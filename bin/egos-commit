@@ -1,0 +1,78 @@
+#!/bin/bash
+# ═══════════════════════════════════════════════════════════
+# 🔱 EGOS Global Commit & Push
+# Orchestrates git push across all connected EGOS repositories
+# Usage: egos-commit "Your commit message"
+# ═══════════════════════════════════════════════════════════
+set -e
+
+MESSAGE="${1:-chore: EGOS Governance Mesh automatic sync}"
+EGOS_HOME="${EGOS_HOME:-$HOME/.egos}"
+MANIFEST="$EGOS_HOME/manifest.json"
+
+GREEN='\033[0;32m'; YELLOW='\033[1;33m'; RED='\033[0;31m'
+BLUE='\033[0;34m'; CYAN='\033[0;36m'; NC='\033[0m'
+
+echo -e "\n${BLUE}🔱 EGOS Global Synchronizer (Git Push)${NC}"
+echo "═══════════════════════════════════════════════════════════"
+
+if [ ! -f "$MANIFEST" ]; then
+    echo -e "${RED}❌ manifest.json not found in $EGOS_HOME${NC}"
+    exit 1
+fi
+
+json_repos() {
+    python3 -c "
+import json
+d=json.load(open('$MANIFEST'))
+for name,cfg in d.get('repos',{}).items():
+    print(f\"{name}|{cfg['path']}|{cfg['mode']}\")
+" 2>/dev/null
+}
+
+export PATH="$EGOS_HOME/bin:$PATH"
+
+# Pre-flight: Sync everything to ensure we commit the latest governance
+echo -e "${CYAN}🔄 Forcing Governance Sync pre-commit...${NC}"
+egos-gov sync --all >/dev/null 2>&1 || true
+
+while IFS='|' read -r name path mode; do
+    [ "$mode" = "mapped-only" ] && { echo -e "\n${YELLOW}⏭️  $name — mapped-only, skipping git ops${NC}"; continue; }
+    [ ! -d "$path" ] && { echo -e "\n${RED}⚠️  $name — path not found, skipping${NC}"; continue; }
+    
+    echo -e "\n${CYAN}📂 $name ($path)${NC}"
+    
+    cd "$path" || continue
+    
+    if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        echo -e "${RED}   Not a git repository.${NC}"
+        continue
+    fi
+    
+    # 1. Pull latest to avoid push rejection
+    echo "   ⬇️  Pulling latest changes..."
+    git pull origin main 2>/dev/null || git pull origin master 2>/dev/null || true
+    
+    # 2. Check for changes
+    if [ -z "$(git status --porcelain)" ]; then
+        echo -e "${GREEN}   ✅ Working directory clean. No commit needed.${NC}"
+        continue
+    fi
+    
+    # 3. Add & Commit
+    echo "   ➕ Adding changes..."
+    git add -A
+    echo -e "   📝 Committing: \"$MESSAGE\""
+    git commit -m "$MESSAGE" >/dev/null 2>&1 || true
+    
+    # 4. Push
+    echo "   🚀 Pushing to origin..."
+    if git push >/dev/null 2>&1; then
+        echo -e "${GREEN}   ✅ Successfully pushed $name${NC}"
+    else
+        echo -e "${RED}   ❌ Failed to push $name. Check git status manually.${NC}"
+    fi
+
+done < <(json_repos)
+
+echo -e "\n${GREEN}🌌 EGOS Global Synchronization Complete!${NC}"

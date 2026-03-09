@@ -1,0 +1,33 @@
+#!/bin/bash
+# EGOS Daily Gem Hunter Automation
+# Runs the Gem Hunter agent once a day.
+
+DATE=$(date +%Y-%m-%d)
+EGOS_LAB_DIR="/home/enio/egos-lab"
+REPORT_PATH="$EGOS_LAB_DIR/docs/gem-hunter/gems-$DATE.md"
+
+if [ -f "$REPORT_PATH" ]; then
+    printf "✅ Gem Hunter already ran today ($DATE).\n"
+    exit 0
+fi
+
+printf "🚀 Launching Daily Gem Hunter (Background)...\n"
+export PATH="$HOME/.egos/bin:$PATH"
+
+# Run in background to not block the /start workflow
+(
+    cd "$EGOS_LAB_DIR" || exit 1
+    # Run the agent directly using bun
+    bun run agents/agents/gem-hunter.ts --exec --quick > "$EGOS_LAB_DIR/docs/gem-hunter/last_run.log" 2>&1
+    
+    # Check if a report was actually created 
+    if [ -f "$REPORT_PATH" ]; then
+        # Use report-generator (or simple script) to append P2 tasks to TASKS.md
+        printf "\n- [ ] **GEM-HUNTER** — Analyze and implement gems from $DATE: [Report](docs/gem-hunter/gems-$DATE.md)\n" >> "$EGOS_LAB_DIR/TASKS.md"
+        
+        # 🌟 Golden Rule: Run Gratitude Engine
+        bun /home/enio/.egos/bin/gem-hunter-gratitude.ts "$REPORT_PATH" >> "$EGOS_LAB_DIR/docs/gem-hunter/last_run.log" 2>&1
+    fi
+) &
+
+printf "ℹ️  Gem Hunter and Gratitude Engine are running in the background. Check TASKS.md later.\n"

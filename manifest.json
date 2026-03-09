@@ -1,0 +1,55 @@
+{
+  "version": "1.0.0",
+  "description": "EGOS Governance Mesh — Declarative sync manifest",
+  "updated": "2026-03-09",
+  
+  "shared_guarani": [
+    "orchestration/DOMAIN_RULES.md",
+    "orchestration/GATES.md",
+    "orchestration/PIPELINE.md",
+    "orchestration/QUESTION_BANK.md",
+    "prompts/PROMPT_SYSTEM.md",
+    "prompts/triggers.json",
+    "prompts/meta/brainet-collective.md",
+    "prompts/meta/universal-strategist.md",
+    "refinery/classifier.md",
+    "refinery/interrogators/bug.md",
+    "refinery/interrogators/feature.md",
+    "refinery/interrogators/knowledge.md",
+    "refinery/interrogators/refactor.md",
+    "philosophy/TSUN_CHA_PROTOCOL.md"
+  ],
+
+  "shared_workflows": [
+    "start.md", "end.md", "pre.md", "prompt.md",
+    "regras.md", "research.md", "disseminate.md"
+  ],
+
+  "shared_skills": [
+    "stitch-design"
+  ],
+
+  "required_local_files": [
+    "AGENTS.md", "TASKS.md", ".windsurfrules"
+  ],
+
+  "repos": {
+    "egos-lab":       { "path": "/home/enio/egos-lab",       "mode": "auto-sync", "hooks": true },
+    "br-acc":         { "path": "/home/enio/br-acc",         "mode": "auto-sync", "hooks": true },
+    "carteira-livre": { "path": "/home/enio/carteira-livre", "mode": "auto-sync", "hooks": true },
+    "forja":          { "path": "/home/enio/forja",          "mode": "auto-sync", "hooks": true },
+    "egos-self":      { "path": "/home/enio/egos-self",      "mode": "auto-sync", "hooks": true },
+    "policia":        { "path": "/home/enio/policia",        "mode": "mapped-only", "hooks": false }
+  },
+
+  "ai_tools": {
+    "codex": {
+      "check": "command -v codex >/dev/null 2>&1",
+      "description": "OpenAI Codex CLI for second-opinion code review"
+    },
+    "alibaba": {
+      "env_vars": ["EGOS_ORCHESTRATOR_PROVIDER", "EGOS_ORCHESTRATOR_MODEL"],
+      "description": "Alibaba/Qwen LLM provider (primary)"
+    }
+  }
+}

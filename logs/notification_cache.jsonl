@@ -1,0 +1,4 @@
+{"timestamp": "2025-10-20T14:04:44.860634", "title": "Test Success", "message": "This is a success notification", "type": "success", "urgency": "normal"}
+{"timestamp": "2025-10-20T14:04:44.883520", "title": "Test Info", "message": "This is an info notification", "type": "info", "urgency": "normal"}
+{"timestamp": "2025-10-20T14:04:44.896708", "title": "Test Warning", "message": "This is a warning notification", "type": "warning", "urgency": "normal"}
+{"timestamp": "2025-10-20T14:04:44.910898", "title": "Test Error", "message": "This is an error notification", "type": "error", "urgency": "critical"}

@@ -1,49 +1,58 @@
-# EGOS Rules
+# 🌐 EGOS Shared Governance Framework
 
-> **Mirror SSOT** — distributed version of `docs/opus-mode/` from [enioxt/egos](https://github.com/enioxt/egos).
-> **License:** MIT
-> **Auto-sync:** via `scripts/sync-egos-rules.sh` in the source monorepo.
-
-## Purpose
-
-This repo is the **public distribution layer** of the EGOS OPUS MODE specification. Any AI agent (Claude/GPT/Gemini/open-source) with web access can:
-
-1. Read the meta-prompt as system prompt
-2. Load rules dynamically at session start
-3. Validate behavior against the canonical spec
-
-## What's here
-
-- **[OPUS_MODE_V1.md](docs/opus-mode/OPUS_MODE_V1.md)** — SSOT principal (16 seções)
-- **[TUTOR_MODE.md](docs/opus-mode/TUTOR_MODE.md)** — tutor grau máximo protocol
-- **[BANDA_COGNITIVA.md](docs/opus-mode/BANDA_COGNITIVA.md)** — 4-role hierarchical review
-- **[COUNCIL_PROTOCOL.md](docs/opus-mode/COUNCIL_PROTOCOL.md)** — multi-LLM orchestration
-- **[CYCLE_REPORT_TEMPLATE.md](docs/opus-mode/CYCLE_REPORT_TEMPLATE.md)** — obligatory end-of-cycle format
-- **[PERSONAL_CHRONICLE.md](docs/opus-mode/PERSONAL_CHRONICLE.md)** — life-event schema
-
-## How to use in YOUR agent
-
-```python
-# Python example
-import httpx
-rules_url = "https://raw.githubusercontent.com/enioxt/egos-rules/main/docs/opus-mode/OPUS_MODE_V1.md"
-system_prompt = httpx.get(rules_url).text
-# Use `system_prompt` in Claude/GPT/Gemini system role
-```
-
-```typescript
-// TypeScript
-const rules = await fetch("https://raw.githubusercontent.com/enioxt/egos-rules/main/docs/opus-mode/OPUS_MODE_V1.md").then(r => r.text());
-```
-
-## Contributing
-
-This is a mirror — PRs should go to the source monorepo first. See [CONTRIBUTING.md](CONTRIBUTING.md) (TBD).
-
-## License
-
-MIT © Enio Rocha 2026
+> **Location:** `/home/enio/.egos/`
+> **Purpose:** Single source of truth for cross-repo rules, preferences, and agent memory
+> **Version:** 1.0.0 | **Updated:** 2026-02-13
 
 ---
 
-*Sacred Code: 000.111.369.963.1618*
+## Architecture
+
+```
+~/.egos/                           ← CENTRAL SOURCE OF TRUTH
+├── README.md                      ← This file
+├── guarani/
+│   ├── IDENTITY.md                ← Shared agent identity
+│   ├── PREFERENCES_SHARED.md      ← Cross-repo coding standards
+│   └── SACRED_CODE.md             ← Sacred Code + core values
+├── skills/
+│   └── *.md                       ← Shared agent skills
+├── workflows/
+│   └── *.md                       ← Shared agent workflows
+└── sync.sh                        ← Auto-sync to all repos
+
+Repos that consume:
+├── /home/enio/egos-lab/           ← symlinked .egos → ~/.egos
+├── /home/enio/carteira-livre/     ← symlinked .egos → ~/.egos
+└── (any future repo)              ← symlinked .egos → ~/.egos
+```
+
+## How It Works
+
+1. **Central rules** live here in `~/.egos/`
+2. **Each repo** has a symlink: `.egos → ~/.egos`
+3. **Local overrides** live in each repo's `.guarani/` (NOT symlinked)
+4. **sync.sh** propagates critical updates and validates consistency
+5. **Agents read** both `.egos/` (shared) and `.guarani/` (local)
+
+## Rule Precedence
+
+```
+1. Local .guarani/ rules     ← HIGHEST (repo-specific overrides)
+2. Shared .egos/ rules       ← MEDIUM  (cross-repo standards)
+3. .windsurfrules             ← AGENT-LEVEL (agent-specific behavior)
+```
+
+## Adding a New Repo
+
+```bash
+# In any new repo:
+ln -sf ~/.egos .egos
+echo ".egos" >> .gitignore  # Don't commit the symlink
+```
+
+## Editing Shared Rules
+
+1. Edit files in `~/.egos/guarani/`
+2. Run `~/.egos/sync.sh` to validate and propagate
+3. All repos automatically see the changes (via symlink)

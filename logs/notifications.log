@@ -1,0 +1,4 @@
+2025-10-20 14:04:44,834 - egos.notifications - INFO - Test Success: This is a success notification
+2025-10-20 14:04:44,862 - egos.notifications - INFO - Test Info: This is an info notification
+2025-10-20 14:04:44,883 - egos.notifications - WARNING - Test Warning: This is a warning notification
+2025-10-20 14:04:44,896 - egos.notifications - ERROR - Test Error: This is an error notification

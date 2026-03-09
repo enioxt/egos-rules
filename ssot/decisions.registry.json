@@ -1,0 +1,160 @@
+{
+  "version": "1",
+  "generatedBy": "ssot-auditor PR10 seed",
+  "decisions": [
+    {
+      "id": "timelineevent-intelink-eagleeye-001",
+      "match": {
+        "symbol": "TimelineEvent",
+        "kind": "interface",
+        "scope": "cross-package",
+        "packages": ["eagle-eye", "intelink"],
+        "clusterKey": "interface|TimelineEvent|cross-package|eagle-eye,intelink"
+      },
+      "decision": {
+        "action": "RENAME_BY_BOUNDED_CONTEXT",
+        "status": "APPROVED",
+        "rationale": "Bounded context collision confirmed: investigation timeline vs research timeline. Rename to InvestigationTimelineEvent (intelink) and ResearchTimelineEvent (eagle-eye).",
+        "owner": "Enio",
+        "date": "2026-02-22"
+      },
+      "payload": {
+        "renames": [
+          { "path": "apps/intelink/lib/intelligence/graph-aggregator.ts", "from": "TimelineEvent", "to": "InvestigationTimelineEvent" },
+          { "path": "apps/eagle-eye/src/research/timeline_tracer.ts", "from": "TimelineEvent", "to": "ResearchTimelineEvent" }
+        ],
+        "notes": [
+          "Do not promote to shared — these are genuinely different domain concepts.",
+          "Update local imports after rename."
+        ]
+      },
+      "validation": {
+        "expectedDriftStatus": "DIVERGENT",
+        "expectedContext": "BOUNDED_CONTEXT_COLLISION"
+      },
+      "meta": {
+        "tags": ["high-priority", "bounded-context", "cross-package"],
+        "createdAt": "2026-02-22T10:00:00.000Z",
+        "updatedAt": "2026-02-22T10:00:00.000Z"
+      }
+    },
+    {
+      "id": "sessionuser-intelink-001",
+      "match": {
+        "symbol": "SessionUser",
+        "kind": "interface",
+        "scope": "intra-package",
+        "packages": ["intelink"],
+        "clusterKey": "interface|SessionUser|intra-package|intelink"
+      },
+      "decision": {
+        "action": "MERGE_TO_CANONICAL",
+        "status": "APPROVED",
+        "rationale": "EXACT shape — consolidate to lib/security/auth.ts as canonical. Remove duplicate in lib/session.ts.",
+        "owner": "Enio",
+        "date": "2026-02-22"
+      },
+      "payload": {
+        "canonical": {
+          "path": "apps/intelink/lib/security/auth.ts",
+          "exportedSymbol": "SessionUser"
+        },
+        "notes": [
+          "Update imports in session.ts to import from security/auth.ts",
+          "PR11 candidate: auto-fix ready"
+        ]
+      },
+      "validation": {
+        "expectedDriftStatus": "EXACT"
+      },
+      "meta": {
+        "tags": ["autofix-ready", "exact", "intra-package"],
+        "createdAt": "2026-02-22T10:00:00.000Z",
+        "updatedAt": "2026-02-22T10:00:00.000Z"
+      }
+    },
+    {
+      "id": "sessionvalidationresult-intelink-001",
+      "match": {
+        "symbol": "SessionValidationResult",
+        "kind": "interface",
+        "scope": "intra-package",
+        "packages": ["intelink"],
+        "clusterKey": "interface|SessionValidationResult|intra-package|intelink"
+      },
+      "decision": {
+        "action": "MERGE_TO_CANONICAL",
+        "status": "APPROVED",
+        "rationale": "EXACT shape — consolidate to lib/security/auth.ts. Same pattern as SessionUser.",
+        "owner": "Enio",
+        "date": "2026-02-22"
+      },
+      "payload": {
+        "canonical": {
+          "path": "apps/intelink/lib/security/auth.ts",
+          "exportedSymbol": "SessionValidationResult"
+        }
+      },
+      "validation": {
+        "expectedDriftStatus": "EXACT"
+      },
+      "meta": {
+        "tags": ["autofix-ready", "exact", "intra-package"],
+        "createdAt": "2026-02-22T10:00:00.000Z",
+        "updatedAt": "2026-02-22T10:00:00.000Z"
+      }
+    },
+    {
+      "id": "searchresult-intelink-eagleeye-001",
+      "match": {
+        "symbol": "SearchResult",
+        "kind": "interface",
+        "scope": "cross-package",
+        "packages": ["eagle-eye", "intelink"],
+        "clusterKey": "interface|SearchResult|cross-package|eagle-eye,intelink"
+      },
+      "decision": {
+        "action": "RENAME_BY_BOUNDED_CONTEXT",
+        "status": "PROPOSED",
+        "rationale": "Cross-package collision — IntelinkSearchResult vs EagleEyeSearchResult. Evaluate if a shared SearchResult<T> generic is viable.",
+        "owner": "Enio",
+        "date": "2026-02-22"
+      },
+      "validation": {
+        "expectedDriftStatus": "DIVERGENT",
+        "expectedContext": "BOUNDED_CONTEXT_COLLISION"
+      },
+      "meta": {
+        "tags": ["cross-package", "bounded-context"],
+        "createdAt": "2026-02-22T10:00:00.000Z",
+        "updatedAt": "2026-02-22T10:00:00.000Z"
+      }
+    },
+    {
+      "id": "user-intelink-marketplace-001",
+      "match": {
+        "symbol": "User",
+        "kind": "interface",
+        "scope": "cross-package",
+        "packages": ["intelink", "marketplace-core"],
+        "clusterKey": "interface|User|cross-package|intelink,marketplace-core"
+      },
+      "decision": {
+        "action": "KEEP_SEPARATE_INTENTIONAL",
+        "status": "APPROVED",
+        "rationale": "Completely different domains: police intelligence user vs marketplace user. Intentional bounded context separation.",
+        "owner": "Enio",
+        "date": "2026-02-22"
+      },
+      "validation": {
+        "expectedDriftStatus": "DIVERGENT",
+        "expectedContext": "BOUNDED_CONTEXT_COLLISION"
+      },
+      "meta": {
+        "tags": ["intentional", "bounded-context", "cross-package"],
+        "createdAt": "2026-02-22T10:00:00.000Z",
+        "updatedAt": "2026-02-22T10:00:00.000Z"
+      }
+    }
+  ]
+}
