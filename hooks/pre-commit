@@ -97,16 +97,17 @@ if [ -n "$TS_FILES" ]; then
   for file in $TS_FILES; do
     if [ -f "$file" ]; then
       # Console.log flood (>3 in same file)
-      count=$(grep -c 'console\.log' "$file" 2>/dev/null || echo 0)
+      count=$(grep -c 'console\.log' "$file" 2>/dev/null || true)
+      count=${count:-0}
       if [ "$count" -gt 5 ]; then
         _warn "$file: $count console.log encontrados — remova antes do merge em main."
       fi
       if grep -q "setInterval" "$file" 2>/dev/null && ! grep -q "clearInterval" "$file" 2>/dev/null; then
         _warn "$file: setInterval detectado sem clearInterval"
       fi
-      # Unsafe array access without null check
-      if grep -qP '(?<!\?\.)\.length\b' "$file" 2>/dev/null; then
-        _warn "$file: .length sem ?. — considere uso seguro (arr?.length)"
+      # Unsafe array iteration without optional chaining
+      if grep -qP '(?<!\?\.)\.(map|filter|forEach)\(' "$file" 2>/dev/null; then
+        _warn "$file: iteração de array sem ?. — considere uso seguro (arr?.map / arr?.filter / arr?.forEach)"
       fi
     fi
   done
