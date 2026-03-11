@@ -27,6 +27,7 @@ echo ""
 # - "$HOME/policia"   (sensitive/private workflow, isolated rules)
 # - "$HOME/personal"  (non-code/personal artifacts)
 REPOS=(
+  "$HOME/852"
   "$HOME/egos-lab"
   "$HOME/carteira-livre"
   "$HOME/br-acc"
