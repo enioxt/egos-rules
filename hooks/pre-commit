@@ -1,0 +1,194 @@
+#!/usr/bin/env bash
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  EGOS UNIVERSAL PRE-COMMIT HOOK — SSOT v1.0                    ║
+# ║  Fonte: /home/enio/.egos/hooks/pre-commit                      ║
+# ║  Instalar com: ln -sf /home/enio/.egos/hooks/pre-commit .git/hooks/pre-commit
+# ╚══════════════════════════════════════════════════════════════════╝
+set -euo pipefail
+
+ERRORS=0
+WARNINGS=0
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
+
+_err()  { echo "  ✗ [ERRO]  $*" >&2; ERRORS=$((ERRORS+1)); }
+_warn() { echo "  ⚠ [AVISO] $*" >&2; WARNINGS=$((WARNINGS+1)); }
+_ok()   { echo "  ✓ $*"; }
+
+echo ""
+echo "╔══════════════════════════════════════════════════════════╗"
+echo "║          EGOS Pre-Commit — verificação de segurança       ║"
+echo "╚══════════════════════════════════════════════════════════╝"
+
+# ── 0. GOVERNANÇA — Detectar drift do mesh EGOS ──────────────────
+echo ""
+echo "[ 0/7 ] Verificando governança EGOS..."
+
+if [ -x "$HOME/.egos/bin/egos-gov" ]; then
+  if ! "$HOME/.egos/bin/egos-gov" check --quiet 2>/dev/null; then
+    _warn "Governance drift detectado — execute: egos-gov sync"
+  fi
+else
+  _warn "egos-gov não encontrado em $HOME/.egos/bin"
+fi
+
+_ok "Verificação de governança concluída."
+
+# ── 1. SECRETS — Nunca commitar credenciais ──────────────────────
+echo ""
+echo "[ 1/6 ] Verificando segredos e credenciais..."
+
+SECRET_PATTERNS=(
+  "password\s*=\s*['\"][^'\"]{8,}"
+  "api[_-]?key\s*=\s*['\"][^'\"]{10,}"
+  "secret[_-]?key\s*=\s*['\"][^'\"]{8,}"
+  "DASHSCOPE_API_KEY\s*=\s*['\"][^'\"]"
+  "OPENROUTER_API_KEY\s*=\s*['\"][^'\"]"
+  "SUPABASE_SERVICE_ROLE_KEY\s*=\s*['\"][^'\"]"
+)
+
+for pattern in "${SECRET_PATTERNS[@]}"; do
+  if git diff --cached --name-only | xargs -I{} grep -lPi "$pattern" {} 2>/dev/null | grep -qv ".env.example"; then
+    _err "Possível credencial detectada (padrão: $pattern) — remova antes de commitar."
+  fi
+done
+
+# Check for .env files being staged
+if git diff --cached --name-only | grep -qE '^\.env($|\.(local|development|production|test)(\..*)?$)'; then
+  _err "Arquivo .env sendo commitado! Use .env.example para documentação."
+fi
+
+# gitleaks se disponível — escaneia apenas arquivos staged
+if command -v gitleaks &>/dev/null; then
+  if ! gitleaks protect --staged 2>/dev/null; then
+    _err "gitleaks detectou possível vazamento de segredos nos arquivos staged."
+  fi
+fi
+
+_ok "Verificação de segredos concluída."
+
+# ── 2. ARQUIVOS GRANDES ──────────────────────────────────────────
+echo ""
+echo "[ 2/6 ] Verificando tamanho de arquivos..."
+
+PERSONAL_FILES=$(git diff --cached --name-only | grep -iE 'cv|resume|curriculum|cover[._ -]?letter|salary' || true)
+if [ -n "$PERSONAL_FILES" ]; then
+  _err "Arquivo pessoal detectado no commit — mova para área privada fora do repo."
+fi
+
+while IFS= read -r file; do
+  if [ -f "$file" ]; then
+    size=$(stat -c%s "$file" 2>/dev/null || stat -f%z "$file" 2>/dev/null || echo 0)
+    if [ "$size" -gt 5242880 ]; then
+      _err "Arquivo grande demais (>5MB): $file ($(numfmt --to=iec $size))"
+    elif [ "$size" -gt 1048576 ]; then
+      _warn "Arquivo >1MB: $file ($(numfmt --to=iec $size)) — considere usar Git LFS"
+    fi
+  fi
+done < <(git diff --cached --name-only)
+
+_ok "Verificação de tamanho concluída."
+
+# ── 3. TYPESCRIPT / JAVASCRIPT ───────────────────────────────────
+echo ""
+echo "[ 3/6 ] Verificando qualidade de código TypeScript/JS..."
+
+TS_FILES=$(git diff --cached --name-only | grep -E '\.(ts|tsx)$' || true)
+if [ -n "$TS_FILES" ]; then
+  for file in $TS_FILES; do
+    if [ -f "$file" ]; then
+      # Console.log flood (>3 in same file)
+      count=$(grep -c 'console\.log' "$file" 2>/dev/null || echo 0)
+      if [ "$count" -gt 5 ]; then
+        _warn "$file: $count console.log encontrados — remova antes do merge em main."
+      fi
+      if grep -q "setInterval" "$file" 2>/dev/null && ! grep -q "clearInterval" "$file" 2>/dev/null; then
+        _warn "$file: setInterval detectado sem clearInterval"
+      fi
+      # Unsafe array access without null check
+      if grep -qP '(?<!\?\.)\.length\b' "$file" 2>/dev/null; then
+        _warn "$file: .length sem ?. — considere uso seguro (arr?.length)"
+      fi
+    fi
+  done
+fi
+
+_ok "Verificação TypeScript concluída."
+
+# ── 4. PYTHON ────────────────────────────────────────────────────
+echo ""
+echo "[ 4/6 ] Verificando código Python..."
+
+PY_FILES=$(git diff --cached --name-only | grep -E '\.py$' || true)
+if [ -n "$PY_FILES" ]; then
+  for file in $PY_FILES; do
+    if [ -f "$file" ]; then
+      if command -v python3 &>/dev/null; then
+        if ! python3 -m py_compile "$file" 2>/dev/null; then
+          _err "Erro de sintaxe Python: $file"
+        fi
+      fi
+      if command -v ruff &>/dev/null; then
+        if ! ruff check "$file" --quiet 2>/dev/null; then
+          _warn "ruff detectou problemas em $file"
+        fi
+      fi
+    fi
+  done
+fi
+
+_ok "Verificação Python concluída."
+
+# ── 5. TASKS.md — Verificar se está atualizado ───────────────────
+echo ""
+echo "[ 5/6 ] Verificando TASKS.md..."
+
+if [ -f "$REPO_ROOT/TASKS.md" ]; then
+  tasks_modified=$(git diff --cached --name-only | grep -c "TASKS.md" || true)
+  code_modified=$(git diff --cached --name-only | grep -cE '\.(ts|tsx|py|js|jsx)$' || true)
+  if [ "$code_modified" -gt 2 ] && [ "$tasks_modified" -eq 0 ]; then
+    _warn "Você modificou $code_modified arquivos de código mas não atualizou TASKS.md — lembre de registrar o progresso."
+  fi
+fi
+
+_ok "Verificação TASKS.md concluída."
+
+# ── 6. PII — Dados pessoais sensíveis ────────────────────────────
+echo ""
+echo "[ 6/6 ] Verificando dados pessoais (PII)..."
+
+PII_PATTERNS=(
+  '\b[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}\b'  # CPF
+  '\b\d{7,9}\b.*masp'                             # MASP (aproximado)
+)
+
+for file in $(git diff --cached --name-only | grep -vE '\.(sql|md)$' || true); do
+  if [ -f "$file" ]; then
+    for pattern in "${PII_PATTERNS[@]}"; do
+      if grep -qP "$pattern" "$file" 2>/dev/null; then
+        _warn "Possível PII em $file — verifique se é dado real ou exemplo."
+      fi
+    done
+  fi
+done
+
+_ok "Verificação PII concluída."
+
+# ── RESULTADO ─────────────────────────────────────────────────────
+echo ""
+if [ "$ERRORS" -gt 0 ]; then
+  echo "╔══════════════════════════════════════════════════════════╗"
+  echo "║  ✗ $ERRORS erro(s) encontrado(s) — COMMIT BLOQUEADO       ║"
+  echo "║  Corrija os erros acima antes de commitar.               ║"
+  echo "╚══════════════════════════════════════════════════════════╝"
+  exit 1
+elif [ "$WARNINGS" -gt 0 ]; then
+  echo "╔══════════════════════════════════════════════════════════╗"
+  echo "║  ⚠ $WARNINGS aviso(s) — commit prosseguindo...            ║"
+  echo "╚══════════════════════════════════════════════════════════╝"
+else
+  echo "╔══════════════════════════════════════════════════════════╗"
+  echo "║  ✓ Todos os checks passaram — commit liberado!           ║"
+  echo "╚══════════════════════════════════════════════════════════╝"
+fi
+
+exit 0
