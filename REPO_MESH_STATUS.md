@@ -1,13 +1,14 @@
 # REPO_MESH_STATUS.md — EGOS Ecosystem Snapshot
 
-## Estado em 2026-03-11
+## Estado em 2026-03-13
 
 | Repo | Tipo | Origin | Governança | Hook | Observação principal |
 |------|------|--------|------------|------|----------------------|
+| `egos` | framework core | `git@github.com:enioxt/egos.git` | completa (from scratch) | SSOT direto (max enforcement) | **NOVO** — kernel puro: governance + runtime + shared. Commit 0 = 2026-03-13 |
 | `852` | Next.js app institucional | `git@github.com:enioxt/852.git` | `AGENTS` + `TASKS` + `.windsurfrules` + `.egos` + `.guarani` + workflows | SSOT direto | referência atual para chat institucional, relatórios, dashboard e issues |
 | `br-acc` | plataforma de inteligência | `git@github.com:enioxt/EGOS-Inteligencia.git` | completa | wrapper SSOT + legado | mantém checks avançados próprios |
 | `carteira-livre` | app standalone | `git@github.com:enioxt/carteira-livre.git` | completa | SSOT direto | tinha lacuna de hook, já corrigida |
-| `egos-lab` | monorepo lab | `git@github.com:enioxt/egos-lab.git` | completa | wrapper SSOT + legado | continua sendo fonte central de governança compartilhada |
+| `egos-lab` | lab/incubator | `git@github.com:enioxt/egos-lab.git` | completa | wrapper SSOT + legado | agora incubator (apps + agents), kernel migrado para `egos` |
 | `forja` | SaaS privado | `git@github.com:enioxt/FORJA.git` | completa | SSOT direto | hook mínimo foi substituído por padrão universal |
 | `policia` | workspace investigativo privado | `https://github.com/enioxt/DHPP.git` | bootstrap parcial | SSOT direto | recebeu `AGENTS`, `TASKS`, `SYSTEM_MAP`, workflow Windsurf e `.egos`; ainda sem `.guarani` |
 | `egos-self` | CLI + Android app | `git@github.com:enioxt/egos-self.git` | completa | SSOT direto | hook mínimo foi substituído por padrão universal |

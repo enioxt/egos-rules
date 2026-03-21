@@ -1,67 +1,83 @@
 ---
-description: "Save knowledge and patterns to persistent memory (System v3.0)"
+description: "Saves new knowledge and patterns to Memory MCP, documentation, and social channels."
 ---
 
-# /disseminate — Knowledge Persistence (System v3.0)
+# /disseminate — Knowledge Dissemination
 
-> **Works in:** ANY repo | **When:** You learn something worth remembering
+> **Works in:** ANY EGOS repo
+> **When to Use:** After implementing a feature, fixing a bug, making an architectural decision, or completing a milestone.
+> **Repo-role:** Check `egos.config.json` for `role` and `surfaces`. If absent, assume `leaf` and skip surfaces like gem-hunter, report-generator, session:guard, and activation:check.
 
 ---
 
-## 1. When to Disseminate
+## 1. Identify New Knowledge
+
+What was created or changed?
+
+- **Infrastructure**: Docker, caching, ETL, deployment?
+- **Feature**: New component, API endpoint, agent?
+- **Architecture**: Design pattern, data flow, integration?
+- **Bug fix**: Root cause, prevention mechanism?
+- **Governance**: Security policy, workflow, meta-prompt?
+
+## 2. Save to Cascade Memory
+
+```ts
+create_memory({
+  Title: "Session — [description]",
+  Content: "Detailed markdown with files, decisions, gotchas...",
+  CorpusNames: ["enioxt/REPO_NAME"],
+  Tags: ["relevant", "tags"],
+  Action: "create"
+})
 ```
-⚠️  Save knowledge when:
-- You discover a pattern that will be useful again (e.g., "Recursion Limit in Accessibility").
-- You solve a tricky bug (save the solution).
-- You learn about a library/API behavior.
-- You find repo-specific conventions (e.g., "Use 'Bun' not 'Node'").
-- You make an architectural decision (save rationale).
+
+## 3. Check Meta-Prompt Triggers
+
+```text
+Read .guarani/prompts/triggers.json
+- Did any trigger apply this session?
+- Should a new trigger be added?
+- Was a meta-prompt useful? Document the outcome.
 ```
 
-## 2. The Process (Dual-Layer)
+## 4. Update Documentation
 
-### A. Fast Path (Code Comments)
-Simply add a comment in the code with the `@disseminate` tag.
-```typescript
-// @disseminate: [Pattern] Always use Shannon Entropy for secret detection.
-if (entropy > 4.5) { ... }
-```
-*The `scripts/disseminate.ts` will pick this up automatically.*
+- `docs/knowledge/HARVEST.md` — Add patterns, gotchas, learnings
+- `TASKS.md` — Mark completed, add discovered tasks
+- `.guarani/` — If architecture decisions were made
+- Record Codex usage: availability, mode used (`review`, `read-only`, `cloud`), suggestions applied/rejected
+- Record Alibaba orchestration status and whether the repo's readiness surface (`session:guard` when present, otherwise local activation checks) was updated
+- If mesh, agents, workflows, or event-bus reality changed, include a `/mycelium` snapshot with maturity, connected systems, and drift notes
 
-### B. Deep Path (Manual Tool Call)
-Use the `mcp_memory` tools to create structured entities.
+## 5. Post on Social Channels (if milestone)
 
-1. **CLASSIFY:**
-   - 🧠 `Concept` (Architecture, Pattern)
-   - 🔧 `Solution` (Bug fix, Config)
-   - 📚 `Reference` (Docs, Library)
-   - ⚠️ `Gotcha` (Edge case, Warning)
+Use `/postar` workflow for unified posting:
 
-2. **SAVE (Memory MCP):**
-   ```javascript
-   mcp_memory_create_entities([{
-     name: "Recursion Limit Pattern",
-     entityType: "padrão_arquitetural",
-     observations: [
-       "Android Accessibility Services are prone to StackOverflow.",
-       "ALWAYS set a MAX_DEPTH constant (e.g., 50).",
-       "Log a warning when depth is exceeded."
-     ]
-   }])
-   ```
+- **Telegram** (@ethikin): Full markdown, up to 4096 chars
+- **Discord**: Markdown, up to 2000 chars
+- **X.com** (@anoineim): 280 chars max + link
 
-3. **CONNECT (Mycelium):**
-   Link this knowledge to the broader graph.
-   ```javascript
-   mcp_memory_create_relations([{
-     from: "Recursion Limit Pattern",
-     to: "Cortex Mobile",
-     relationType: "used_in"
-   }])
-   ```
+## 6. Update Bot/AI System Prompts (if applicable)
 
-### C. Global Rule Propagation (For Structural/Security Fixes)
-When you discover a critical vulnerability (like the APEX-SECURE findings) or a fundamental structural pattern, you MUST disseminate it across the entire system automatically.
-1. **Update `.windsurfrules`:** Inject the pattern into `## SECURITY` or `## ARCHITECTURE` of the local repo.
-2. **Update `.guarani/PREFERENCES.md`:** Ensure local code-quality standards reflect the new heuristic.
-3. **If Multi-Repo:** Always ask the user if they want to propagate this critical pattern to other core repos (e.g., `carteira-livre`).
+If new data sources, tools, or capabilities were added, update relevant system prompts.
+
+## 7. Update Capability Registry (if applicable)
+
+If a new capability was created, improved, or adopted:
+
+- Update `egos/docs/CAPABILITY_REGISTRY.md` — add/modify capability entry with SSOT ref, quality rating, adoption status
+- If chatbot-related, verify compliance with `egos/docs/modules/CHATBOT_SSOT.md`
+- If a module was ported to `packages/shared/`, update the SSOT column in the registry
+
+---
+
+## Checklist
+
+- [ ] Cascade Memory updated (create_memory)
+- [ ] Meta-prompt triggers reviewed
+- [ ] Codex usage recorded (or explicit reason why not used)
+- [ ] TASKS.md updated
+- [ ] Documentation updated (HARVEST.md, .guarani/)
+- [ ] Capability Registry updated (if new capability created/adopted)
+- [ ] Social channels posted (if milestone)

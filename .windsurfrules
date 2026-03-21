@@ -1,0 +1,111 @@
+---
+project: "carteira-livre"
+type: "standalone-app + marketplace + leaf-repo"
+---
+
+# .windsurfrules — Carteira Livre
+
+> VERSION 1.1.0 — Updated 2026-03-15
+
+## SSOT (Single Source of Truth)
+
+| File | Purpose | MAX lines |
+|------|---------|-----------|
+| `AGENTS.md` | System map, stack, commands | 200 |
+| `TASKS.md` | All tasks | 500 |
+| `.windsurfrules` | Agent rules (this file) | 150 |
+| `.guarani/PREFERENCES.md` | Coding standards | 100 |
+| `.guarani/VALUATION_STANDARDS.md` | AI-Era metrics + valuation | 200 |
+
+## PRIME DIRECTIVE
+
+> **Rules govern agents. Agents enforce rules. Community evolves rules.**
+> **NEVER write manual logic if a Tool (MCP) or Agent exists.**
+> **CHALLENGE before EXECUTE. Process before code.**
+> **DRY-RUN FIRST. Always.**
+
+## ORCHESTRATION PROTOCOL (MANDATORY)
+
+> **Every message follows:** INTAKE -> CHALLENGE -> PLAN -> GATE -> EXECUTE -> VERIFY -> LEARN
+> **Full spec:** `.guarani/orchestration/PIPELINE.md`
+
+| Complexity | Pipeline Depth | Min Thoughts |
+|------------|---------------|---------------|
+| TRIVIAL | Skip to Execute | 0 |
+| SIMPLE | Intake + Plan + Execute | 0 |
+| MODERATE | Full pipeline, questions mandatory | 3 |
+| COMPLEX | Full pipeline + Sequential Thinking | 5 |
+| CRITICAL | Full pipeline + user approval | 7 |
+
+## MANDAMENTOS
+
+1. **CHALLENGE** — Question, detect contradictions, ask for evidence.
+2. **ONE THING** — Each agent does ONE thing. Each module solves ONE problem.
+3. **ZERO DEPS** — Agents use only Node/Bun stdlib. No framework dependencies.
+4. **DRY-RUN FIRST** — Every agent SHALL support `--dry` before `--exec`.
+5. **REGISTRY** — No agent runs without `agents/registry/agents.json` entry.
+6. **CLAIMS** — Never claim a tool, provider, rule, or mesh surface is active without code, command output, endpoint, log, or env evidence.
+7. **SHARED** — Reusable code is encouraged, but leaf repos MUST NOT ship runtime/build dependencies on sibling paths like `../egos/*`.
+8. **COMMIT** — Conventional commits every 30-60min.
+9. **SCOPE** — Do ONLY what was asked. ASK before creating new features.
+10. **TEACH** — Explain WHY, not just WHAT. Question bad ideas.
+11. **EDIT SIZE** — Max 80 lines per write_to_file/edit call.
+12. **FROZEN** — Never edit frozen zones without explicit user approval + proof.
+13. **CODEX** — Use Codex for diff-heavy, audit, and mechanical work.
+14. **HUMAN LOOP** — For ambiguous decisions, ask before acting.
+
+## DOCUMENTATION DISCIPLINE (MANDATORY)
+
+### Anti-Proliferation Rules
+
+1. **NO TIMESTAMPED DOCS** — NEVER create `*_2026-03-*.md`, `*AUDIT_2026*.md`, `*REPORT_2026*.md`
+2. **UPDATE SSOT, DON'T CREATE** — Audits/diagnostics MUST update `AGENTS.md`, `TASKS.md`, `docs/SYSTEM_MAP.md`
+3. **HANDOFFS ARE EPHEMERAL** — Consolidate in `docs/knowledge/HARVEST.md`, archive >30 days
+4. **ONE SSOT PER CONCERN** — `AGENTS.md` = capabilities, `TASKS.md` = backlog, `SYSTEM_MAP.md` = architecture
+5. **KERNEL CANONICAL ONLY** — `SSOT_REGISTRY.md`, `CAPABILITY_REGISTRY.md`, `CHATBOT_SSOT.md` live in `/home/enio/egos/docs/`
+
+### Allowed Docs
+
+- `AGENTS.md`, `TASKS.md`, `README.md`, `docs/SYSTEM_MAP.md`, `docs/_generated/*`, `docs/_archived_handoffs/YYYY-MM/*` ✅
+
+### Prohibited
+
+- ❌ `docs/*AUDIT*.md`, `docs/*DIAGNOSTIC*.md`, `docs/*REPORT*.md` with date stamps (except `_archived/`)
+
+## FROZEN ZONES
+
+> **DO NOT EDIT** without explicit user request + proof-of-work:
+
+- `app/auth/login/page.tsx`, `app/auth/register/page.tsx`, `app/auth/admin/page.tsx`, `app/auth/callback/processing/page.tsx`
+- `lib/supabase/client.ts`, `lib/capacitor-utils.ts`, `middleware.ts`
+- onboarding, verificação/KYC e fluxo de criação de conta
+- lógica de criação e vinculação de subcontas Asaas
+
+## TASK-TYPE CHECKLISTS
+
+| Task | Mandatory Steps |
+|------|----------------|
+| **New agent** | Entry in registry + `--dry` before `--exec` + zero deps + single responsibility |
+| **Bug fix** | Classify complexity + `tsc --noEmit` before commit + root-cause first |
+| **New API** | Add to api-registry + server-side keys only + `.env` for secrets |
+| **Schema change** | Contract test + update generated types/contracts in `types/` or shared surfaces |
+
+## ACTIVATION HARDENING
+
+- `/start` MUST separate local repo truth from canonical fallback truth.
+- Missing required local surfaces MUST be flagged as drift before any claim that they were loaded.
+- If a canonical fallback exists (`/home/enio/egos`, `~/.egos`), load it explicitly and record the drift in `TASKS.md`.
+- If Alibaba, Codex, session guard, or Refinery surfaces are unavailable, state `unavailable` explicitly instead of implying activation.
+
+## SECURITY
+
+- Pre-commit: lint + EGOS checks + frozen zones check + governance drift check
+- API Keys: NEVER hardcode. Use `.env`.
+- PII: Mask CPF/email in all output.
+- RLS: Every new table MUST have `ENABLE ROW LEVEL SECURITY`.
+
+## META-PROMPT SYSTEM
+
+Boot: `.guarani/prompts/PROMPT_SYSTEM.md`
+Triggers: `.guarani/prompts/triggers.json`
+Atoms: Persona, Mission, Rules, Phases, Mathematics, Output, Philosophy

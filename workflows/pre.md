@@ -1,46 +1,74 @@
 ---
-description: "Intent Refinery — Translate vague instructions into precise technical prompts"
+description: "Pre-processa instruções vagas em prompts técnicos otimizados"
 ---
 
-# /pre — Intent Refinery (Agnostic v2.0)
+# /pre — Pre-Processor de Instruções
 
-> **Works in:** ANY repo | **When:** User gives vague or ambiguous instructions
+> **Works in:** ANY EGOS repo
+
+## Quando Usar
+
+- Instrução vaga ou curta (< 50 chars)
+- Quer simular múltiplas perspectivas antes de executar
+- Quer garantir que nada foi esquecido
+
+## Passos
+
+1. **Carregar Pre-Processor**
+
+Read `.guarani/preprocessor.md` if it exists.
+
+2. **Capturar Instrução Original**
+
+Copie exatamente o que o usuário disse.
+
+3. **Simular Perspectivas (3-4 personas)**
+
+- Engenheiro Senior
+- Especialista em Seguranca
+- Usuario Final
+- QA Engineer
+
+4. **Check Meta-Prompt Triggers**
+
+Read `.guarani/prompts/triggers.json` — does this instruction match any trigger?
+If yes, load the corresponding meta-prompt before executing.
+
+5. **Gerar Output Padronizado**
+
+```text
+### INSTRUCAO ORIGINAL:
+>>> [citacao] <<<
+
+### PERSPECTIVAS SIMULADAS:
+[perspectivas]
+
+### INSTRUCAO MELHORADA:
+>>> [versao otimizada] <<<
+
+### SUBTAREFAS:
+1. [ ] ...
+
+### CRITERIOS DE ACEITACAO:
+- [ ] ...
 
 ---
-
-## Process
-
+**EXECUTAR?** [SIM / PERGUNTAR]
 ```
-⚠️  AI AGENT: When user input is vague, process it through these steps:
 
-1. EXTRACT INTENT
-   - What does the user actually want to achieve?
-   - What's the underlying problem/need?
+6. **Aguardar Aprovacao**
 
-2. IDENTIFY AMBIGUITIES
-   - What's unclear or could be interpreted multiple ways?
-   - What assumptions am I making?
+- Se usuario aprovar: executar
+- Se tiver duvidas: esclarecer primeiro
 
-3. MAP TO TECHNICAL ACTIONS
-   - What specific files/modules/APIs are involved?
-   - What's the scope (1 file? 10 files? architectural?)
+7. **Executar Instrucao Melhorada**
 
-4. GENERATE CLARIFYING QUESTIONS (if needed)
-   - Ask max 3 targeted questions
-   - Provide default options so user can just confirm
+- Usar Sequential Thinking se P0/P1
+- Seguir subtarefas na ordem
 
-5. OUTPUT PRECISE PROMPT
-   - Rewrite as clear, actionable technical specification
-   - Include: scope, files affected, expected outcome, verification
+## Atalho
 
-TEMPLATE:
-────────────────────────────────────────────
-**Intent:** [clear 1-line summary]
-**Scope:** [files/modules affected]
-**Steps:**
-  1. [specific action]
-  2. [specific action]
-**Verification:** [how to confirm it's done]
-**Cost:** [estimated effort: low/medium/high]
-────────────────────────────────────────────
-```
+Este workflow e ativado AUTOMATICAMENTE quando:
+- Instrucao < 50 caracteres
+- Contem palavras vagas ("rapidinho", "simples", "basico")
+- P0/P1 mencionado

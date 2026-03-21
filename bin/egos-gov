@@ -100,11 +100,18 @@ cmd_check() {
     [ "$quiet" != "--quiet" ] && info "Codex CLI not installed (optional)"
   fi
 
+  local env_file=""
   if [ -f "$root/.env" ]; then
-    if grep -q 'EGOS_ORCHESTRATOR_PROVIDER' "$root/.env" 2>/dev/null; then
-      [ "$quiet" != "--quiet" ] && ok "Alibaba/Qwen configured"
+    env_file="$root/.env"
+  elif [ -f "$root/.env.local" ]; then
+    env_file="$root/.env.local"
+  fi
+
+  if [ -n "$env_file" ]; then
+    if grep -Eq '^(EGOS_ORCHESTRATOR_PROVIDER|EGOS_ORCHESTRATOR_MODEL|DASHSCOPE_API_KEY|ALIBABA_DASHSCOPE_API_KEY|OPENROUTER_API_KEY|LLM_PROVIDER)=' "$env_file" 2>/dev/null; then
+      [ "$quiet" != "--quiet" ] && ok "LLM provider configuration detected"
     else
-      [ "$quiet" != "--quiet" ] && info "EGOS_ORCHESTRATOR_PROVIDER not in .env"
+      [ "$quiet" != "--quiet" ] && info "No LLM provider config detected in $(basename "$env_file")"
     fi
   fi
 

@@ -1,0 +1,5 @@
+{
+  "name": "egos-core-runtime",
+  "private": true,
+  "type": "module"
+}

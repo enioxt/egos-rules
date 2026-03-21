@@ -1,6 +1,6 @@
 # EGOS System Map — Shared Governance Home
 
-> **Version:** 1.1.0 | **Updated:** 2026-03-08
+> **Version:** 2.0.0 | **Updated:** 2026-03-13
 > **Purpose:** global topological truth for the shared governance home at `~/.egos`
 
 ---
@@ -30,7 +30,9 @@ It is not the product itself; it is the **mycelial root** that keeps truth synch
 
 | Root | Path | Sync Mode | Notes |
 |------|------|-----------|-------|
-| **egos-lab** | `/home/enio/egos-lab` | auto-sync | Canonical orchestration kernel |
+| **egos** | `/home/enio/egos` | auto-sync | Framework core (governance + runtime + shared) |
+| **egos-lab** | `/home/enio/egos-lab` | auto-sync | Lab/incubator (apps, agent implementations, experiments) |
+| **852** | `/home/enio/852` | auto-sync | Institutional intelligence chatbot (852.egos.ia.br) |
 | **carteira-livre** | `/home/enio/carteira-livre` | auto-sync | Production SaaS |
 | **br-acc** | `/home/enio/br-acc` | auto-sync | Public-data intelligence graph |
 | **forja** | `/home/enio/forja` | auto-sync | Private ERP in planning |
@@ -62,14 +64,14 @@ It is not the product itself; it is the **mycelial root** that keeps truth synch
 
 ### Layer 1 — Canonical Kernel
 
-Lives mainly in `/home/enio/egos-lab`:
+Lives in `/home/enio/egos` (framework core):
 
 - `.guarani/orchestration/*`
 - `agents/runtime/*`
 - `agents/registry/agents.json`
 - `packages/shared/src/*`
-- `scripts/ssot_governance.ts`
-- ecosystem/workspace maps
+
+Incubator in `/home/enio/egos-lab` (apps + agent implementations)
 
 ### Layer 2 — Domain Leaves
 
@@ -103,7 +105,9 @@ Lives mainly in `/home/enio/egos-lab`:
 
 ### Auto-Synced Standard Code Repos
 
+- `/home/enio/egos`
 - `/home/enio/egos-lab`
+- `/home/enio/852`
 - `/home/enio/carteira-livre`
 - `/home/enio/br-acc`
 - `/home/enio/forja`

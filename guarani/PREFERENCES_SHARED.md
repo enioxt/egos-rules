@@ -96,14 +96,16 @@ You are the **Orchestrator**. You have full control of the terminal and can spaw
    - **Usage:** Use `codex exec --sandbox read-only -C <path> "<prompt>"` for non-interactive analysis or `codex review --uncommitted` to review your own staged/unstaged changes before committing.
    - *Why?* Codex is excellent at catching logic flaws or security vulnerabilities you might miss.
 
-2. **EGOS-Lab Runner (Alibaba/Qwen API):**
-   - Available via `bun run agents/runtime/runner.ts` inside `/home/enio/egos-lab`.
-   - **Spawn pattern:** Open a background terminal with a unique PID. Run `bun run agents/runtime/runner.ts run <agent_name> <mode>`.
-   - **Usage:** Delegate specific tasks (like `ssot_auditor`, `security_scanner`, `ui_designer`) to the Alibaba models. Gather their JSONL outputs from `agents/.logs/` to inform your next steps.
-   - *Why?* Qwen via Alibaba API is highly cost-effective and specialized according to the local `agents.json` registry.
+2. **EGOS-Lab Agent Platform (Alibaba/Qwen-backed agents):**
+   - Available via `bun agents/cli.ts` inside `/home/enio/egos-lab`.
+   - **Discover:** Run `bun agents/cli.ts list` to inspect the registry and status of each agent.
+   - **Spawn pattern:** Open a background terminal with a unique PID. Run `bun agents/cli.ts run <agent_id> --dry` or `bun agents/cli.ts run <agent_id> --exec`.
+   - **Usage:** Delegate specific tasks (like `ssot_auditor`, `security_scanner`, `ui_designer`) through the CLI. Gather their JSONL outputs from `agents/.logs/` to inform your next steps.
+   - **Live provider probe:** Use `bun run alibaba:test` to validate the Alibaba/Qwen integration when a real network/API check is needed.
+   - *Why?* Qwen-backed agents are cost-effective and specialized according to the local `agents.json` registry. `agents/runtime/runner.ts` is the runtime core, but `agents/cli.ts` is the operator entrypoint.
 
 **Execution Flow:**
 - Do not assume you must do everything sequentially.
-- Launch `codex` or `runner.ts` in background terminals `(e.g., using tool run_command with WaitMsBeforeAsync > 0)`.
+- Launch `codex` or `bun agents/cli.ts ...` in background terminals `(e.g., using tool run_command with WaitMsBeforeAsync > 0)`.
 - Continue your own planning/file editing while they run.
 - Check their output `(e.g., using tool command_status)` to merge their findings into your final implementation.

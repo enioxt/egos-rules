@@ -58,6 +58,75 @@ SKILL_COUNT=$(find "$EGOS_HOME/skills" -name "SKILL.md" 2>/dev/null | wc -l)
 echo -e "   ${GREEN}✅${NC} $WF_COUNT workflows available"
 echo -e "   ${GREEN}✅${NC} $SKILL_COUNT skills available"
 
+# ── Step 1.5: Validate Global IDE Symlinks ──
+echo ""
+echo "📋 Step 1.5: Validating Global IDE Symlinks (Antigravity/Cline)..."
+CLINE_DIR="$HOME/Documents/Cline"
+if [ -d "$CLINE_DIR" ]; then
+  # Workflows
+  if [ -L "$CLINE_DIR/Workflows" ]; then
+    echo -e "   ${GREEN}✅${NC} Cline Workflows symlink OK"
+  else
+    rm -rf "$CLINE_DIR/Workflows"
+    ln -sf "$EGOS_HOME/workflows" "$CLINE_DIR/Workflows"
+    echo -e "   ${GREEN}🔗${NC} Cline Workflows symlink fixed"
+  fi
+  # Rules
+  if [ -L "$CLINE_DIR/Rules" ]; then
+    echo -e "   ${GREEN}✅${NC} Cline Rules symlink OK"
+  else
+    rm -rf "$CLINE_DIR/Rules"
+    ln -sf "$EGOS_HOME/guarani/standards/ide-rules" "$CLINE_DIR/Rules"
+    echo -e "   ${GREEN}🔗${NC} Cline Rules symlink fixed"
+  fi
+
+  # Hooks
+  if [ -L "$CLINE_DIR/Hooks" ]; then
+    echo -e "   ${GREEN}✅${NC} Cline Hooks symlink OK"
+  else
+    if [ -d "$EGOS_HOME/hooks" ]; then
+      rm -rf "$CLINE_DIR/Hooks"
+      ln -sf "$EGOS_HOME/hooks" "$CLINE_DIR/Hooks"
+      echo -e "   ${GREEN}🔗${NC} Cline Hooks symlink fixed"
+    fi
+  fi
+
+  # Skills
+  if [ -L "$CLINE_DIR/Skills" ]; then
+    echo -e "   ${GREEN}✅${NC} Cline Skills symlink OK"
+  else
+    if [ -d "$EGOS_HOME/skills" ]; then
+      rm -rf "$CLINE_DIR/Skills"
+      ln -sf "$EGOS_HOME/skills" "$CLINE_DIR/Skills"
+      echo -e "   ${GREEN}🔗${NC} Cline Skills symlink fixed"
+    fi
+  fi
+fi
+
+# Global .agent
+AGENT_DIR="$HOME/.agent"
+if [ -d "$AGENT_DIR" ]; then
+  if [ -L "$AGENT_DIR/workflows" ]; then
+    echo -e "   ${GREEN}✅${NC} Global .agent workflows symlink OK"
+  else
+    rm -rf "$AGENT_DIR/workflows"
+    ln -sf "$EGOS_HOME/workflows" "$AGENT_DIR/workflows"
+    echo -e "   ${GREEN}🔗${NC} Global .agent workflows symlink fixed"
+  fi
+fi
+
+# Global .codeium
+CODEIUM_WF_DIR="$HOME/.codeium/windsurf/windsurf/workflows"
+if [ -d "$(dirname "$CODEIUM_WF_DIR")" ]; then
+  if [ -L "$CODEIUM_WF_DIR" ]; then
+    echo -e "   ${GREEN}✅${NC} Global Codeium workflows symlink OK"
+  else
+    rm -rf "$CODEIUM_WF_DIR"
+    ln -sf "$EGOS_HOME/workflows" "$CODEIUM_WF_DIR"
+    echo -e "   ${GREEN}🔗${NC} Global Codeium workflows symlink fixed"
+  fi
+fi
+
 # ── Step 2: Sync each repo ──
 echo ""
 echo "📋 Step 2: Syncing to repos..."
@@ -105,13 +174,14 @@ for repo in "${REPOS[@]}"; do
     for wf in "$EGOS_HOME/workflows/"*.md; do
       wf_name=$(basename "$wf")
       target="$repo/.agent/workflows/$wf_name"
-      if [ ! -e "$target" ]; then
+      if [ -L "$target" ]; then
+        rm -f "$target"
         ln -sf "$wf" "$target"
-        echo -e "      ${GREEN}🔗${NC} .agent/workflows/$wf_name"
-      elif [ -L "$target" ]; then
         echo -e "      ${GREEN}✅${NC} .agent/workflows/$wf_name"
       else
-        echo -e "      ${YELLOW}⚠️${NC}  .agent/workflows/$wf_name — LOCAL override exists"
+        rm -f "$target"
+        ln -sf "$wf" "$target"
+        echo -e "      ${GREEN}🔗${NC} .agent/workflows/$wf_name (forced SSOT execution)"
       fi
     done
   fi
@@ -122,16 +192,14 @@ for repo in "${REPOS[@]}"; do
     for wf in "$EGOS_HOME/workflows/"*.md; do
       wf_name=$(basename "$wf")
       target="$repo/.windsurf/workflows/$wf_name"
-      if [ ! -e "$target" ]; then
+      if [ -L "$target" ]; then
+        rm -f "$target"
         ln -sf "$wf" "$target"
-        echo -e "      ${GREEN}🔗${NC} .windsurf/workflows/$wf_name"
-      elif [ -L "$target" ]; then
-        # Update symlink to point to latest
-        rm "$target"
-        ln -sf "$wf" "$target"
-        echo -e "      ${GREEN}🔄${NC} .windsurf/workflows/$wf_name (updated)"
+        echo -e "      ${GREEN}✅${NC} .windsurf/workflows/$wf_name"
       else
-        echo -e "      ${YELLOW}⚠️${NC}  .windsurf/workflows/$wf_name — LOCAL override exists"
+        rm -f "$target"
+        ln -sf "$wf" "$target"
+        echo -e "      ${GREEN}🔗${NC} .windsurf/workflows/$wf_name (forced SSOT execution)"
       fi
     done
   fi
@@ -144,13 +212,14 @@ for repo in "${REPOS[@]}"; do
       for skill_dir in "$EGOS_HOME/skills/"/*/; do
         skill_name=$(basename "$skill_dir")
         target="$repo/.agent/skills/$skill_name"
-        if [ ! -e "$target" ]; then
+        if [ -L "$target" ]; then
+          rm -f "$target"
           ln -sf "$skill_dir" "$target"
-          echo -e "      ${GREEN}🔗${NC} .agent/skills/$skill_name"
-        elif [ -L "$target" ]; then
           echo -e "      ${GREEN}✅${NC} .agent/skills/$skill_name"
         else
-          echo -e "      ${YELLOW}⚠️${NC}  .agent/skills/$skill_name — LOCAL override"
+          rm -rf "$target"
+          ln -sf "$skill_dir" "$target"
+          echo -e "      ${GREEN}🔗${NC} .agent/skills/$skill_name (forced SSOT execution)"
         fi
       done
     fi
@@ -161,15 +230,65 @@ for repo in "${REPOS[@]}"; do
       for skill_dir in "$EGOS_HOME/skills/"/*/; do
         skill_name=$(basename "$skill_dir")
         target="$repo/.windsurf/skills/$skill_name"
-        if [ ! -e "$target" ]; then
+        if [ -L "$target" ]; then
+          rm -f "$target"
           ln -sf "$skill_dir" "$target"
-          echo -e "      ${GREEN}🔗${NC} .windsurf/skills/$skill_name"
+          echo -e "      ${GREEN}✅${NC} .windsurf/skills/$skill_name"
+        else
+          rm -rf "$target"
+          ln -sf "$skill_dir" "$target"
+          echo -e "      ${GREEN}🔗${NC} .windsurf/skills/$skill_name (forced SSOT execution)"
         fi
       done
     fi
   fi
 
-  # ── D. Update .gitignore ──
+  # ── D. Granular Core .guarani Symlinks (SSOT Enforcement) ──
+  # We delete duplicated centralized governance directories/files and replace them with symlinks.
+  # We intentionally DO NOT touch IDENTITY.md, PREFERENCES.md, or any unknown files.
+  if [ -d "$repo/.guarani" ]; then
+    SHARED_NODES=(
+      "orchestration"
+      "philosophy"
+      "prompts"
+      "refinery"
+      "security"
+      "standards"
+      "tools"
+      "DESIGN_IDENTITY.md"
+      "ENGINEERING_STANDARDS_2026.md"
+      "PREFERENCES_SHARED.md"
+      "SACRED_CODE.md"
+      "SEPARATION_POLICY.md"
+      "preprocessor.md"
+    )
+    for node in "${SHARED_NODES[@]}"; do
+      target_path="$repo/.guarani/$node"
+      ssot_path="../.egos/guarani/$node"
+      
+      # If the shared node exists in the central home
+      if [ -e "$EGOS_HOME/guarani/$node" ]; then
+        # Check what's currently in the local repo
+        if [ -L "$target_path" ]; then
+          # Already a symlink, just make sure it's correct
+          rm -f "$target_path"
+          ln -sf "$ssot_path" "$target_path"
+        elif [ -e "$target_path" ]; then
+          # It's a real file/dir that was duplicated! Delete it and symlink
+          echo -e "      ${RED}🗑️${NC}  Purging drifted artifact: .guarani/$node"
+          rm -rf "$target_path"
+          ln -sf "$ssot_path" "$target_path"
+          echo -e "      ${GREEN}🔗${NC} .guarani/$node (converted to SSOT symlink)"
+        else
+          # Didn't exist locally, just create the symlink
+          ln -sf "$ssot_path" "$target_path"
+          echo -e "      ${GREEN}🔗${NC} .guarani/$node"
+        fi
+      fi
+    done
+  fi
+
+  # ── E. Update .gitignore ──
   if [ -f "$repo/.gitignore" ]; then
     for pattern in ".egos"; do
       if ! grep -q "^${pattern}$" "$repo/.gitignore" 2>/dev/null; then
@@ -179,7 +298,7 @@ for repo in "${REPOS[@]}"; do
     done
   fi
 
-  # ── E. Governance file check ──
+  # ── F. Governance file check ──
   echo -e "      📋 Governance:"
   for f in AGENTS.md TASKS.md; do
     if [ -f "$repo/$f" ]; then

@@ -1,201 +1,129 @@
+# /start — Session Initialization (v5.4)
+
+## 1. Load Core Context
+
+Read these files in order (all paths relative to repo root):
+
+- `AGENTS.md` — Project config, stack, commands, SSOT files list
+- `TASKS.md` — Current priorities (P0 → P1 → P2)
+- `docs/CAPABILITY_REGISTRY.md` — Ecosystem capability map and current adoption truth
+- `.guarani/PREFERENCES.md` — Coding standards and rules
+- `.guarani/IDENTITY.md` — Agent identity and mission
+
+If `docs/CAPABILITY_REGISTRY.md` is missing in a leaf repo, load the canonical fallback at `/home/enio/egos/docs/CAPABILITY_REGISTRY.md` and flag the local absence as governance drift.
+
+## 2. Load Orchestration System
+
+Read the orchestration pipeline that governs ALL work:
+
+- `.guarani/orchestration/PIPELINE.md` — 7-phase protocol (INTAKE → CHALLENGE → PLAN → GATE → EXECUTE → VERIFY → LEARN)
+- `.guarani/orchestration/GATES.md` — 5-dimension quality scoring (score >= 75 to proceed)
+- `.guarani/orchestration/QUESTION_BANK.md` — 70+ maieutic questions by domain
+- `.guarani/orchestration/DOMAIN_RULES.md` — Project-specific checklists
+
+Acknowledge: "Orchestration Protocol loaded. Pipeline: 7 phases. Gate threshold: 75."
+
+## 3. Load Meta-Prompt System
+
+Scan `.guarani/prompts/triggers.json` for active trigger mappings:
+
+- `.guarani/prompts/PROMPT_SYSTEM.md` — Meta-prompt index (anatomy, triggers, catalog)
+- `.guarani/prompts/triggers.json` — Machine-readable keyword→prompt mappings
+- `.guarani/prompts/meta/universal-strategist.md` — Game Theory + Oriental philosophy
+- `.guarani/prompts/meta/brainet-collective.md` — Collective intelligence lens
+- `.guarani/prompts/meta/mycelium-orchestrator.md` — Recursive sync, mesh reality, self-improvement loop
+- `.guarani/philosophy/TSUN_CHA_PROTOCOL.md` — Dialectical debate protocol
+
+Acknowledge: "Meta-prompt system loaded. [N] prompts, [N] triggers active."
+
+If the task mentions `mycelium`, `mesh`, `sync`, `agents`, `auto melhorar`, or `teia`, load `.windsurf/workflows/mycelium.md` immediately after `/start`.
+If that workflow is absent in the current repo, load `docs/concepts/mycelium/MYCELIUM_OVERVIEW.md` instead and flag the missing workflow as drift.
+
+If the task mentions `chatbot`, `prompt`, `replication`, `shared modules`, `backfill`, or `compliance`, load `docs/modules/CHATBOT_SSOT.md` immediately after `/start`.
+If that file is absent in the current repo, load `/home/enio/egos/docs/modules/CHATBOT_SSOT.md` instead and flag the local absence as drift.
+
+## 4. Load Refinery (Intent Processing)
+
+For MODERATE+ tasks, the Refinery activates automatically:
+
+- `.guarani/refinery/classifier.md` — Intent classification (FEATURE/BUG/REFACTOR/KNOWLEDGE)
+- `.guarani/refinery/interrogators/` — 4 specialized interrogators by type
+- `.guarani/preprocessor.md` — Vague→explicit translation with persona simulation
+
+These are loaded ON-DEMAND when the pipeline activates. No need to read all at start.
+
+If the local repo does not ship these Refinery surfaces, load the shared fallback from `~/.egos/guarani/refinery/*` and `~/.egos/guarani/preprocessor.md`, then record the missing local surfaces as drift instead of silently claiming them loaded.
+
+If the task involves setup, auth, platform configuration, or multiple valid paths, prefer `ask_user_question` early to keep the human in the loop. Default to multiple-choice prompts unless the choice is strictly binary/exclusive.
+
+## 5. Rule Checksum Validation
+
+> **CRITICAL:** LLMs suffer from probabilistic rule drift over long contexts.
+
+Read `.windsurfrules` and confirm the active ruleset:
+
+- Print: "Rules v[X.X.X] loaded. Mandamentos: [count]. Frozen zones: [count]."
+- Verify `AGENTS.md` version matches `.windsurfrules` expectations.
+
+## 6. System Map & Handoff
+
+- Read `docs/SYSTEM_MAP.md` for the repo-local system overview
+- Use `~/.egos/SYSTEM_MAP.md` only when the task requires cross-repo topology beyond this kernel
+- Check latest handoff in `docs/_current_handoffs/` (most recent file)
+- Recent commits: `git log --oneline -5`
+
+## 7. Cost Monitor
+
+| Resource | Warning | Critical |
+|----------|---------|----------|
+| Vercel usage | > 50% | > 75% (STOP) |
+| Supabase DB | > 500 MB | > 2 GB (EMERGENCY) |
+
+## 8. Tooling Session Check (MANDATORY)
+
+The agent MUST verify these before implementation work:
+
+| Tool | Check command | Required? | Default |
+|------|--------------|-----------|--------|
+| Codex | `codex --version` | MODERATE+ tasks | `codex review --uncommitted` |
+| Codex cloud | `codex cloud list` | If pending tasks exist | Inspect before new work |
+| Alibaba | `.env` has `ALIBABA_DASHSCOPE_API_KEY` | Yes | `alibaba:qwen-plus` |
+| Session guard | `bun run session:guard` | Only if this repo exposes it | Else use `bun run governance:check` + `bun run agent:lint` |
+| Gem Hunter | `ls -t docs/gem-hunter/gems-*.md 2>/dev/null \| head -1` | Research sessions in repos that ship Gem Hunter | Suggest if > 7 days old |
+| Report Generator | `ls -t docs/reports/report-*.html 2>/dev/null \| head -1` | Research sessions in repos that ship report generation | `bun agent:run report-generator --exec` |
+
+Rules:
+
+- Codex runs in a **parallel terminal**, NEVER in main chat
+- Codex NEVER owns SSOT; it reviews under human/Cascade supervision
+- Alibaba is the preferred orchestrator when configured
+- If Alibaba is not configured, the agent MUST say `unavailable` and MUST NOT claim `alibaba:qwen-plus` is active
+- Kernel repos may not expose `session:guard`, `docs/gem-hunter`, or `docs/reports`; treat them as optional surfaces, not activation blockers
+
+## 9. Output Briefing
+
+Present to user:
+
+- **Rules:** Version + mandamento count + orchestration status
+- **Tasks:** P0 blockers → P1 sprint → P2 backlog (counts)
+- **Handoff:** Last session summary (1-2 lines)
+- **Recent commits:** Last 5 commits
+- **Meta-prompts:** Count loaded + active triggers
+- **Codex:** Availability + pending cloud tasks + chosen mode (cloud vs local read-only)
+- **Alibaba:** Availability + chosen orchestrator provider/model
+- **Research:** Latest gem-hunter/report state or `N/A` for kernel repos without those surfaces
+- **Orchestration:** "Pipeline active. Refinery ready. Gate threshold: 75."
+
 ---
-description: "Session initialization — Agnostic session start (works in ANY repo)"
+
+## File Existence Check
+
+Required (flag if missing): `AGENTS.md`, `TASKS.md`, `docs/CAPABILITY_REGISTRY.md`, `.windsurfrules`, `.guarani/PREFERENCES.md`, `.guarani/IDENTITY.md`, `.guarani/orchestration/PIPELINE.md`, `.guarani/orchestration/GATES.md`, `.guarani/orchestration/QUESTION_BANK.md`, `.guarani/orchestration/DOMAIN_RULES.md`, `.guarani/refinery/classifier.md`, `.guarani/refinery/interrogators/*.md`, `.guarani/preprocessor.md`, `.guarani/prompts/PROMPT_SYSTEM.md`, `.guarani/prompts/triggers.json`, `docs/SYSTEM_MAP.md`.
+
+For leaf repos, missing required files MUST produce both: (1) an explicit drift note in the `/start` briefing, and (2) a canonical fallback load when a verified upstream source exists.
+
+Optional: `.guarani/philosophy/TSUN_CHA_PROTOCOL.md`, `.guarani/MCP_ORCHESTRATION_GUIDE.md`, `.guarani/DESIGN_STANDARDS.md`.
+
 ---
 
-# /start — Session Initialization (Agnostic v5.0 — Governance Mesh)
-
-> **Works in:** ANY repo with `.egos` symlink
-> **Sacred Code:** 000.111.369.963.1618
-
----
-
-## 0. Governance Sync (Self-Healing) // turbo
-
-```bash
-# EGOS Governance Mesh — auto-heal before session
-export PATH="$HOME/.egos/bin:$PATH"
-
-if command -v egos-gov >/dev/null 2>&1; then
-  if ! egos-gov check --quiet 2>/dev/null; then
-    printf "🔧 Governance drift detected — auto-healing...\n"
-    egos-gov sync 2>&1
-    printf "\n"
-  else
-    printf "✅ Governance mesh: synchronized\n\n"
-  fi
-else
-  printf "⚠️  egos-gov not found — install: ~/.egos/bin/egos-gov\n"
-  printf "   Falling back to legacy mode\n\n"
-fi
-```
-
-## 0.5 Daily Gem Hunter (Automated Research) // turbo
-
-```bash
-# Triggers the Gem Hunter agent once per day in the background
-if command -v gem-hunter-daily >/dev/null 2>&1; then
-  gem-hunter-daily
-  printf "\n"
-fi
-```
-
-## 1. Detect Repo & Load Context // turbo
-
-```bash
-printf "═══════════════════════════════════════════════════════════\n"
-printf "🚀 EGOS SESSION START\n"
-printf "═══════════════════════════════════════════════════════════\n\n"
-
-# Auto-detect repo root
-ROOT="$PWD"; CUR="$ROOT"
-while [ "$CUR" != "/" ] && [ ! -e "$CUR/.git" ]; do CUR="$(dirname "$CUR")"; done
-[ -e "$CUR/.git" ] && ROOT="$CUR"
-export EGOS_ROOT="$ROOT"
-
-REPO_NAME=$(basename "$ROOT")
-printf "📂 Repo: %s\n" "$REPO_NAME"
-printf "📍 Root: %s\n\n" "$ROOT"
-
-# Check EGOS governance
-printf "🔍 Governance Check:\n"
-for f in AGENTS.md TASKS.md .windsurfrules; do
-  if [ -f "$ROOT/$f" ]; then
-    printf "   ✅ %s\n" "$f"
-  else
-    printf "   ⚠️  %s — MISSING\n" "$f"
-  fi
-done
-
-# Check shared governance
-if [ -L "$ROOT/.egos" ] || [ -d "$ROOT/.egos" ]; then
-  printf "   ✅ .egos/ (shared governance)\n"
-else
-  printf "   ⚠️  .egos/ — NOT LINKED (run ~/.egos/sync.sh)\n"
-fi
-
-# Check local governance
-if [ -d "$ROOT/.guarani" ]; then
-  printf "   ✅ .guarani/ (local overrides)\n"
-else
-  printf "   ℹ️  .guarani/ — no local overrides\n"
-fi
-
-printf "\n"
-```
-
-## 2. Load Handoff & Tasks
-
-```bash
-printf "═══════════════════════════════════════════════════════════\n"
-printf "📋 CONTEXT LOADING\n"
-printf "═══════════════════════════════════════════════════════════\n\n"
-
-# Find latest handoff
-HANDOFF_DIR="$ROOT/docs/_current_handoffs"
-if [ -d "$HANDOFF_DIR" ]; then
-  LATEST=$(ls -t "$HANDOFF_DIR"/handoff_*.md 2>/dev/null | head -1)
-  if [ -n "$LATEST" ]; then
-    printf "📄 Latest handoff: %s\n" "$(basename "$LATEST")"
-    printf "   Modified: %s\n\n" "$(date -r "$LATEST" '+%Y-%m-%d %H:%M' 2>/dev/null || stat -c '%y' "$LATEST" 2>/dev/null | cut -d. -f1)"
-    printf "⚠️  AI AGENT: Read this handoff file NOW!\n"
-    printf "   Path: %s\n\n" "$LATEST"
-  else
-    printf "ℹ️  No handoff files found\n\n"
-  fi
-else
-  printf "ℹ️  No handoff directory\n\n"
-fi
-
-# Show git status
-printf "📊 Git Status:\n"
-LAST_COMMIT=$(git -C "$ROOT" log --oneline -1 2>/dev/null)
-UNCOMMITTED=$(git -C "$ROOT" status --short 2>/dev/null | wc -l)
-printf "   Last commit: %s\n" "$LAST_COMMIT"
-printf "   Uncommitted: %s files\n\n" "$UNCOMMITTED"
-
-# Show tasks summary if exists
-if [ -f "$ROOT/TASKS.md" ]; then
-  P0=$(grep -c '\- \[ \]' "$ROOT/TASKS.md" 2>/dev/null || echo "0")
-  DONE=$(grep -c '\- \[x\]' "$ROOT/TASKS.md" 2>/dev/null || echo "0")
-  printf "📝 Tasks: %s open | %s done\n\n" "$P0" "$DONE"
-  printf "⚠️  AI AGENT: Read TASKS.md for current priorities!\n\n"
-fi
-```
-
-## 3. Environment Scan // turbo
-
-```bash
-printf "═══════════════════════════════════════════════════════════\n"
-printf "⚙️  ENVIRONMENT SCAN\n"
-printf "═══════════════════════════════════════════════════════════\n\n"
-
-# Node/npm
-printf "🔧 Runtime:\n"
-printf "   Node: %s\n" "$(node --version 2>/dev/null || echo 'N/A')"
-printf "   npm:  %s\n" "$(npm --version 2>/dev/null || echo 'N/A')"
-printf "   bun:  %s\n" "$(bun --version 2>/dev/null || echo 'N/A')"
-printf "   tsx:  %s\n" "$(npx tsx --version 2>/dev/null || echo 'N/A')"
-
-# Check .env
-if [ -f "$ROOT/.env" ] || [ -f "$ROOT/.env.local" ]; then
-  printf "   🔐 .env: present\n"
-else
-  printf "   ⚠️  .env: MISSING\n"
-fi
-
-# Check package.json
-if [ -f "$ROOT/package.json" ]; then
-  DEPS=$(grep -c '"' "$ROOT/package.json" 2>/dev/null || echo "?")
-  printf "   📦 package.json: exists (%s lines)\n" "$(wc -l < "$ROOT/package.json")"
-fi
-
-# Check if node_modules exists
-if [ -d "$ROOT/node_modules" ]; then
-  printf "   📁 node_modules: installed\n"
-else
-  printf "   ⚠️  node_modules: NOT installed (run npm install)\n"
-fi
-
-printf "\n"
-
-# Repo-specific checks (conditional)
-if [ -f "$ROOT/next.config.ts" ] || [ -f "$ROOT/next.config.js" ] || [ -f "$ROOT/next.config.mjs" ]; then
-  printf "   🔷 Framework: Next.js detected\n"
-fi
-if [ -f "$ROOT/vite.config.ts" ]; then
-  printf "   ⚡ Framework: Vite detected\n"
-fi
-if [ -f "$ROOT/tsconfig.json" ]; then
-  printf "   📘 TypeScript: configured\n"
-fi
-
-printf "\n"
-```
-
-## 4. AI Agent Instructions
-
-```bash
-printf "═══════════════════════════════════════════════════════════\n"
-printf "🤖 AI AGENT — SESSION CHECKLIST\n"
-printf "═══════════════════════════════════════════════════════════\n\n"
-
-printf "BEFORE doing anything:\n"
-printf "   1. Read AGENTS.md (if exists)\n"
-printf "   2. Read latest handoff file (shown above)\n"
-printf "   3. Read TASKS.md for priorities\n"
-printf "   4. Read .egos/guarani/PREFERENCES_SHARED.md\n"
-printf "   5. Check .guarani/ for local overrides\n"
-printf "   6. Load docs/_knowledge/APEX_SECURE_PATTERNS.md (CRITICAL: Enforce ZERO-TRUST defenses)\n\n"
-
-printf "RULES:\n"
-printf "   - Never build UI without Stitch design (if UI project)\n"
-printf "   - Always update TASKS.md as you work\n"
-printf "   - Commit with descriptive messages (explain WHY)\n"
-printf "   - Run ~/.egos/sync.sh if editing shared rules\n"
-printf "   - ALWAYS use @[/disseminate] if you discover new security vulnerabilities or architectural patterns.\n"
-printf "   - End session with /end workflow\n\n"
-
-printf "═══════════════════════════════════════════════════════════\n"
-printf "✅ Session ready! Sacred Code: 000.111.369.963.1618\n"
-printf "═══════════════════════════════════════════════════════════\n"
-```
+*v5.4 — Added capability registry to core load order, conditional CHATBOT_SSOT dispatch, and file-existence checks for capability-map-driven sessions.*

@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "description": "EGOS Governance Mesh — Declarative sync manifest",
-  "updated": "2026-03-09",
+  "updated": "2026-03-13",
   
   "shared_guarani": [
     "orchestration/DOMAIN_RULES.md",
@@ -34,7 +34,9 @@
   ],
 
   "repos": {
+    "egos":           { "path": "/home/enio/egos",           "mode": "auto-sync", "hooks": true },
     "egos-lab":       { "path": "/home/enio/egos-lab",       "mode": "auto-sync", "hooks": true },
+    "852":            { "path": "/home/enio/852",            "mode": "auto-sync", "hooks": true },
     "br-acc":         { "path": "/home/enio/br-acc",         "mode": "auto-sync", "hooks": true },
     "carteira-livre": { "path": "/home/enio/carteira-livre", "mode": "auto-sync", "hooks": true },
     "forja":          { "path": "/home/enio/forja",          "mode": "auto-sync", "hooks": true },
