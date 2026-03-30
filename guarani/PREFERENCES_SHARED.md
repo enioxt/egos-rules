@@ -1,7 +1,25 @@
 # ⚙️ SHARED PREFERENCES — Cross-Repo Coding Standards
 
-> **Version:** 1.0.0 | **Updated:** 2026-02-13
+> **Version:** 1.1.0 | **Updated:** 2026-03-30
 > **Applies to:** ALL repos that link to ~/.egos
+
+---
+
+## Cross-Repo SSOT Visit Protocol (MANDATORY)
+
+**Rule:** Whenever you access a file or repo OUTSIDE the current working repo to extract, compare, or migrate content — you MUST immediately:
+
+1. **LOG the visit** in `TASKS.md` or nearest handoff doc:
+   `- [x] SSOT-VISIT [date]: [source-repo/path] → [disposition: archived|merged|kept-as-ref|superseded]`
+2. **MARK duplicates** with a comment or task: `DUPLICATE: canonical at [path]`
+3. **ARCHIVE** aspirational/wrong docs to `archive/` in the source repo
+4. **NEVER leave a cross-repo visit unlogged** — this is a governance violation
+
+Applies in: `/start`, `/end`, `/disseminate`, pre-commit, any Agent task that reads from multiple repos.
+
+Disposition tags: `archived` | `merged` | `kept-as-ref` | `superseded` | `independent`
+
+Full spec: `egos/.guarani/orchestration/DOMAIN_RULES.md` §7
 
 ---
 
