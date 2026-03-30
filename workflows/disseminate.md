@@ -1,12 +1,30 @@
 ---
-description: "Saves new knowledge and patterns to Memory MCP, documentation, and social channels."
+description: disseminate workflow
 ---
-
-# /disseminate — Knowledge Dissemination
+# /disseminate — Knowledge Dissemination (v5.5 SecOps Edition)
 
 > **Works in:** ANY EGOS repo
-> **When to Use:** After implementing a feature, fixing a bug, making an architectural decision, or completing a milestone.
+> **When to Use:** After implementing a feature, fixing a bug, making an architectural decision, **mitigating a CVE**, or completing a milestone.
 > **Repo-role:** Check `egos.config.json` for `role` and `surfaces`. If absent, assume `leaf` and skip surfaces like gem-hunter, report-generator, session:guard, and activation:check.
+
+---
+
+## 0. SSOT Visit Audit (Run First)
+
+Before disseminating, check for unlogged visits made this session.
+
+**Triggers to check** (per DOMAIN_RULES.md §7):
+- Any file read outside the current repo
+- Any file in `archive/`, `docs/`, `legacy/`, `old/`, `_current_handoffs/`
+- Any file discovered via search/grep (not directly navigated)
+- Any file >2 directory levels from working root not in TASKS.md/AGENTS.md/SYSTEM_MAP.md
+
+**Action:** For each unlogged visit found, add to the nearest `TASKS.md` before proceeding:
+```
+- [x] SSOT-VISIT [date]: [path-or-repo/path] → read [what] → [disposition]
+```
+
+**Block dissemination if any unlogged visit is found and not yet resolved.**
 
 ---
 
@@ -19,15 +37,16 @@ What was created or changed?
 - **Architecture**: Design pattern, data flow, integration?
 - **Bug fix**: Root cause, prevention mechanism?
 - **Governance**: Security policy, workflow, meta-prompt?
+- **[NEW] SecOps**: Patched a CVE? What was the mitigation strategy?
 
 ## 2. Save to Cascade Memory
 
 ```ts
 create_memory({
   Title: "Session — [description]",
-  Content: "Detailed markdown with files, decisions, gotchas...",
+  Content: "Detailed markdown with files, decisions, gotchas. If SecOps related, list the CVE ID and the applied fix.",
   CorpusNames: ["enioxt/REPO_NAME"],
-  Tags: ["relevant", "tags"],
+  Tags: ["relevant", "tags", "secops", "cve"],
   Action: "create"
 })
 ```
@@ -43,18 +62,18 @@ Read .guarani/prompts/triggers.json
 
 ## 4. Update Documentation
 
-- `docs/knowledge/HARVEST.md` — Add patterns, gotchas, learnings
+- `docs/knowledge/HARVEST.md` — Add patterns, gotchas, learnings. **(Mandatory for CVE Mitigations)**
 - `TASKS.md` — Mark completed, add discovered tasks
 - `.guarani/` — If architecture decisions were made
 - Record Codex usage: availability, mode used (`review`, `read-only`, `cloud`), suggestions applied/rejected
 - Record Alibaba orchestration status and whether the repo's readiness surface (`session:guard` when present, otherwise local activation checks) was updated
 - If mesh, agents, workflows, or event-bus reality changed, include a `/mycelium` snapshot with maturity, connected systems, and drift notes
 
-## 5. Post on Social Channels (if milestone)
+## 5. Post on Social Channels (if milestone or CVE patched)
 
 Use `/postar` workflow for unified posting:
 
-- **Telegram** (@ethikin): Full markdown, up to 4096 chars
+- **Telegram** (@ethikin): Full markdown, up to 4096 chars (Alert Mycelium network if critical CVE patched)
 - **Discord**: Markdown, up to 2000 chars
 - **X.com** (@anoineim): 280 chars max + link
 
@@ -72,12 +91,36 @@ If a new capability was created, improved, or adopted:
 
 ---
 
+## SSOT Visit Summary
+
+Include this section in every disseminate output:
+
+```
+SSOT VISIT SUMMARY
+==================
+Repos/files visited this session:
+- [path] → [disposition tag]
+- [path] → [disposition tag]
+
+Intra-repo gems (archive/, docs/, legacy/ checked):
+- [file] → [gem-found / stale-confirmed / kept-as-ref]
+
+Unlogged visits found: [N] — all resolved before disseminate: [yes/no]
+```
+
+Disposition tags: `archived` | `merged` | `kept-as-ref` | `superseded` | `independent` | `gem-found` | `stale-confirmed`
+
+---
+
 ## Checklist
 
+- [ ] SSOT Visit Audit completed (Step 0 — all unlogged visits resolved)
+- [ ] SSOT Visit Summary written above
+- [ ] Intra-repo gems checked (archive/, docs/, legacy/ scanned)
 - [ ] Cascade Memory updated (create_memory)
 - [ ] Meta-prompt triggers reviewed
 - [ ] Codex usage recorded (or explicit reason why not used)
 - [ ] TASKS.md updated
 - [ ] Documentation updated (HARVEST.md, .guarani/)
 - [ ] Capability Registry updated (if new capability created/adopted)
-- [ ] Social channels posted (if milestone)
+- [ ] Social channels posted (if milestone or CVE patched)
