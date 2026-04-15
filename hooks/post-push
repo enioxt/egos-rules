@@ -1,0 +1,34 @@
+#!/bin/sh
+# EGOS post-push hook — submits Codex Cloud review after successful push
+# Installed via: ~/.egos/crcdm/crcdm-install-hooks.sh
+#
+# This hook runs AFTER git push succeeds.
+# It submits an async Codex review — does NOT block the push.
+# Reviews are stored in ~/.egos/codex-reviews/ and read at /start + /end.
+
+REPO_PATH="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+REPO_NAME="$(basename "${REPO_PATH}")"
+
+# Only auto-submit for kernel repo
+case "${REPO_NAME}" in
+  egos|guard-brasil|forja|852|carteira-livre)
+    : # submit for production repos
+    ;;
+  *)
+    exit 0  # skip for other repos
+    ;;
+esac
+
+# Run in background — don't block the shell
+(
+  # Small delay to let the push complete
+  sleep 2
+
+  if bash ~/.egos/scripts/codex-submit-review.sh "${REPO_PATH}" 3 >> ~/.egos/codex-reviews/submit.log 2>&1; then
+    echo "🤖 [post-push] Codex review submitted for ${REPO_NAME}" >&2
+  else
+    echo "⚠️  [post-push] Codex review submission failed (non-blocking)" >&2
+  fi
+) &
+
+exit 0

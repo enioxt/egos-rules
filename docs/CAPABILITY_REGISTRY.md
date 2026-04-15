@@ -929,8 +929,8 @@ Differentiator: LGPD compliance (Guard Brasil), audit trail, frozen zones, spec-
 
 **What:** Sistema local-first para análise forense de vídeos de câmeras de segurança. Detecta movimentos, agrupa em eventos, gera thumbnails e clips, timeline clicável, revisão humana com chain-of-custody auditável.
 
-**Repo:** `/home/enio/omniview` (standalone — NÃO parte do EGOS kernel)
-**Status:** Phase 0+1 completas, Phase 2 (UI) em andamento
+**Repo:** `/home/enio/omniview` | **GitHub:** `enioxt/omniview` (criado 2026-04-15)
+**Status:** Phase 0+1+2+3 completas ✅ + DVR converter ✅
 
 **Engine (Python 3.12 + FastAPI):**
 - `app/core/integrity.py` — SHA-256 streaming (chunks 1MB)
@@ -955,10 +955,19 @@ Differentiator: LGPD compliance (Guard Brasil), audit trail, frozen zones, spec-
 - `GET /api/videos/{id}/provenance` — JSON cadeia de custódia
 - `GET /api/metrics` — Prometheus format
 
-**UI (React 18 + TypeScript + Tailwind + i18n PT-BR):**
-- Fase 2 em andamento — VideoPlayer, EventTimeline, ReviewPanel, FiltersBar
+**Engine adicional (Phase 2+3+DVR):**
+- `app/core/converter.py` — DVR auto-conversion: `.264/.dav/.h264/.m2ts` → H.264 MP4 via ffmpeg; cache, graceful degradation, timeout 600s
+- `app/services/export_service.py` — ZIP forense + HMAC manifest + HTML report
+- `app/core/retention.py` — purge noncritical(30d) / critical(365d)
+- `app/core/progress.py` — asyncio.Queue pub/sub para WebSocket scan progress
+- `omniview-cli verify <zip>` — HMAC check + SHA-256
+- `omniview-cli export <video_id>` / `omniview-cli retention [--dry-run]`
 
-**Testes:** 26 passando (unit: integrity, event_grouping, errors + integration: API + motion pipeline com vídeos sintéticos FFmpeg)
+**UI (React 18 + TypeScript + Tailwind + i18n PT-BR):** ✅ completa
+- VideoPlayer, EventTimeline, EventGallery, ReviewPanel (hotkeys 1-9), FiltersBar
+- LoginPage, IngestPage, ReviewPage, EventDetailPage, ExportPage
+
+**Testes:** 26+ passando (unit + integration + converter com 9 testes DVR)
 
 **Princípios hard-coded:**
 1. Original imutável após ingest (chmod 444)
@@ -968,3 +977,27 @@ Differentiator: LGPD compliance (Guard Brasil), audit trail, frozen zones, spec-
 5. Chain-of-custody em tudo que sai do sistema
 
 **Não reimplementar em sessões futuras:** os módulos acima já existem. Ver `engine/app/` diretamente.
+
+---
+
+## §34 — Pochete2.0 v4.0 — Browser Video Toolkit (2026-04-15)
+
+**What:** Editor de vídeo 100% no navegador para perícia policial. Zero install, zero cloud, vídeo nunca sai da máquina.
+
+**Repo:** `/home/enio/video-editor` | **GitHub:** `enioxt/Pochete2.0` (v4.0 — 2026-04-15)
+**URL:** [video.egos.ia.br](https://video.egos.ia.br) | **Serving:** nginx no VPS Hetzner
+
+**Features v4.0:**
+- ✂️ Corte por tempo com timeline visual arrastável
+- 🎯 Detector de movimento (canvas pixel-diff, 3 sensibilidades: low/mid/high)
+  - `MOT_CFG`: `diffThreshold`, `motionPixelPct`, `gapMs`, `minDurationMs`
+  - "Enviar para Corte" preenche aba Cortar com horários + 2s de margem
+- 🔄 Rotação com preview ao vivo (90°/180°/270°) — AR-matching para evitar crop
+- 📷 Capturar quadro como PNG
+- 🗗 Player adaptável: `object-fit: contain` em container 420px fixo
+- ⌨️ Atalhos: Espaço/←/→/,/.
+- LEIAME.md em PT-BR para agente não técnico
+
+**Stack:** HTML5 + vanilla JS + ffmpeg.wasm (814.ffmpeg.js) | **Headers:** COOP + COEP (SharedArrayBuffer)
+
+**Não reimplementar:** o arquivo único é `/home/enio/video-editor/index.html` (~1700 linhas).

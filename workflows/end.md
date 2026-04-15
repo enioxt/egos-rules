@@ -76,15 +76,33 @@ Before ending, the agent MUST persist knowledge:
 | Chatbot surface changed | Re-check `docs/modules/CHATBOT_SSOT.md` adoption table + rollout protocol |
 | Agents / dashboards / mesh claims changed | Apply `.windsurf/workflows/mycelium.md` logic and add maturity snapshot to handoff |
 
-## Phase 6: Codex Cleanup
+## Phase 6: Codex Review — Submit + Evaluate Pending
 
+### 6.1 — Fetch any READY reviews first
 ```bash
-if command -v codex &> /dev/null; then
-  codex --version 2>/dev/null && codex cloud list 2>/dev/null | head -5 || true
-  [ "$(git -C "$ROOT" status --short 2>/dev/null | wc -l)" -gt 0 ] && codex review --uncommitted 2>/dev/null || true
+bash ~/.egos/scripts/codex-fetch-reviews.sh
+```
+
+Evaluate each FETCHED review against `~/.egos/guarani/CODEX_REVIEW_CRITERIA.md`:
+- Score ≥ 80 → **APPLY**: present to Enio with recommendation
+- Score 60-79 → **CONSIDER**: present with reasoning
+- Score < 60 → **SKIP**: log pattern only
+
+### 6.2 — Submit new review for this session's commits
+```bash
+# Only submit if there were actual commits this session
+COMMITS_THIS_SESSION=$(git -C "$ROOT" log --oneline --since='6 hours ago' 2>/dev/null | wc -l)
+if [ "$COMMITS_THIS_SESSION" -gt 0 ]; then
+  bash ~/.egos/scripts/codex-submit-review.sh "$ROOT" "$COMMITS_THIS_SESSION"
+  printf "✅ Codex review submitted for %s commits\n" "$COMMITS_THIS_SESSION"
 else
-  printf "Codex not installed\n"
+  printf "⏭️  No commits this session — skipping Codex submission\n"
 fi
+```
+
+### 6.3 — Auth health check
+```bash
+bash ~/.egos/scripts/codex-auth-refresh.sh 2>/dev/null | tail -1 || true
 ```
 
 ## Phase 7: Commit If Needed // turbo

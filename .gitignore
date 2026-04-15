@@ -1,3 +1,8 @@
+# Secrets — NEVER commit
+secrets.env
+*.env
+.env*
+
 # Runtime state — not versioned
 context-signals.jsonl
 crcdm/logs/
