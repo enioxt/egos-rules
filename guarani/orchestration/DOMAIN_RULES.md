@@ -1,6 +1,6 @@
 # DOMAIN RULES — EGOS Kernel
 
-> **Version:** 2.0.0 | **Updated:** 2026-03-13
+> **Version:** 2.1.0 | **Updated:** 2026-03-31
 > **Project:** egos (orchestration-kernel + agent-runtime)
 
 ---
@@ -62,7 +62,8 @@ agents/registry/agents.json (structure, not content)
 - **LLM client:** `packages/shared/src/llm-provider.ts`
 - **Model router:** `packages/shared/src/model-router.ts`
 - **Rate limiter:** `packages/shared/src/rate-limiter.ts`
-- **Env vars:** `ALIBABA_DASHSCOPE_API_KEY`, `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `GROQ_API_KEY`
+- **Env vars:** `ALIBABA_DASHSCOPE_API_KEY`, `OPENROUTER_API_KEY`, `GROQ_API_KEY`, `HUGGINGFACE_API_KEY`
+- **Active providers:** DashScope (Alibaba Qwen), OpenRouter, Groq, HuggingFace
 - **Reference:** `.env.example` for all expected keys
 
 ### Anti-Patterns
@@ -193,25 +194,61 @@ agents/registry/agents.json (structure, not content)
 
 ---
 
-## 7. CROSS-REPO SSOT VISIT PROTOCOL
+## 6A. PRODUCT ROLLOUT & LAUNCH READINESS
 
-**Rule:** Whenever you visit a file, directory, or repo that is NOT the current working repo to extract information or migrate content, you MUST mark the visit immediately. This applies in /start, /end, /disseminate, pre-commit, and any cross-repo search task.
+### SSOT
+
+- **Governance canon:** `.guarani/RULES_INDEX.md`
+- **Execution standards:** `.guarani/PREFERENCES.md`
+- **Task order / dependencies:** `TASKS.md`
+- **Architecture / runbook:** domain SSOT doc (`docs/*_ARCHITECTURE*.md`, `docs/*SSOT*.md`, or equivalent)
+
+### Anti-Patterns
+
+- Bundling rollout work into opaque ranges (`SD-001..008`) without explicit dependency order
+- Starting deploy without rollback path, smoke checks, and monitoring path
+- Launching public surfaces before disclaimer/copy review and UX acceptance
+- Treating `CLAUDE.md` or `.windsurfrules` as canonical when `.guarani` says otherwise
+
+### Checklist
+
+- [ ] Dependencies are explicit (`depends_on` or equivalent wording in TASKS.md)
+- [ ] Exact execution order is named before implementation starts
+- [ ] **Deploy gate** defined: health check, smoke check, monitoring path, rollback path
+- [ ] **Security gate** defined: secrets/env handling, PII/log policy, access model, disclaimers
+- [ ] **UX gate** defined: onboarding, empty/error states, copy review, acceptance criteria
+- [ ] **Launch gate** defined: ICP/persona, analytics path, feedback loop, GTM/dissemination handoff
+
+---
+
+## 7. SSOT VISIT PROTOCOL (Cross-Repo AND Intra-Repo)
+
+**Rule:** Whenever you visit a file that is contextually distant — either in another repo OR deep inside the current repo (archive/, docs/, legacy/, old/, >2 directories from CWD) — you MUST log the visit. Large repos have "lost gems": files created, forgotten, never referenced again. Logging prevents silent drift.
+
+### When to Log (Triggers)
+
+**Cross-repo** (other repos under /home/enio/):
+- Any file read outside the current working repo
+
+**Intra-repo** (same repo, contextually distant):
+- File in `archive/`, `docs/`, `legacy/`, `old/`, `_current_handoffs/`
+- File more than 2 directory levels from the working root
+- File not referenced in TASKS.md, AGENTS.md, or SYSTEM_MAP.md
+- File discovered via search/grep (not directly navigated to)
+- File not committed in >30 days AND you read its content
 
 ### Protocol Steps
 
-1. **MARK the source** — Add a `<!-- SSOT-VISITED: YYYY-MM-DD by claude, extracted to [target] -->` comment or a markdown note at the top of the source file if it's a doc.
-2. **LOG the visit** in the current repo's `docs/_current_handoffs/` or `TASKS.md` with format:
-   `- [x] SSOT-VISIT [date]: [source-repo/path] → extracted [what] → [disposition: archived|merged|kept-as-ref]`
-3. **MARK duplicates** — If you find a duplicate of canonical content, mark the copy with `<!-- DUPLICATE: canonical at [path], keep as [ref|delete|merge] -->` and create a task to resolve.
-4. **ARCHIVE after extraction** — If the source was purely aspirational/wrong, move it to `archive/` in the same repo and add an entry in the nearest TASKS.md.
-5. **NEVER leave a cross-repo visit unlogged.** Missing the log is a governance violation.
-
-### Applies to
-- `/start` skill: scan visited repos → log all SSOT gaps found
-- `/end` skill: verify all cross-repo visits are logged before closing session
-- `/disseminate` skill: log which files were propagated to which repos
-- Pre-commit hooks: if staged files contain cross-repo path references, warn if visit log is missing
-- Any Agent or Explore task that reads from multiple repos
+1. **LOG the visit** in the nearest `TASKS.md` with format:
+   ```
+   - [x] SSOT-VISIT [date]: [path-or-repo/path] → read [what] → [disposition]
+   ```
+2. **MARK the source** — If it's a doc, add to its header:
+   `<!-- SSOT-VISITED: YYYY-MM-DD, disposition: [tag] -->`
+3. **MARK duplicates** — Add a comment: `<!-- DUPLICATE: canonical at [path] -->`
+   and create a task to resolve.
+4. **ARCHIVE after extraction** — Aspirational/wrong docs → `archive/` + TASKS.md entry.
+5. **NEVER leave a visit unlogged.** Missing log = governance violation.
 
 ### Disposition Tags
 
@@ -222,6 +259,24 @@ agents/registry/agents.json (structure, not content)
 | `kept-as-ref` | Source kept but not canonical — target is SSOT |
 | `superseded` | Source was wrong/outdated — replaced by target |
 | `independent` | Both are canonical for different purposes |
+| `gem-found` | Hidden valuable content surfaced, extracted to active use |
+| `stale-confirmed` | Visited, confirmed outdated, left as-is with note |
+
+### Applies to
+- `/start`: scan all repos → log SSOT gaps + any gems found
+- `/end`: verify ALL visits this session are logged before closing
+- `/disseminate`: log which files were propagated where
+- Pre-commit: warn if staged files reference paths not in visit log
+- Any Agent/Explore task that searches multiple directories
+- Manual exploration: if you read a file deep in the tree, log it
+
+### Example Log Entries
+```
+- [x] SSOT-VISIT 2026-03-30: carteira-livre/docs/project_eagle_eye.md → original Eagle Eye spec → kept-as-ref
+- [x] SSOT-VISIT 2026-03-30: egos-lab/apps/eagle-eye/docs/ → 5 aspirational docs → archived
+- [x] SSOT-VISIT 2026-03-30: egos/docs/concepts/architecture/FRACTAL_GROWTH.md → gem-found: brand.egos.ia.br vision → merged to memory
+- [x] SSOT-VISIT 2026-03-30: egos/packages/shared/src/social/ai-engine.ts → gem-found: created as shim → independent
+```
 
 ---
 
@@ -230,7 +285,7 @@ agents/registry/agents.json (structure, not content)
 | Task Keywords | Domains to Load |
 |---------------|----------------|
 | agent, registry, runner, orchestrator, dry-run | Agentic Platform |
-| llm, model, qwen, openrouter, alibaba, router, cost | LLM Provider & Model Router |
+| llm, model, qwen, openrouter, alibaba, groq, huggingface, router, cost | LLM Provider & Model Router |
 | governance, sync, guarani, workflow, propagate | Governance & Sync |
 | security, PII, RLS, secret, scan, frozen | Security |
 | shared, llm-provider, packages, types, atrian | Shared Packages |

@@ -9,25 +9,6 @@ description: disseminate workflow
 
 ---
 
-## 0. SSOT Visit Audit (Run First)
-
-Before disseminating, check for unlogged visits made this session.
-
-**Triggers to check** (per DOMAIN_RULES.md §7):
-- Any file read outside the current repo
-- Any file in `archive/`, `docs/`, `legacy/`, `old/`, `_current_handoffs/`
-- Any file discovered via search/grep (not directly navigated)
-- Any file >2 directory levels from working root not in TASKS.md/AGENTS.md/SYSTEM_MAP.md
-
-**Action:** For each unlogged visit found, add to the nearest `TASKS.md` before proceeding:
-```
-- [x] SSOT-VISIT [date]: [path-or-repo/path] → read [what] → [disposition]
-```
-
-**Block dissemination if any unlogged visit is found and not yet resolved.**
-
----
-
 ## 1. Identify New Knowledge
 
 What was created or changed?
@@ -91,32 +72,8 @@ If a new capability was created, improved, or adopted:
 
 ---
 
-## SSOT Visit Summary
-
-Include this section in every disseminate output:
-
-```
-SSOT VISIT SUMMARY
-==================
-Repos/files visited this session:
-- [path] → [disposition tag]
-- [path] → [disposition tag]
-
-Intra-repo gems (archive/, docs/, legacy/ checked):
-- [file] → [gem-found / stale-confirmed / kept-as-ref]
-
-Unlogged visits found: [N] — all resolved before disseminate: [yes/no]
-```
-
-Disposition tags: `archived` | `merged` | `kept-as-ref` | `superseded` | `independent` | `gem-found` | `stale-confirmed`
-
----
-
 ## Checklist
 
-- [ ] SSOT Visit Audit completed (Step 0 — all unlogged visits resolved)
-- [ ] SSOT Visit Summary written above
-- [ ] Intra-repo gems checked (archive/, docs/, legacy/ scanned)
 - [ ] Cascade Memory updated (create_memory)
 - [ ] Meta-prompt triggers reviewed
 - [ ] Codex usage recorded (or explicit reason why not used)

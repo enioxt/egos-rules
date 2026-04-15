@@ -1,0 +1,132 @@
+#!/bin/sh
+# EGOS CRCDM Pre-Commit Hook
+# Detects changes BEFORE they are committed, creates DAG node
+# Part of Cross-Repo Change Detection Mesh (CRCDM)
+
+set -eu
+
+CRCDM_ROOT="${HOME}/.egos/crcdm"
+HOOK_NAME="pre-commit"
+REPO_PATH="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+REPO_NAME="$(basename "$REPO_PATH")"
+
+echo "🔍 CRCDM [$HOOK_NAME] — Analyzing changes in $REPO_NAME..."
+
+# Ensure CRCDM is initialized
+mkdir -p "${CRCDM_ROOT}"/{logs,dag,state,notifications}
+
+# Get current branch and state
+BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')"
+STAGED_FILES="$(git diff --cached --name-only 2>/dev/null || true)"
+STAGED_COUNT="$(echo "$STAGED_FILES" | grep -c . 2>/dev/null || echo '0')"
+
+if [ "$STAGED_COUNT" -eq 0 ]; then
+  echo "  ℹ️ No staged files to analyze"
+  exit 0
+fi
+
+# Calculate staged files hash (Merkle-style)
+STAGED_HASH=""
+for file in $STAGED_FILES; do
+  if [ -f "$file" ]; then
+    file_hash="$(sha256sum "$file" 2>/dev/null | cut -d' ' -f1 || echo 'null')"
+    STAGED_HASH="${STAGED_HASH}${file_hash}"
+  fi
+done
+CHANGE_HASH="$(echo "${REPO_PATH}:${BRANCH}:${STAGED_HASH}:$(date +%s)" | sha256sum | cut -d' ' -f1)"
+NODE_ID="${CHANGE_HASH:0:16}"
+
+# Classify impact
+IMPACT="low"
+for file in $STAGED_FILES; do
+  case "$file" in
+    *runtime*|*auth*|*security*|*middleware*|*.env*)
+      IMPACT="critical"
+      break
+      ;;
+    *api/*|*db/*|*config/*|*migrations/*)
+      if [ "$IMPACT" != "critical" ]; then
+        IMPACT="high"
+      fi
+      ;;
+    *components/*|*features/*|*hooks/*)
+      if [ "$IMPACT" = "low" ]; then
+        IMPACT="medium"
+      fi
+      ;;
+  esac
+done
+
+# Create impact emoji
+IMPACT_EMOJI="⚪"
+case "$IMPACT" in
+  critical) IMPACT_EMOJI="🔴" ;;
+  high) IMPACT_EMOJI="🟠" ;;
+  medium) IMPACT_EMOJI="🟡" ;;
+esac
+
+# Check for cross-repo dependencies
+echo "  📊 Impact analysis: ${IMPACT_EMOJI} ${IMPACT} (${STAGED_COUNT} files)"
+
+# Check if this change affects other repos
+AFFECTS_OTHERS=""
+for file in $STAGED_FILES; do
+  case "$file" in
+    *packages/shared*|*.guarani/*|.windsurf/workflows/*)
+      AFFECTS_OTHERS="true"
+      echo "  ⚠️  WARNING: Changes to $file may affect OTHER repositories!"
+      ;;
+  esac
+done
+
+# Log to CRCDM
+TIMESTAMP="$(date -u +%s)"
+{
+  echo "${TIMESTAMP} ${NODE_ID} ${REPO_NAME} ${BRANCH} ${IMPACT} PRE_COMMIT:${STAGED_COUNT}_files"
+  echo "$STAGED_FILES" | while read -r file; do
+    if [ -n "$file" ]; then
+      echo "${TIMESTAMP} ${NODE_ID} FILE: $file"
+    fi
+  done
+} >> "${CRCDM_ROOT}/logs/${HOOK_NAME}.log"
+
+# Create pre-commit node in DAG
+if command -v jq >/dev/null 2>&1; then
+  DAG_FILE="${CRCDM_ROOT}/dag/dag.json"
+  if [ ! -f "$DAG_FILE" ]; then
+    echo '{"nodes": [], "edges": [], "version": "1.0.0"}' > "$DAG_FILE"
+  fi
+  
+  # Create node
+  NODE=$(jq -n \
+    --arg id "$NODE_ID" \
+    --arg repo "$REPO_NAME" \
+    --arg branch "$BRANCH" \
+    --arg impact "$IMPACT" \
+    --argjson files "$(echo "$STAGED_FILES" | jq -R . | jq -s .)" \
+    --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+    --arg type "pre-commit" \
+    '{id: $id, repo: $repo, branch: $branch, impact: $impact, files: $files, timestamp: $timestamp, type: $type, status: "pending"}')
+  
+  jq --argjson node "$NODE" '.nodes += [$node]' "$DAG_FILE" > "${DAG_FILE}.tmp" && mv "${DAG_FILE}.tmp" "$DAG_FILE"
+fi
+
+# Check for Claude Code context (if running inside Claude)
+if [ -n "${CLaude_SESSION:-}" ] || [ -f ".claude/session.json" ] 2>/dev/null; then
+  echo "  🤖 Claude Code session detected — syncing context..."
+  # This will be picked up by Claude's context tracker
+fi
+
+# Final report
+echo "  📝 CRCDM Node: ${NODE_ID}"
+echo "  🌿 Branch: ${BRANCH}"
+if [ -n "$AFFECTS_OTHERS" ]; then
+  echo "  🔗 Cross-repo impact: YES — Run 'crcdm-sync' after commit"
+fi
+
+# Export for potential downstream hooks
+export CRCDM_NODE_ID="$NODE_ID"
+export CRCDM_IMPACT="$IMPACT"
+export CRCDM_FILES_COUNT="$STAGED_COUNT"
+
+echo "✅ CRCDM [$HOOK_NAME] — Ready to commit"

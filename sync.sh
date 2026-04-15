@@ -3,7 +3,7 @@
 # 🔄 EGOS Sync v2.0 — Shared Governance + Workflows + Skills
 # 
 # Creates symlinks for governance, workflows, and skills
-# in ALL registered repos. Works with both Windsurf and Gemini.
+# in ALL registered repos. Works with Windsurf, `.agent`, and shared IDE surfaces.
 #
 # Usage: ~/.egos/sync.sh
 # ═══════════════════════════════════════════════════════════
@@ -11,6 +11,7 @@
 set -e
 
 EGOS_HOME="$HOME/.egos"
+SYNC_TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
@@ -28,19 +29,25 @@ echo ""
 # - "$HOME/personal"  (non-code/personal artifacts)
 REPOS=(
   "$HOME/852"
+  "$HOME/INPI"
   "$HOME/egos-lab"
   "$HOME/carteira-livre"
   "$HOME/br-acc"
   "$HOME/forja"
   "$HOME/egos-self"
+  "$HOME/commons"
+  "$HOME/smartbuscas"
+  "$HOME/santiago"   # EGOS-069: added 2026-03-30
+  "$HOME/arch"       # EGOS governance bootstrap
+  "$HOME/egos-inteligencia"  # EGOS-Inteligência (Intelink) 2026-03-30
 )
 
 # ── Step 1: Validate central governance ──
 echo "📋 Step 1: Validating central governance..."
 REQUIRED=(
   "guarani/IDENTITY.md"
-  "guarani/PREFERENCES_SHARED.md"
-  "guarani/SACRED_CODE.md"
+  "guarani/PREFERENCES.md"
+  "guarani/RULES_INDEX.md"
   "README.md"
 )
 for file in "${REQUIRED[@]}"; do
@@ -156,6 +163,23 @@ for repo in "${REPOS[@]}"; do
     echo -e "      ${GREEN}🔗${NC} .egos symlink created"
   fi
 
+  # ── A.1 Universal pre-commit hook (.git/hooks/pre-commit → ~/.egos/hooks/pre-commit) ──
+  if [ -d "$repo/.git/hooks" ] && [ -f "$EGOS_HOME/hooks/pre-commit" ]; then
+    hook_target="$repo/.git/hooks/pre-commit"
+    if [ -L "$hook_target" ] && [ "$(readlink -f "$hook_target")" = "$EGOS_HOME/hooks/pre-commit" ]; then
+      echo -e "      ${GREEN}✅${NC} universal pre-commit hook"
+    else
+      if [ -e "$hook_target" ] && [ ! -L "$hook_target" ]; then
+        backup="$repo/.git/hooks/pre-commit.backup.$SYNC_TIMESTAMP"
+        mv "$hook_target" "$backup"
+        echo -e "      ${YELLOW}↺${NC} backed up local pre-commit → $(basename "$backup")"
+      fi
+      ln -sf "$EGOS_HOME/hooks/pre-commit" "$hook_target"
+      chmod +x "$EGOS_HOME/hooks/pre-commit"
+      echo -e "      ${GREEN}🔗${NC} universal pre-commit hook installed"
+    fi
+  fi
+
   # ── B. Workflow symlinks ──
   # Detect agent type
   IS_WINDSURF=false
@@ -257,8 +281,8 @@ for repo in "${REPOS[@]}"; do
       "tools"
       "DESIGN_IDENTITY.md"
       "ENGINEERING_STANDARDS_2026.md"
-      "PREFERENCES_SHARED.md"
-      "SACRED_CODE.md"
+      "PREFERENCES.md"
+      "RULES_INDEX.md"
       "SEPARATION_POLICY.md"
       "preprocessor.md"
     )

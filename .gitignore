@@ -1,0 +1,9 @@
+# Runtime state — not versioned
+context-signals.jsonl
+crcdm/logs/
+crcdm/dag/
+crcdm/state/
+crcdm/notifications/
+
+# Local Claude config overrides
+.claude/config

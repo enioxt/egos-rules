@@ -1,64 +1,232 @@
 {
-  "_version": "1.1.0",
-  "_system": "EGOS Meta-Prompt Trigger System",
-  "description": "Maps situations/keywords to the appropriate meta-prompt",
-  "updated": "2026-03-17",
+  "_version": "3.0.0",
+  "_system": "EGOS Skill Auto-Activation Trigger Map",
+  "description": "Maps context patterns to skills. Claude reads §18 CLAUDE.md + this file to auto-invoke skills. 26 skills mapped. Updated: SKILLS-003.",
+  "updated": "2026-04-14",
+  "auto_activation": {
+    "enabled": true,
+    "model": "Claude reads context signals from pre-commit (~/.egos/context-signals.jsonl) and session state, then invokes matching skills proactively without user needing to type /command",
+    "priority_order": ["critical", "high", "medium", "low"]
+  },
   "triggers": [
     {
-      "id": "strategy.universal",
-      "file": "meta/universal-strategist.md",
-      "keywords": ["decisão estratégica", "negociação", "conflito", "investimento", "game theory", "análise de cenário", "competição", "cooperação", "dilema"],
-      "situations": ["Facing a strategic decision with multiple players", "Negotiation with information asymmetry", "Investment/resource allocation under uncertainty"],
-      "priority": "high",
-      "apps": ["all"]
+      "id": "session.start",
+      "skill": "/start",
+      "file": "~/.egos/.claude/commands/start.md",
+      "when": "First message in a new session, or user says 'iniciar', 'começar', '/start', or session has been idle >4h",
+      "keywords": ["/start", "iniciar sessão", "ativar kernel", "começa", "nova sessão"],
+      "priority": "critical"
     },
     {
-      "id": "intelligence.brainet",
-      "file": "meta/brainet-collective.md",
-      "keywords": ["brainstorm", "inteligência coletiva", "rede", "multi-perspectiva", "dissolução de ego", "decisão em grupo", "emergência"],
-      "situations": ["Multiple stakeholders with different expertise", "Problem too complex for single perspective", "Need to synthesize contradictory viewpoints"],
-      "priority": "medium",
-      "apps": ["all"]
+      "id": "session.end",
+      "skill": "/end",
+      "file": "~/.egos/.claude/commands/end.md",
+      "when": "User says '/end', 'finalizar', 'encerrar sessão', 'handoff', or session has 15+ commits and no /end yet",
+      "keywords": ["/end", "finalizar sessão", "handoff", "encerrar", "terminar sessão", "salva e fecha"],
+      "priority": "critical"
+    },
+    {
+      "id": "activation.egos-governance",
+      "skill": "/activation",
+      "file": "~/.egos/.claude/commands/activation.md",
+      "when": "First time in a repo that doesn't have CLAUDE.md with EGOS-KERNEL-PROPAGATED marker, or governance drift detected",
+      "keywords": ["ativar egos", "meta prompt de ativação", "atrian", "governance boot", "kernel não ativado"],
+      "priority": "critical"
+    },
+    {
+      "id": "session.daily",
+      "skill": "/daily",
+      "file": "~/.egos/.claude/commands/daily.md",
+      "when": "First session of the day (check date vs last /daily), or user asks 'o que temos hoje', 'prioridades do dia', 'agenda'",
+      "keywords": ["/daily", "agenda do dia", "prioridades hoje", "o que temos hoje", "daily standup", "plano do dia"],
+      "priority": "high"
+    },
+    {
+      "id": "strategy.universal",
+      "skill": "/strategist",
+      "file": "~/.egos/.claude/commands/strategist.md",
+      "when": "User asks about business decisions, partnership, pricing, pivot, market positioning, or 'como devemos' type questions",
+      "keywords": ["decisão estratégica", "negociação", "conflito", "investimento", "game theory", "análise de cenário", "pivot", "parceiro", "cliente", "precificação", "como posicionamos"],
+      "priority": "high"
+    },
+    {
+      "id": "governance.disseminate",
+      "skill": "/disseminate",
+      "file": "~/.egos/.claude/commands/disseminate.md",
+      "when": "After implementing a new rule, fixing a bug that affects multiple repos, or changing CLAUDE.md / .guarani / hooks",
+      "keywords": ["disseminar", "propagar regra", "atualizar todos repos", "sync governance", "disseminate", "kernel rule changed"],
+      "priority": "high"
+    },
+    {
+      "id": "spec.init",
+      "skill": "/spec-init",
+      "file": "~/.egos/.claude/commands/spec-init.md",
+      "when": "User asks to build a new feature, system, or product without an existing spec. Especially if scope > 1 file",
+      "keywords": ["criar spec", "especificação", "SDD", "spec-driven", "criar feature", "novo sistema", "nova funcionalidade", "spec primeiro"],
+      "priority": "high"
+    },
+    {
+      "id": "spec.plan",
+      "skill": "/spec-plan",
+      "file": "~/.egos/.claude/commands/spec-plan.md",
+      "when": "A spec file (SDD) exists and user wants to plan implementation, break into tasks, or create a roadmap",
+      "keywords": ["planejar spec", "spec plan", "quebrar em tasks", "roadmap da spec", "implementar spec"],
+      "priority": "high"
+    },
+    {
+      "id": "spec.implement",
+      "skill": "/spec-implement",
+      "file": "~/.egos/.claude/commands/spec-implement.md",
+      "when": "Spec exists, plan exists, user is ready to implement. Tasks are defined and acceptance criteria clear",
+      "keywords": ["implementar", "executar spec", "spec implement", "codificar spec", "build from spec"],
+      "priority": "high"
+    },
+    {
+      "id": "spec.review",
+      "skill": "/spec-review",
+      "file": "~/.egos/.claude/commands/spec-review.md",
+      "when": "Implementation is done and user wants to verify against spec, or before PR creation for spec-driven features",
+      "keywords": ["revisar spec", "spec review", "verificar implementação", "compliance check", "aderência à spec"],
+      "priority": "high"
     },
     {
       "id": "systems.mycelium",
-      "file": "meta/mycelium-orchestrator.md",
-      "keywords": ["mycelium", "micélio", "teia", "mesh", "sync", "sincronizar sistema", "auto melhorar", "auto-melhoria", "workflow periódico"],
-      "situations": ["Need to sync multiple system surfaces", "Need recursive architecture improvement", "Need to compare narrative vs live system reality"],
-      "priority": "high",
-      "apps": ["all"]
+      "skill": "/mycelium",
+      "file": "~/.egos/.claude/commands/mycelium.md",
+      "when": "Cross-repo sync needed, agent event bus out of sync, multiple repos need coordinated update, or 'sincronizar tudo'",
+      "keywords": ["mycelium", "micélio", "mesh", "sync", "sincronizar sistema", "auto-melhoria", "event bus", "agent sync"],
+      "priority": "high"
+    },
+    {
+      "id": "systems.mycelium-check",
+      "skill": "/mycelium-check",
+      "file": "~/.egos/.claude/commands/mycelium-check.md",
+      "when": "Before a release, or if agents are misbehaving, or weekly health check",
+      "keywords": ["checar mycelium", "status event bus", "agent health", "verificar sync", "mycelium check"],
+      "priority": "medium"
     },
     {
       "id": "audit.ecosystem",
-      "file": "meta/ecosystem-audit.md",
-      "keywords": ["auditoria", "diagnóstico", "análise de repo", "reverse engineering", "code review"],
-      "situations": ["Onboarding to a new codebase", "Periodic health check", "Cross-repo analysis"],
-      "priority": "medium",
-      "apps": ["all"]
+      "skill": "/audit",
+      "file": "~/.egos/.claude/commands/audit.md",
+      "when": "Onboarding a new repo, after major refactor, or if user asks for 'diagnóstico', 'auditoria', or code quality review",
+      "keywords": ["auditoria", "diagnóstico", "análise de repo", "onboarding", "code review", "health check", "estado do repo"],
+      "priority": "medium"
     },
     {
-      "id": "debate.tsun-cha",
-      "file": "../philosophy/TSUN_CHA_PROTOCOL.md",
-      "keywords": ["questionar", "verificar", "debate", "lógica", "falácia", "contradição", "pramana"],
-      "situations": ["AI assertion needs validation", "Hypothesis testing", "Logical inconsistency detected"],
-      "priority": "high",
-      "apps": ["intelink", "agents", "all"]
+      "id": "audit.diag",
+      "skill": "/diag",
+      "file": "~/.egos/.claude/commands/diag.md",
+      "when": "Something is broken, CI failing, tests failing, production error, or 'o que está errado' type questions",
+      "keywords": ["diagnosticar", "debugging", "o que está errado", "erro em produção", "CI falhou", "tests quebraram", "bug crítico"],
+      "priority": "high"
     },
     {
-      "id": "extraction.police",
-      "file": "../../apps/intelink/lib/intelink/meta-prompts.ts",
-      "keywords": ["extrair", "BO", "ocorrência", "depoimento", "documento policial", "REDS"],
-      "situations": ["Police document uploaded", "Need to extract entities from text", "Forensic analysis of testimony"],
-      "priority": "high",
-      "apps": ["intelink"]
+      "id": "intelligence.brainet",
+      "skill": "/brainet",
+      "file": "~/.egos/.claude/commands/brainet.md",
+      "when": "User needs multiple perspectives on a complex decision, wants to challenge assumptions, or mentions 'quórum'",
+      "keywords": ["brainstorm", "inteligência coletiva", "multi-perspectiva", "dissolução de ego", "decisão em grupo", "quórum", "perspectivas diferentes"],
+      "priority": "medium"
     },
     {
-      "id": "engineering.prompt",
-      "file": "../../.windsurf/workflows/prompt.md",
-      "keywords": ["criar prompt", "system prompt", "instrução AI", "meta-prompt", "prompt engineering"],
-      "situations": ["Building a new AI prompt", "Improving existing prompt", "Creating agent instructions"],
-      "priority": "medium",
-      "apps": ["all"]
+      "id": "knowledge.base",
+      "skill": "/knowledge",
+      "file": "~/.egos/.claude/commands/knowledge.md",
+      "when": "User asks about capturing learnings, updating HARVEST.md, wiki-compiler, or knowledge system state",
+      "keywords": ["base de conhecimento", "knowledge base", "harvest", "aprendizado", "wiki", "documentar padrão", "learning system"],
+      "priority": "medium"
+    },
+    {
+      "id": "knowledge.kb-init",
+      "skill": "/kb-init",
+      "file": "~/.egos/.claude/commands/kb-init.md",
+      "when": "Setting up a new client KB, initializing KBS for a new domain, or deploying knowledge graph for first time",
+      "keywords": ["inicializar kb", "novo cliente kb", "kb-init", "configurar knowledge base", "novo grafo de conhecimento"],
+      "priority": "medium"
+    },
+    {
+      "id": "infra.vps",
+      "skill": "/vps",
+      "file": "~/.egos/.claude/commands/vps.md",
+      "when": "Anything touching production VPS (Hetzner 204.168.217.125), Caddy, Docker services, or deployment",
+      "keywords": ["vps", "hetzner", "produção", "deploy", "caddy", "nginx", "servidor", "ssh", "docker", "container"],
+      "priority": "high"
+    },
+    {
+      "id": "infra.sync",
+      "skill": "/sync",
+      "file": "~/.egos/.claude/commands/sync.md",
+      "when": "Governance files out of sync between repos, ~/.egos drift detected, or after adding new rules that need propagation",
+      "keywords": ["sync", "sincronizar governance", "drift detectado", "propagar kernel", "atualizar hooks", "egos sync"],
+      "priority": "high"
+    },
+    {
+      "id": "engineering.pr-prep",
+      "skill": "/pr-prep",
+      "file": "~/.egos/.claude/commands/pr-prep.md",
+      "when": "Before creating a PR to Carlos Victor's ratio repo, or for any external contribution PR",
+      "keywords": ["pr", "pull request", "contribuição externa", "ratio", "prepare pr", "abrir pr", "revisar antes de pr"],
+      "priority": "medium"
+    },
+    {
+      "id": "agents.management",
+      "skill": "/agents",
+      "file": "~/.egos/.claude/commands/agents.md",
+      "when": "Adding, removing, or debugging agents. Checking agent registry (agents.json), runner health, event-bus",
+      "keywords": ["agentes", "agent registry", "criar agente", "debugar agente", "runner", "event bus", "agents.json"],
+      "priority": "medium"
+    },
+    {
+      "id": "coordination.multi-agent",
+      "skill": "/coordinator",
+      "file": "~/.egos/.claude/commands/coordinator.md",
+      "when": "Spawning 3+ parallel agents for a complex task, or managing a swarm with dependencies between agents",
+      "keywords": ["coordenar agentes", "swarm", "parallel agents", "multi-agent", "orquestrar", "coordinator", "pipeline de agentes"],
+      "priority": "medium"
+    },
+    {
+      "id": "learning.study",
+      "skill": "/study",
+      "file": "~/.egos/.claude/commands/study.md",
+      "when": "User wants to learn a concept deeply, read a paper, or do structured learning with gem-hunter style notes",
+      "keywords": ["estudar", "aprender", "pesquisar paper", "deep dive", "gem-hunter", "study session", "entender conceito"],
+      "priority": "medium"
+    },
+    {
+      "id": "learning.study-end",
+      "skill": "/study-end",
+      "file": "~/.egos/.claude/commands/study-end.md",
+      "when": "After a /study session, to capture gems, save learnings, and close the study context",
+      "keywords": ["fechar study", "study end", "salvar gems", "encerrar estudo", "finalizar pesquisa"],
+      "priority": "medium"
+    },
+    {
+      "id": "publication.approve",
+      "skill": "/approve-pub",
+      "file": "~/.egos/.claude/commands/approve-pub.md",
+      "when": "Before publishing any article, X thread, LinkedIn post, or public communication. HITL gate required by §0",
+      "keywords": ["publicar artigo", "aprovar publicação", "approve pub", "postar", "thread x.com", "linkedin post", "artigo pronto"],
+      "priority": "critical"
+    },
+    {
+      "id": "reporting.usage",
+      "skill": "/usage-report",
+      "file": "~/.egos/.claude/commands/usage-report.md",
+      "when": "User asks about API costs, token usage, model spending, or monthly bill. Also at end of sprint",
+      "keywords": ["relatório de uso", "usage report", "custo api", "tokens gastos", "quanto gastamos", "billing", "spending"],
+      "priority": "low"
     }
-  ]
+  ],
+  "_context_signals": {
+    "source": "~/.egos/context-signals.jsonl",
+    "written_by": "pre-commit hook after each commit",
+    "read_by": "/start skill at session open",
+    "format": "{\"ts\": \"ISO\", \"repo\": \"name\", \"signal\": \"type\", \"detail\": \"...\"}"
+  },
+  "_removed": {
+    "debate.tsun-cha": "Archived — no equivalent skill, TSUN_CHA_PROTOCOL.md never created",
+    "extraction.police": "Removed — egos-lab ARCHIVING status, intelink-specific",
+    "governance.clarity-review": "Archived — CLARITY_REVIEW.md moved to .guarani/_archived/"
+  }
 }

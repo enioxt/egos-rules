@@ -1,0 +1,179 @@
+# Skill Manifest: web-knowledge-ingest
+# ID: WEB-KBS-001
+# Version: 1.0.0
+# Purpose: Live Web Knowledge Ingestion via TinyFish Web Primitives
+# Created: 2026-04-15
+# Owner: Window B (Grok Research)
+
+skill_id: web-knowledge-ingest
+version: 1.0.0
+type: mcp-cli
+command: npx skills add https://tinyfish.ai/skill --skill tinyfish
+
+description: |
+  Live Web Knowledge Ingestor for EGOS KBS (Knowledge Base System).
+  Uses TinyFish web primitives to fetch, clean, and ingest content
+  from legal/open sources into the entity graph.
+
+capabilities:
+  - web-fetch       # GET any URL with browser rendering
+  - web-search      # Structured search results
+  - web-browser     # Controlled Chrome automation
+  - web-agent       # Multi-step workflows
+
+governance:
+  # Whitelist: apenas domínios legais/open access
+  whitelist_domains:
+    - archive.org           # Internet Archive (empréstimo digital + domínio público)
+    - gutenberg.org         # Project Gutenberg (domínio público)
+    - openlibrary.org       # Open Library (domínio público + empréstimo)
+    - openstax.org          # OpenStax (livros didáticos open access)
+    - standardebooks.org    # Standard Ebooks (domínio público)
+    - authorama.com         # Authorama (domínio público)
+    - librivox.org          # LibriVox (audiobooks domínio público)
+    - github.com            # Código open source
+    - docs.python.org       # Documentação Python
+    - developer.mozilla.org  # MDN Web Docs
+  
+  # Blacklist: shadow libraries e sites de pirataria
+  blacklist_patterns:
+    - "*z-lib*"
+    - "*zlibrary*"
+    - "*pdfdrive*"
+    - "*oceanofpdf*"
+    - "*annas-archive*"
+    - "*libgen*"
+    - "*scihub*"
+    - "*shadow*"
+  
+  # Compliance LGPD + Lei 9.610/98
+  compliance:
+    - LGPD
+    - Lei-9.610/98          # Direitos Autorais Brasil
+    - copyright-legal-only
+    - open-access-preferred
+  
+  # PII handling: passar pelo Guard Brasil
+  pii_handling: guard_brasil_mask
+  
+  # Rate limiting para respeitar servidores
+  rate_limit:
+    requests_per_hour: 100
+    burst_allowance: 10
+    retry_delay_ms: 1000
+  
+  # Evidence gate: todo fetch precisa de justificativa
+  evidence_gate:
+    enabled: true
+    require_justification: true
+    log_all_requests: true
+  
+  # Drift check: verificar se config mudou
+  drift_check: true
+
+pipeline:
+  # Fluxo KBS: fetch → clean → PII guard → JSONL → entity graph
+  steps:
+    - name: fetch
+      tool: tinyfish-web-fetch
+      config:
+        remove_css: true
+        remove_js: true
+        remove_ads: true
+        render_timeout_ms: 10000
+    
+    - name: clean
+      tool: content-sanitizer
+      config:
+        extract_main_content: true  # Remove nav/footer/sidebar
+        preserve_code_blocks: true
+        preserve_tables: true
+    
+    - name: pii_guard
+      tool: guard_brasil
+      config:
+        mask_mode: aggressive
+        log_findings: true
+    
+    - name: jsonl_convert
+      tool: kbs-ingestor
+      config:
+        format: jsonl
+        include_metadata: true
+        source_attribution: true
+    
+    - name: entity_graph
+      tool: neo4j-kuzu-ingestor
+      config:
+        create_nodes: true
+        create_edges: true
+        deduplicate: true
+
+integrations:
+  # Onde este skill é consumido
+  consumers:
+    - name: wiki-compiler
+      purpose: Enriquecer páginas wiki com conteúdo da web
+    
+    - name: gem-hunter
+      purpose: Buscar gems em papers/blog posts técnicos
+    
+    - name: research-framework
+      purpose: Coletar evidence para análise de lenses
+    
+    - name: 852-chatbot
+      purpose: Responder perguntas com fontes atualizadas
+
+fallback:
+  # Se TinyFish falhar, usar Playwright + stealth (implementação própria)
+  alternative: web-primitives-os
+  trigger: on_tinyfish_error
+  config:
+    playwright_stealth: true
+    proxy_rotation: true
+    user_agent_rotation: true
+
+monitoring:
+  metrics:
+    - requests_total
+    - requests_by_domain
+    - pii_findings_per_request
+    - ingest_success_rate
+    - average_latency_ms
+  
+  alerts:
+    - condition: pii_findings_rate > 0.1  # 10% dos requests com PII
+      level: warning
+      message: "High PII detection rate in web content"
+    
+    - condition: blacklist_domain_attempt
+      level: critical
+      message: "Attempted fetch from blacklisted domain"
+    
+    - condition: success_rate < 0.8  # < 80% sucesso
+      level: warning
+      message: "Low ingest success rate"
+
+tasks:
+  # Tasks relacionadas (Window B)
+  related:
+    - id: WEB-KBS-001
+      name: Live Web Knowledge Ingestor v1
+      priority: P1
+      status: in_progress
+    
+    - id: WEB-ALT-001
+      name: Web Primitives Open Source Fallback
+      priority: P2
+      status: pending
+    
+    - id: SKILLS-005
+      name: Skill /web-research
+      priority: P2
+      status: pending
+
+harvest_pattern: P51
+# Pattern para HARVEST.md: Live Web Ingestion
+# LEARNING: Web primitives (TinyFish/Playwright) + whitelist governance 
+# + PII guard + KBS pipeline = knowledge base sempre atualizado 
+# sem pirataria + zero drift

@@ -1,9 +1,12 @@
 {
-  "version": "1.0.0",
-  "description": "EGOS Governance Mesh — Declarative sync manifest",
-  "updated": "2026-03-13",
+  "version": "1.1.0",
+  "description": "EGOS Governance Mirror — declarative sync manifest for ~/.egos distribution",
+  "updated": "2026-04-06",
   
   "shared_guarani": [
+    "IDENTITY.md",
+    "PREFERENCES.md",
+    "RULES_INDEX.md",
     "orchestration/DOMAIN_RULES.md",
     "orchestration/GATES.md",
     "orchestration/PIPELINE.md",
@@ -22,10 +25,12 @@
 
   "shared_workflows": [
     "start.md", "end.md", "pre.md", "prompt.md",
-    "regras.md", "research.md", "disseminate.md"
+    "regras.md", "research.md", "disseminate.md",
+    "diag.md", "mycelium.md", "stitch.md"
   ],
 
   "shared_skills": [
+    "deep-research",
     "stitch-design"
   ],
 
@@ -37,10 +42,15 @@
     "egos":           { "path": "/home/enio/egos",           "mode": "auto-sync", "hooks": true },
     "egos-lab":       { "path": "/home/enio/egos-lab",       "mode": "auto-sync", "hooks": true },
     "852":            { "path": "/home/enio/852",            "mode": "auto-sync", "hooks": true },
+    "INPI":           { "path": "/home/enio/INPI",           "mode": "auto-sync", "hooks": true },
     "br-acc":         { "path": "/home/enio/br-acc",         "mode": "auto-sync", "hooks": true },
     "carteira-livre": { "path": "/home/enio/carteira-livre", "mode": "auto-sync", "hooks": true },
     "forja":          { "path": "/home/enio/forja",          "mode": "auto-sync", "hooks": true },
     "egos-self":      { "path": "/home/enio/egos-self",      "mode": "auto-sync", "hooks": true },
+    "commons":        { "path": "/home/enio/commons",        "mode": "auto-sync", "hooks": true },
+    "smartbuscas":    { "path": "/home/enio/smartbuscas",    "mode": "auto-sync", "hooks": true },
+    "santiago":       { "path": "/home/enio/santiago",       "mode": "auto-sync", "hooks": true },
+    "arch":           { "path": "/home/enio/arch",           "mode": "auto-sync", "hooks": true },
     "policia":        { "path": "/home/enio/policia",        "mode": "mapped-only", "hooks": false }
   },
 

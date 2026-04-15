@@ -1,22 +1,24 @@
 # 🌐 EGOS Shared Governance Framework
 
 > **Location:** `/home/enio/.egos/`
-> **Purpose:** Single source of truth for cross-repo rules, preferences, and agent memory
-> **Version:** 1.0.0 | **Updated:** 2026-02-13
+> **Purpose:** Synced governance mirror for cross-repo rules, workflows, hooks, and adapters
+> **Version:** 1.1.0 | **Updated:** 2026-04-06
 
 ---
 
 ## Architecture
 
 ```
-~/.egos/                           ← CENTRAL SOURCE OF TRUTH
+kernel egos/.guarani/              ← CANONICAL GOVERNANCE SOURCE
+        ↓ governance-sync.sh
+~/.egos/                           ← SHARED MIRROR / DISTRIBUTION LAYER
 ├── README.md                      ← This file
 ├── guarani/
 │   ├── IDENTITY.md                ← Shared agent identity
-│   ├── PREFERENCES_SHARED.md      ← Cross-repo coding standards
-│   └── SACRED_CODE.md             ← Sacred Code + core values
+│   ├── PREFERENCES.md             ← Cross-repo coding standards
+│   └── RULES_INDEX.md             ← Canonical rule lookup
 ├── skills/
-│   └── *.md                       ← Shared agent skills
+│   └── */SKILL.md                 ← Shared agent skills
 ├── workflows/
 │   └── *.md                       ← Shared agent workflows
 └── sync.sh                        ← Auto-sync to all repos
@@ -29,18 +31,18 @@ Repos that consume:
 
 ## How It Works
 
-1. **Central rules** live here in `~/.egos/`
+1. **Canonical rules** live in `kernel/.guarani/`
 2. **Each repo** has a symlink: `.egos → ~/.egos`
-3. **Local overrides** live in each repo's `.guarani/` (NOT symlinked)
-4. **sync.sh** propagates critical updates and validates consistency
-5. **Agents read** both `.egos/` (shared) and `.guarani/` (local)
+3. **`scripts/governance-sync.sh`** mirrors kernel governance into `~/.egos/`
+4. **`~/.egos/sync.sh`** propagates workflows, hooks, and selected governance surfaces
+5. **Agents read** `.guarani/` as canon and treat adapter files as environment-specific views
 
 ## Rule Precedence
 
 ```
-1. Local .guarani/ rules     ← HIGHEST (repo-specific overrides)
-2. Shared .egos/ rules       ← MEDIUM  (cross-repo standards)
-3. .windsurfrules             ← AGENT-LEVEL (agent-specific behavior)
+1. Kernel `.guarani/` canon   ← HIGHEST
+2. Shared `~/.egos/` mirror   ← synced distribution layer
+3. `CLAUDE.md` / `.windsurfrules` ← adapter surfaces only
 ```
 
 ## Adding a New Repo
@@ -53,6 +55,7 @@ echo ".egos" >> .gitignore  # Don't commit the symlink
 
 ## Editing Shared Rules
 
-1. Edit files in `~/.egos/guarani/`
-2. Run `~/.egos/sync.sh` to validate and propagate
-3. All repos automatically see the changes (via symlink)
+1. Edit canonical files in `/home/enio/egos/.guarani/` or other kernel SSOT surfaces
+2. Run `bun run governance:sync:exec` from the kernel
+3. Run `bun run governance:check` to verify mirror drift = 0
+4. Use `~/.egos/sync.sh` only as the distribution step to repos/IDEs

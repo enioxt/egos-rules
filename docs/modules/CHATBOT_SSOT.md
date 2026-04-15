@@ -1,6 +1,6 @@
 # CHATBOT_SSOT — Canonical Chatbot Standard
 
-> **VERSION:** 1.2.0 | **UPDATED:** 2026-03-21
+> **VERSION:** 2.0.0 | **UPDATED:** 2026-04-07
 > **REFERENCE IMPLEMENTATION:** `/home/enio/852` (852 Inteligência) + reusable core modules in `/home/enio/egos/packages/shared`
 > **STATUS:** Active — all new chatbots MUST follow this standard
 
@@ -390,16 +390,204 @@ Minimum evidence per rollout:
 
 ---
 
-## 11. Adoption Status
+## 12. Adoption Status
 
 | Project | Status | Verified State | Next Gap |
 |---------|--------|----------------|----------|
-| **852** | SSOT Reference | Production-grade reference implementation with prompt, ATRiAN, PII, memory, routing, telemetry, and hardening. | Keep as origin benchmark. |
+| **852** | SSOT Reference | Active development — reference implementation with prompt, ATRiAN, PII, memory, routing, telemetry, and hardening. Real users, but evolving. | Keep as origin benchmark. |
 | **carteira-livre** | HAS | Shared ATRiAN/PII/memory modules integrated in `app/api/tutor/route.ts`; validated by typecheck + `chatbot_compliance_checker` `100/100`. | Broader 852 parity remains optional (exports/dashboard-level extras). |
 | **intelink** | HAS | Shared ATRiAN/PII/memory modules integrated in `app/api/chat/route.ts`; validated by typecheck + `chatbot_compliance_checker` `100/100`. | Deeper parity with 852 review/export surfaces remains optional. |
 | **egos-web** | BASIC | Public chat has provider fallback, rate limiting, cost guard, prompt hardening, and file-context awareness; `chatbot_compliance_checker` currently scores `64/100`. | Adopt shared ATRiAN/PII/memory modules and align maturity tags in registry. |
 | **Forja** | FOUNDATION | Prompt builder + `/api/chat` foundation integrated with shared modules; validated by typecheck + `chatbot_compliance_checker` `100/100`. | DB-backed memory, durable telemetry, tools, and full production workflow still pending. |
 | **br-acc** | Python variant | Tool-calling chat, public guard, in-memory conversation state, evidence chain, and rate limits exist in Python; `chatbot_compliance_checker` currently scores `71/100`. | Define ATRiAN/shared-module adapter path and align replication contract to this SSOT. |
+
+---
+
+## 13. v2.0 Upgrade Roadmap (2026-04-07)
+
+**Architectural decisions:**
+- Vercel AI SDK v4+ is canonical TS adapter (not custom streaming)
+- LangGraph is canonical Python orchestrator for agent loops
+- JSON Schema source-of-truth for TS↔Python parity (types generated from `packages/shared/contracts/`)
+- OpenTelemetry for traces + Supabase for queryable analytics (duals, not competitors)
+- Memory is layered: Working → Episodic (AI summary) → Semantic (pgvector) → Entity (facts)
+
+**New modules (M9–M16):**
+- M9: Tool Calling & Agent Loop (`runAgentLoop`, lifted from br-acc into shared)
+- M10: Structured Output Layer (Zod/Pydantic with auto-retry)
+- M11: Multi-modal Message Parts (text/image/file/tool canonical type)
+- M12: Conversation Forking & Edit
+- M13: Resumable Streams (stream IDs + buffer)
+- M14: Eval & Regression Harness (golden set CI gate)
+- M15: Dual-Runtime Spec (TS + Python `packages/shared_py/`)
+- M16: Agent Handoff Swarm-style (`transfer_to_<agent>` primitive)
+
+**P0 tasks:** CHAT-001..010 in `TASKS.md`
+
+---
+
+---
+
+## 14. `@egos/chatbot-core` — API Reference (2026-04-15)
+
+> **Package:** `packages/chatbot-core/` | **Exported as:** `@egos/chatbot-core`  
+> **Status:** Active — replaces duplicated LLM boilerplate across all repos  
+> Forja migrated ✅ 2026-04-15. 852/Intelink: see notes below.
+
+### 14.1 `createChatbot(config)` — Full HTTP handler factory
+
+Creates a self-contained chat handler for a Next.js App Router endpoint.
+
+```typescript
+import { createChatbot } from '@egos/chatbot-core';
+
+const bot = createChatbot({
+  name: 'MyBot',                          // used in logging
+  systemPrompt: 'Você é...',             // static string or (ctx) => string
+  tools: {                               // optional ToolRegistry
+    my_tool: {
+      description: 'What the tool does',
+      inputSchema: { type: 'object', properties: { q: { type: 'string' } } },
+      execute: async ({ q }) => ({ result: '...' }),
+    },
+  },
+  models: {
+    primary: {
+      modelId: 'google/gemini-2.0-flash-001',
+      providerEnvKey: 'OPENROUTER_API_KEY',
+      inputCostPerMillion: 0.075,
+      outputCostPerMillion: 0.30,
+    },
+    fallback: {                           // optional — used when primary rate-limits
+      modelId: 'qwen-plus',
+      providerEnvKey: 'ALIBABA_DASHSCOPE_API_KEY',
+      baseUrl: 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions',
+    },
+  },
+  atrian: {                              // optional — ethical validation
+    blockedEntities: ['entity_name'],
+    knownAcronyms: ['LGPD', 'CPF'],
+  },
+  rateLimit: { limit: 12, windowMs: 5 * 60 * 1000 }, // 12 req/5min per IP
+});
+
+// In Next.js App Router:
+export const POST = bot.streamHandler;   // SSE streaming response
+// or:
+export const POST = bot.batchHandler;   // JSON batch response
+```
+
+**SSE events emitted by `streamHandler`:**
+
+| event | payload | when |
+|-------|---------|------|
+| `thinking` | `{ status, model }` | start of each request |
+| `tool_call` | `{ tool, args }` | before each tool execution |
+| `tool_result` | `{ tool, count }` | after tool returns |
+| `complete` | `{ reply, toolsUsed, costUsd, rounds }` | final answer ready |
+| `error` | `{ message }` | on any failure |
+
+**Frontend consumption:**
+```typescript
+const res = await fetch('/api/chat', { method: 'POST', body: JSON.stringify({ message: '...' }) });
+const reader = res.body!.getReader();
+// parse event: type\ndata: json\n\n format
+// handle 'complete' event for the final reply
+```
+
+---
+
+### 14.2 `fetchWithFailover(payload, models, headers?)` — Low-level LLM call
+
+For projects that need custom HTTP handling (not a plain Next.js endpoint).  
+Used internally by `runToolLoop` and exported for direct use (e.g., Forja's runtime wrapper).
+
+```typescript
+import { fetchWithFailover } from '@egos/chatbot-core';
+
+const { data, tierUsed } = await fetchWithFailover(
+  {
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userMessage },
+    ],
+    max_tokens: 1200,
+    temperature: 0.3,
+  },
+  {
+    primary: { modelId: 'google/gemini-2.0-flash-001', providerEnvKey: 'OPENROUTER_API_KEY' },
+    fallback: { modelId: 'qwen-plus', providerEnvKey: 'ALIBABA_DASHSCOPE_API_KEY',
+                baseUrl: 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions' },
+  },
+  { 'HTTP-Referer': 'https://myapp.com', 'X-Title': 'MyApp' },
+);
+
+const reply = (data.choices as any)[0]?.message?.content ?? '';
+```
+
+Returns `{ data: Record<string, unknown>, tierUsed: ResolvedTier }`.  
+Throws if ALL tiers fail after retries.
+
+---
+
+### 14.3 Conversation utilities
+
+```typescript
+import {
+  shouldSummarizeConversation,  // (msgs: ConversationMessage[]) => boolean — true if ≥4 messages
+  buildConversationTranscript,  // (msgs) => string — last 12 msgs, max 400 chars each
+  buildConversationMemoryBlock, // (items: {title?, summary?}[]) => string | null
+} from '@egos/chatbot-core';
+```
+
+These replace duplicated implementations in Forja/carteira-livre/egos.
+
+---
+
+### 14.4 Adding chatbot-core to a project
+
+**In the project's `package.json`:**
+```json
+{
+  "dependencies": {
+    "@egos/chatbot-core": "file:../egos/packages/chatbot-core",
+    "@egos/shared": "file:../egos/packages/shared"
+  }
+}
+```
+
+**In `tsconfig.json` (if project is NOT in the egos workspace):**
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "@egos/chatbot-core": ["../egos/packages/chatbot-core/src/index.ts"],
+      "@egos/shared": ["../egos/packages/shared/src/index.ts"]
+    }
+  }
+}
+```
+
+---
+
+### 14.5 Project integration status
+
+| Project | Pattern | Status | Notes |
+|---------|---------|--------|-------|
+| **@egos/chatbot-core** | Library | ✅ Live | Source of truth |
+| **Forja** | `fetchWithFailover` + conv utils | ✅ 2026-04-15 | Full migration blocked: per-request tenant context |
+| **carteira-livre** | Manual (duplicated) | Pending | Same pattern as Forja — candidate for same migration |
+| **852** | AI SDK v6 streaming | Deferred [P2] | Architecture mismatch; extract model-config to @egos/shared |
+| **Intelink** | Telegram bot + OpenAI embeddings | Deferred [P3] | createChatbot HTTP pattern doesn't apply; embeddings not in core |
+
+---
+
+### 14.6 Limitations / Known gaps
+
+- **Per-request tool context** (tenantId, userId): `createChatbot()` takes tools at config time. Multi-tenant apps must create chatbot per-request or use closure workaround.
+- **Embeddings**: Not supported. Projects needing embeddings keep OpenAI SDK directly.
+- **Streaming token-by-token**: `complete` event sends the full reply at once. Not suitable for UX that requires progressive streaming (like 852's `streamText` pattern).
+- **Memory persistence**: `MemoryConfig` is typed but Supabase implementation is planned (not yet built).
 
 ---
 

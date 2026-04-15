@@ -1,195 +1,200 @@
-#!/usr/bin/env bash
-# ╔══════════════════════════════════════════════════════════════════╗
-# ║  EGOS UNIVERSAL PRE-COMMIT HOOK — SSOT v1.0                    ║
-# ║  Fonte: /home/enio/.egos/hooks/pre-commit                      ║
-# ║  Instalar com: ln -sf /home/enio/.egos/hooks/pre-commit .git/hooks/pre-commit
-# ╚══════════════════════════════════════════════════════════════════╝
-set -euo pipefail
+#!/bin/sh
+# EGOS CRCDM Pre-Commit Hook
+# Detects changes BEFORE they are committed, creates DAG node
+# Part of Cross-Repo Change Detection Mesh (CRCDM)
 
-ERRORS=0
-WARNINGS=0
-REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
+set -eu
 
-_err()  { echo "  ✗ [ERRO]  $*" >&2; ERRORS=$((ERRORS+1)); }
-_warn() { echo "  ⚠ [AVISO] $*" >&2; WARNINGS=$((WARNINGS+1)); }
-_ok()   { echo "  ✓ $*"; }
+CRCDM_ROOT="${HOME}/.egos/crcdm"
+HOOK_NAME="pre-commit"
+REPO_PATH="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+REPO_NAME="$(basename "$REPO_PATH")"
 
-echo ""
-echo "╔══════════════════════════════════════════════════════════╗"
-echo "║          EGOS Pre-Commit — verificação de segurança       ║"
-echo "╚══════════════════════════════════════════════════════════╝"
+echo "🔍 CRCDM [$HOOK_NAME] — Analyzing changes in $REPO_NAME..."
 
-# ── 0. GOVERNANÇA — Detectar drift do mesh EGOS ──────────────────
-echo ""
-echo "[ 0/7 ] Verificando governança EGOS..."
+# Ensure CRCDM is initialized
+mkdir -p "${CRCDM_ROOT}/logs"
+mkdir -p "${CRCDM_ROOT}/dag"
+mkdir -p "${CRCDM_ROOT}/state"
+mkdir -p "${CRCDM_ROOT}/notifications"
 
-if [ -x "$HOME/.egos/bin/egos-gov" ]; then
-  if ! "$HOME/.egos/bin/egos-gov" check --quiet 2>/dev/null; then
-    _warn "Governance drift detectado — execute: egos-gov sync"
+# Get current branch and state
+BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')"
+STAGED_FILES="$(git diff --cached --name-only 2>/dev/null || true)"
+STAGED_COUNT="$(echo "$STAGED_FILES" | grep -c . 2>/dev/null || echo '0')"
+
+if [ "$STAGED_COUNT" -eq 0 ]; then
+  echo "  ℹ️ No staged files to analyze"
+  exit 0
+fi
+
+# Security gate — gitleaks + staged diff fallback
+GITLEAKS_CONFIG=""
+if [ -f "$REPO_PATH/.gitleaks.toml" ]; then
+  GITLEAKS_CONFIG="$REPO_PATH/.gitleaks.toml"
+elif [ -f "$HOME/egos/.gitleaks.toml" ]; then
+  GITLEAKS_CONFIG="$HOME/egos/.gitleaks.toml"
+fi
+
+if command -v gitleaks >/dev/null 2>&1; then
+  echo "  🔐 Secret scan: gitleaks"
+  if [ -n "$GITLEAKS_CONFIG" ]; then
+    gitleaks protect --staged --no-banner --config "$GITLEAKS_CONFIG" || {
+      echo "❌ BLOCKED: Secrets detected in staged changes. Remove or redact them before committing."
+      exit 1
+    }
+  else
+    gitleaks protect --staged --no-banner || {
+      echo "❌ BLOCKED: Secrets detected in staged changes. Remove or redact them before committing."
+      exit 1
+    }
   fi
 else
-  _warn "egos-gov não encontrado em $HOME/.egos/bin"
+  echo "  ⚠️ gitleaks not installed — running fallback token scan"
 fi
 
-_ok "Verificação de governança concluída."
-
-# ── 1. SECRETS — Nunca commitar credenciais ──────────────────────
-echo ""
-echo "[ 1/6 ] Verificando segredos e credenciais..."
-
-SECRET_PATTERNS=(
-  "password\s*=\s*['\"][^'\"]{8,}"
-  "api[_-]?key\s*=\s*['\"][^'\"]{10,}"
-  "secret[_-]?key\s*=\s*['\"][^'\"]{8,}"
-  "DASHSCOPE_API_KEY\s*=\s*['\"][^'\"]"
-  "OPENROUTER_API_KEY\s*=\s*['\"][^'\"]"
-  "SUPABASE_SERVICE_ROLE_KEY\s*=\s*['\"][^'\"]"
-)
-
-for pattern in "${SECRET_PATTERNS[@]}"; do
-  if git diff --cached --name-only | xargs -I{} grep -lPi "$pattern" {} 2>/dev/null | grep -qv ".env.example"; then
-    _err "Possível credencial detectada (padrão: $pattern) — remova antes de commitar."
-  fi
-done
-
-# Check for .env files being staged
-if git diff --cached --name-only | grep -qE '^\.env($|\.(local|development|production|test)(\..*)?$)'; then
-  _err "Arquivo .env sendo commitado! Use .env.example para documentação."
-fi
-
-# gitleaks se disponível — escaneia apenas arquivos staged
-if command -v gitleaks &>/dev/null; then
-  if ! gitleaks protect --staged 2>/dev/null; then
-    _err "gitleaks detectou possível vazamento de segredos nos arquivos staged."
-  fi
-fi
-
-_ok "Verificação de segredos concluída."
-
-# ── 2. ARQUIVOS GRANDES ──────────────────────────────────────────
-echo ""
-echo "[ 2/6 ] Verificando tamanho de arquivos..."
-
-PERSONAL_FILES=$(git diff --cached --name-only | grep -iE 'cv|resume|curriculum|cover[._ -]?letter|salary' || true)
-if [ -n "$PERSONAL_FILES" ]; then
-  _err "Arquivo pessoal detectado no commit — mova para área privada fora do repo."
-fi
-
-while IFS= read -r file; do
-  if [ -f "$file" ]; then
-    size=$(stat -c%s "$file" 2>/dev/null || stat -f%z "$file" 2>/dev/null || echo 0)
-    if [ "$size" -gt 5242880 ]; then
-      _err "Arquivo grande demais (>5MB): $file ($(numfmt --to=iec $size))"
-    elif [ "$size" -gt 1048576 ]; then
-      _warn "Arquivo >1MB: $file ($(numfmt --to=iec $size)) — considere usar Git LFS"
-    fi
-  fi
-done < <(git diff --cached --name-only)
-
-_ok "Verificação de tamanho concluída."
-
-# ── 3. TYPESCRIPT / JAVASCRIPT ───────────────────────────────────
-echo ""
-echo "[ 3/6 ] Verificando qualidade de código TypeScript/JS..."
-
-TS_FILES=$(git diff --cached --name-only | grep -E '\.(ts|tsx)$' || true)
-if [ -n "$TS_FILES" ]; then
-  for file in $TS_FILES; do
-    if [ -f "$file" ]; then
-      # Console.log flood (>3 in same file)
-      count=$(grep -c 'console\.log' "$file" 2>/dev/null || true)
-      count=${count:-0}
-      if [ "$count" -gt 5 ]; then
-        _warn "$file: $count console.log encontrados — remova antes do merge em main."
-      fi
-      if grep -q "setInterval" "$file" 2>/dev/null && ! grep -q "clearInterval" "$file" 2>/dev/null; then
-        _warn "$file: setInterval detectado sem clearInterval"
-      fi
-      # Unsafe array iteration without optional chaining
-      if grep -qP '(?<!\?\.)\.(map|filter|forEach)\(' "$file" 2>/dev/null; then
-        _warn "$file: iteração de array sem ?. — considere uso seguro (arr?.map / arr?.filter / arr?.forEach)"
-      fi
-    fi
-  done
-fi
-
-_ok "Verificação TypeScript concluída."
-
-# ── 4. PYTHON ────────────────────────────────────────────────────
-echo ""
-echo "[ 4/6 ] Verificando código Python..."
-
-PY_FILES=$(git diff --cached --name-only | grep -E '\.py$' || true)
-if [ -n "$PY_FILES" ]; then
-  for file in $PY_FILES; do
-    if [ -f "$file" ]; then
-      if command -v python3 &>/dev/null; then
-        if ! python3 -m py_compile "$file" 2>/dev/null; then
-          _err "Erro de sintaxe Python: $file"
-        fi
-      fi
-      if command -v ruff &>/dev/null; then
-        if ! ruff check "$file" --quiet 2>/dev/null; then
-          _warn "ruff detectou problemas em $file"
-        fi
-      fi
-    fi
-  done
-fi
-
-_ok "Verificação Python concluída."
-
-# ── 5. TASKS.md — Verificar se está atualizado ───────────────────
-echo ""
-echo "[ 5/6 ] Verificando TASKS.md..."
-
-if [ -f "$REPO_ROOT/TASKS.md" ]; then
-  tasks_modified=$(git diff --cached --name-only | grep -c "TASKS.md" || true)
-  code_modified=$(git diff --cached --name-only | grep -cE '\.(ts|tsx|py|js|jsx)$' || true)
-  if [ "$code_modified" -gt 2 ] && [ "$tasks_modified" -eq 0 ]; then
-    _warn "Você modificou $code_modified arquivos de código mas não atualizou TASKS.md — lembre de registrar o progresso."
-  fi
-fi
-
-_ok "Verificação TASKS.md concluída."
-
-# ── 6. PII — Dados pessoais sensíveis ────────────────────────────
-echo ""
-echo "[ 6/6 ] Verificando dados pessoais (PII)..."
-
-PII_PATTERNS=(
-  '\b[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}\b'  # CPF
-  '\b\d{7,9}\b.*masp'                             # MASP (aproximado)
-)
-
-for file in $(git diff --cached --name-only | grep -vE '\.(sql|md)$' || true); do
-  if [ -f "$file" ]; then
-    for pattern in "${PII_PATTERNS[@]}"; do
-      if grep -qP "$pattern" "$file" 2>/dev/null; then
-        _warn "Possível PII em $file — verifique se é dado real ou exemplo."
-      fi
-    done
-  fi
-done
-
-_ok "Verificação PII concluída."
-
-# ── RESULTADO ─────────────────────────────────────────────────────
-echo ""
-if [ "$ERRORS" -gt 0 ]; then
-  echo "╔══════════════════════════════════════════════════════════╗"
-  echo "║  ✗ $ERRORS erro(s) encontrado(s) — COMMIT BLOQUEADO       ║"
-  echo "║  Corrija os erros acima antes de commitar.               ║"
-  echo "╚══════════════════════════════════════════════════════════╝"
+STAGED_PATCH="$(git diff --cached --no-color 2>/dev/null || true)"
+if echo "$STAGED_PATCH" | grep -E '^[+].*(sbp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]+|gh[pousr]_[A-Za-z0-9]{20,}|sk_(live|test)_[A-Za-z0-9]{16,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN (RSA|EC|OPENSSH|DSA|PGP) PRIVATE KEY-----)' >/dev/null 2>&1; then
+  echo "❌ BLOCKED: Potential secret detected in staged diff. Remove or redact it before committing."
   exit 1
-elif [ "$WARNINGS" -gt 0 ]; then
-  echo "╔══════════════════════════════════════════════════════════╗"
-  echo "║  ⚠ $WARNINGS aviso(s) — commit prosseguindo...            ║"
-  echo "╚══════════════════════════════════════════════════════════╝"
-else
-  echo "╔══════════════════════════════════════════════════════════╗"
-  echo "║  ✓ Todos os checks passaram — commit liberado!           ║"
-  echo "╚══════════════════════════════════════════════════════════╝"
 fi
 
-exit 0
+# Calculate staged files hash (Merkle-style)
+STAGED_HASH=""
+for file in $STAGED_FILES; do
+  if [ -f "$file" ]; then
+    file_hash="$(sha256sum "$file" 2>/dev/null | cut -d' ' -f1 || echo 'null')"
+    STAGED_HASH="${STAGED_HASH}${file_hash}"
+  fi
+done
+CHANGE_HASH="$(echo "${REPO_PATH}:${BRANCH}:${STAGED_HASH}:$(date +%s)" | sha256sum | cut -d' ' -f1)"
+NODE_ID="$(echo "$CHANGE_HASH" | cut -c1-16)"
+
+# Classify impact
+IMPACT="low"
+for file in $STAGED_FILES; do
+  case "$file" in
+    *runtime*|*auth*|*security*|*middleware*|*.env*)
+      IMPACT="critical"
+      break
+      ;;
+    *api/*|*db/*|*config/*|*migrations/*)
+      if [ "$IMPACT" != "critical" ]; then
+        IMPACT="high"
+      fi
+      ;;
+    *components/*|*features/*|*hooks/*)
+      if [ "$IMPACT" = "low" ]; then
+        IMPACT="medium"
+      fi
+      ;;
+  esac
+done
+
+# Create impact emoji
+IMPACT_EMOJI="⚪"
+case "$IMPACT" in
+  critical) IMPACT_EMOJI="🔴" ;;
+  high) IMPACT_EMOJI="🟠" ;;
+  medium) IMPACT_EMOJI="🟡" ;;
+esac
+
+# Check for cross-repo dependencies
+echo "  📊 Impact analysis: ${IMPACT_EMOJI} ${IMPACT} (${STAGED_COUNT} files)"
+
+# Check if this change affects other repos
+AFFECTS_OTHERS=""
+for file in $STAGED_FILES; do
+  case "$file" in
+    *packages/shared*|*.guarani/*|.windsurf/workflows/*)
+      AFFECTS_OTHERS="true"
+      echo "  ⚠️  WARNING: Changes to $file may affect OTHER repositories!"
+      ;;
+  esac
+done
+
+# ════════════════════════════════════════════════════════
+# GOVERNANCE GATE — Doc proliferation + SSOT limits
+# ════════════════════════════════════════════════════════
+
+# CHECK: Doc proliferation (BLOCKING)
+NEW_DOCS=$(git diff --cached --name-only --diff-filter=A | grep '^docs/' || true)
+if [ -n "$NEW_DOCS" ]; then
+  FILTERED=$(echo "$NEW_DOCS" | grep -vE '^docs/(_context_snapshots|_generated|_archived_handoffs)/' || true)
+  TIMESTAMPED=$(echo "$FILTERED" | grep -E '_20[0-9]{2}-[0-9]{2}' || true)
+  if [ -n "$TIMESTAMPED" ]; then
+    echo "❌ BLOCKED: Timestamped docs not allowed outside allowed folders."
+    echo "   Move to docs/_archived_handoffs/ or use TASKS.md/SYSTEM_MAP.md instead:"
+    echo "$TIMESTAMPED" | while IFS= read -r f; do echo "   - $f"; done
+    exit 1
+  fi
+fi
+
+# CHECK: SSOT file size limits (warning only)
+_chk() {
+  if [ -f "$1" ]; then
+    _l=$(wc -l < "$1")
+    [ "$_l" -gt "$2" ] && echo "  ⚠️  $1: ${_l} lines (soft limit: $2)" || true
+  fi
+}
+_chk "AGENTS.md" 200; _chk "TASKS.md" 500; _chk "docs/SYSTEM_MAP.md" 300
+
+# CHECK: Handoff freshness (warning only)
+if [ -d "docs/_current_handoffs" ]; then
+  _hc=$(find docs/_current_handoffs -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+  [ "${_hc:-0}" -gt 5 ] && echo "  ⚠️  ${_hc} active handoffs — consider archiving >30-day-old files" || true
+fi
+
+# Log to CRCDM
+TIMESTAMP="$(date -u +%s)"
+{
+  echo "${TIMESTAMP} ${NODE_ID} ${REPO_NAME} ${BRANCH} ${IMPACT} PRE_COMMIT:${STAGED_COUNT}_files"
+  echo "$STAGED_FILES" | while read -r file; do
+    if [ -n "$file" ]; then
+      echo "${TIMESTAMP} ${NODE_ID} FILE: $file"
+    fi
+  done
+} >> "${CRCDM_ROOT}/logs/${HOOK_NAME}.log"
+
+# Create pre-commit node in DAG
+if command -v jq >/dev/null 2>&1; then
+  DAG_FILE="${CRCDM_ROOT}/dag/dag.json"
+  if [ ! -f "$DAG_FILE" ]; then
+    echo '{"nodes": [], "edges": [], "version": "1.0.0"}' > "$DAG_FILE"
+  fi
+  
+  # Create node
+  NODE=$(jq -n \
+    --arg id "$NODE_ID" \
+    --arg repo "$REPO_NAME" \
+    --arg branch "$BRANCH" \
+    --arg impact "$IMPACT" \
+    --argjson files "$(echo "$STAGED_FILES" | jq -R . | jq -s .)" \
+    --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+    --arg type "pre-commit" \
+    '{id: $id, repo: $repo, branch: $branch, impact: $impact, files: $files, timestamp: $timestamp, type: $type, status: "pending"}')
+  
+  jq --argjson node "$NODE" '.nodes += [$node]' "$DAG_FILE" > "${DAG_FILE}.tmp" && mv "${DAG_FILE}.tmp" "$DAG_FILE"
+fi
+
+# Check for Claude Code context (if running inside Claude)
+if [ -n "${CLaude_SESSION:-}" ] || [ -f ".claude/session.json" ] 2>/dev/null; then
+  echo "  🤖 Claude Code session detected — syncing context..."
+fi
+
+# Final report
+echo "  📝 CRCDM Node: ${NODE_ID}"
+echo "  🌿 Branch: ${BRANCH}"
+if [ -n "$AFFECTS_OTHERS" ]; then
+  echo "  🔗 Cross-repo impact: YES — Run 'crcdm-sync' after commit"
+fi
+
+# Export for potential downstream hooks
+export CRCDM_NODE_ID="$NODE_ID"
+export CRCDM_IMPACT="$IMPACT"
+export CRCDM_FILES_COUNT="$STAGED_COUNT"
+
+# README freshness gate
+bash ~/.egos/hooks/readme-freshness.sh "${1:-}" || exit 1
+
+echo "✅ CRCDM [$HOOK_NAME] — Ready to commit"

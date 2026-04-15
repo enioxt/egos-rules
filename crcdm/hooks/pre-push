@@ -1,0 +1,159 @@
+#!/bin/sh
+# EGOS CRCDM Pre-Push Hook
+# Analyzes changes before push, warns about cross-repo impacts
+# Part of Cross-Repo Change Detection Mesh (CRCDM)
+
+set -eu
+
+CRCDM_ROOT="${HOME}/.egos/crcdm"
+HOOK_NAME="pre-push"
+REPO_PATH="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+REPO_NAME="$(basename "$REPO_PATH")"
+
+echo "🔍 CRCDM [$HOOK_NAME] — Analyzing push from $REPO_NAME..."
+
+# Get remote and branch info
+REMOTE="$1"
+URL="$2"
+BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')"
+UPSTREAM="$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || echo '')"
+
+# Calculate commits to push
+if [ -n "$UPSTREAM" ]; then
+  COMMITS_TO_PUSH="$(git log --oneline $UPSTREAM..HEAD 2>/dev/null || true)"
+  COMMITS_COUNT="$(echo "$COMMITS_TO_PUSH" | grep -c . 2>/dev/null || echo '0')"
+else
+  # No upstream, pushing new branch
+  COMMITS_TO_PUSH="$(git log --oneline HEAD 2>/dev/null || true)"
+  COMMITS_COUNT="$(echo "$COMMITS_TO_PUSH" | grep -c . 2>/dev/null || echo '0')"
+fi
+
+echo "  🌐 Remote: ${REMOTE}"
+echo "  🔗 URL: ${URL}"
+echo "  🌿 Branch: ${BRANCH}"
+echo "  📦 Commits to push: ${COMMITS_COUNT}"
+
+# Analyze each commit for impact
+CRITICAL_COUNT=0
+HIGH_COUNT=0
+
+while IFS= read -r line; do
+  if [ -n "$line" ]; then
+    commit="$(echo "$line" | cut -d' ' -f1)"
+    message="$(echo "$line" | cut -d' ' -f2-)"
+    
+    # Get files for this commit
+    files="$(git diff-tree --no-commit-id --name-only -r $commit 2>/dev/null || true)"
+    
+    # Check impact
+    impact="low"
+    for file in $files; do
+      case "$file" in
+        *runtime*|*auth*|*security*|*middleware*|*.env*)
+          impact="critical"
+          CRITICAL_COUNT=$((CRITICAL_COUNT + 1))
+          break
+          ;;
+        *api/*|*db/*|*config/*|*migrations/*)
+          if [ "$impact" != "critical" ]; then
+            impact="high"
+            HIGH_COUNT=$((HIGH_COUNT + 1))
+          fi
+          ;;
+      esac
+    done
+  fi
+done <<< "$COMMITS_TO_PUSH"
+
+# Generate push hash
+PUSH_HASH="$(echo "${REPO_PATH}:${BRANCH}:${COMMITS_COUNT}:$(date +%s)" | sha256sum | cut -d' ' -f1)"
+NODE_ID="${PUSH_HASH:0:16}"
+
+# Log
+TIMESTAMP="$(date -u +%s)"
+echo "${TIMESTAMP} ${NODE_ID} ${REPO_NAME} ${BRANCH} PRE_PUSH ${COMMITS_COUNT}_commits ${CRITICAL_COUNT}_critical ${HIGH_COUNT}_high" >> "${CRCDM_ROOT}/logs/${HOOK_NAME}.log"
+
+# Summary
+echo ""
+echo "  📊 Impact Summary:"
+if [ $CRITICAL_COUNT -gt 0 ]; then
+  echo "    🔴 Critical: ${CRITICAL_COUNT} commits"
+fi
+if [ $HIGH_COUNT -gt 0 ]; then
+  echo "    🟠 High: ${HIGH_COUNT} commits"
+fi
+if [ $CRITICAL_COUNT -eq 0 ] && [ $HIGH_COUNT -eq 0 ]; then
+  echo "    ⚪ Low/No critical impact"
+fi
+
+# Check for cross-repo dependencies
+CROSS_REPO_AFFECTED=""
+for repo in egos-lab 852 forja carteira-livre br-acc smartbuscas; do
+  if [ "$repo" != "$REPO_NAME" ] && [ -f "${CRCDM_ROOT}/cross-repo-deps.json" ]; then
+    if grep -q "\"from\": \"$REPO_NAME\".*\"to\": \"$repo\"" "${CRCDM_ROOT}/cross-repo-deps.json" 2>/dev/null || \
+       grep -q "\"from\": \"$repo\".*\"to\": \"$REPO_NAME\"" "${CRCDM_ROOT}/cross-repo-deps.json" 2>/dev/null; then
+      CROSS_REPO_AFFECTED="${CROSS_REPO_AFFECTED}${repo} "
+    fi
+  fi
+done
+
+if [ -n "$CROSS_REPO_AFFECTED" ]; then
+  echo ""
+  echo "  ⚠️  Cross-repo dependencies detected:"
+  for repo in $CROSS_REPO_AFFECTED; do
+    echo "     → May affect: $repo"
+  done
+  echo ""
+  echo "     Run after push: crcdm-sync"
+fi
+
+# Warning for critical changes
+if [ $CRITICAL_COUNT -gt 0 ]; then
+  echo ""
+  echo "  🔴 WARNING: Pushing ${CRITICAL_COUNT} CRITICAL impact commits!"
+  echo "     These changes affect core runtime/security components."
+  echo ""
+  echo "     Consider:"
+  echo "       1. Verify all tests pass"
+  echo "       2. Check dependent repos"
+  echo "       3. Have rollback plan ready"
+  echo ""
+fi
+
+# Create pre-push node in DAG
+if command -v jq >/dev/null 2>&1; then
+  DAG_FILE="${CRCDM_ROOT}/dag/dag.json"
+  if [ -f "$DAG_FILE" ]; then
+    NODE=$(jq -n \
+      --arg id "$NODE_ID" \
+      --arg repo "$REPO_NAME" \
+      --arg branch "$BRANCH" \
+      --arg remote "$REMOTE" \
+      --argjson commits "$COMMITS_COUNT" \
+      --argjson critical "$CRITICAL_COUNT" \
+      --argjson high "$HIGH_COUNT" \
+      --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+      '{id: $id, repo: $repo, branch: $branch, remote: $remote, commits: $commits, critical: $critical, high: $high, timestamp: $timestamp, type: "pre-push", status: "pending"}')
+    
+    jq --argjson node "$NODE" '.nodes += [$node]' "$DAG_FILE" > "${DAG_FILE}.tmp" && mv "${DAG_FILE}.tmp" "$DAG_FILE"
+  fi
+fi
+
+# Store for post-push
+STATE_FILE="${CRCDM_ROOT}/state/pre-push-${NODE_ID}.json"
+cat > "$STATE_FILE" <<EOF
+{
+  "node_id": "$NODE_ID",
+  "repo": "$REPO_NAME",
+  "branch": "$BRANCH",
+  "remote": "$REMOTE",
+  "commits_count": $COMMITS_COUNT,
+  "critical_count": $CRITICAL_COUNT,
+  "high_count": $HIGH_COUNT,
+  "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+}
+EOF
+
+echo ""
+echo "  📝 CRCDM Node: ${NODE_ID}"
+echo "✅ CRCDM [$HOOK_NAME] — Ready to push"

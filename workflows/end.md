@@ -57,35 +57,16 @@ The agent MUST verify documentation is current before finalizing.
 The agent MUST run a vulnerability scan / check `package.json` logic or `grep UNMITIGATED docs/gem-hunter/secops-*.md`.
 If an active CVE affecting the stack (e.g. CVE-2026-3910 for Chromium) is unaccounted for, the session CANNOT END until patched or explicitly overridden by the user.
 
-## Phase 4.2: SSOT Visit Audit (BLOCKING)
-
-The agent MUST verify that all files visited this session matching the DOMAIN_RULES.md §7 triggers are logged in `TASKS.md` before `/end` can complete.
-
-**Triggers requiring a log entry:**
-- Any file read outside the current repo (cross-repo visit)
-- Any file in `archive/`, `docs/`, `legacy/`, `old/`, `_current_handoffs/`
-- Any file discovered via search/grep (not directly navigated to)
-- Any file >2 directory levels from working root not referenced in TASKS.md/AGENTS.md/SYSTEM_MAP.md
-- Any file not committed in >30 days that was read this session
-
-**Check:** Review the session's file reads against these triggers.
-
-**The agent SHALL NOT finalize `/end` if:**
-- Any visit matching the above triggers has no corresponding `SSOT-VISIT` entry in `TASKS.md`
-
-**Resolution:** Add the missing log entry:
-```
-- [x] SSOT-VISIT [date]: [path] → [what was read] → [disposition tag]
-```
-
----
-
-## Phase 5: Disseminate Knowledge
+## Phase 5: Disseminate Knowledge + Vault Update
 
 Before ending, the agent MUST persist knowledge:
 | Condition | Required action |
 |------|----------------|
 | Any session | `create_memory()` with patterns, decisions, gotchas |
+| Any session | **[VAULT]** Update `~/Obsidian\ Vault/EGOS/MEMORY.md` Session Index + add session entry |
+| Any session | **[VAULT]** Create/update `~/Obsidian\ Vault/EGOS/03 - Sessions/Session YYYY-MM-DD.md` with accomplished/blocked/next |
+| Any session | **[VAULT]** Run `cd ~/egos && bun obsidian:sync` to sync latest docs |
+| New architecture decision | **[VAULT]** Add to `~/Obsidian\ Vault/EGOS/05 - Decisions/YYYY-MM-DD — [topic].md` |
 | SecOps Mitigated | Distribute patch pattern to `HARVEST.md` |
 | Meta-prompt trigger suspected | Check `.guarani/prompts/triggers.json` |
 | Architecture changed | Document in `.guarani/` or repo docs |
@@ -116,6 +97,26 @@ if [ "$UNCOMMITTED" -gt 0 ]; then
 fi
 ```
 
+## Phase 7.5: Focus Audit (SINGLE PURSUIT)
+
+The agent MUST calculate and display:
+```bash
+GUARD_SESSION=$(git log --oneline --since="6 hours ago" -- 'packages/guard-brasil/*' 'apps/api/*' 2>/dev/null | wc -l)
+TOTAL_SESSION=$(git log --oneline --since="6 hours ago" 2>/dev/null | wc -l)
+echo "Guard Brasil: $GUARD_SESSION / $TOTAL_SESSION commits"
+```
+
+Display focus audit:
+```text
+FOCUS AUDIT (Single Pursuit)
+============================
+Guard Brasil commits: [N] / [total] ([%])
+Gem Hunter commits:   [N] (max 3/week)
+Other:                [N]
+GTM advanced today?   [yes/no — outreach, demo, post, lead]
+Dispersal alert:      [if Guard Brasil < 60%: "VOCE ESTA DISPERSANDO"]
+```
+
 ## Phase 8: Session Summary
 
 The agent MUST display this structure in chat:
@@ -124,11 +125,12 @@ SESSION SUMMARY
 ===============
 Repo: [name]
 Commits: [N] this session
+Guard Brasil focus: [N]% of commits
 Security: [Patched CVEs or Clean]
 Files changed: [list key files]
 What was done: [2-4 lines]
-Next steps: [P0/P1 priorities]
-Meta-prompts used: [any triggered?]
+Next steps: [P0/P1 priorities — Guard Brasil FIRST]
+GTM today: [outreach/demo/post/lead or "none — DISPERSAL"]
 Context Tracker: [final CTX value/280] [zone emoji]
 Signed by: cascade-agent — [ISO8601]
 ```

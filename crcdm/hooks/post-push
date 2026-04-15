@@ -1,0 +1,153 @@
+#!/bin/sh
+# EGOS CRCDM Post-Push Hook
+# Records completed push, triggers cross-repo sync if needed
+# Part of Cross-Repo Change Detection Mesh (CRCDM)
+
+set -eu
+
+CRCDM_ROOT="${HOME}/.egos/crcdm"
+HOOK_NAME="post-push"
+REPO_PATH="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+REPO_NAME="$(basename "$REPO_PATH")"
+
+echo "🔍 CRCDM [$HOOK_NAME] — Recording push from $REPO_NAME..."
+
+# Get push info
+BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')"
+REMOTE="$(git config branch.$BRANCH.remote 2>/dev/null || echo 'origin')"
+UPSTREAM="${REMOTE}/${BRANCH}"
+
+# Get commits that were pushed
+COMMITS_PUSHED="$(git log --oneline ${UPSTREAM}..HEAD 2>/dev/null || git log --oneline -10 2>/dev/null || true)"
+COMMITS_COUNT="$(echo "$COMMITS_PUSHED" | grep -c . 2>/dev/null || echo '0')"
+
+# Generate push completion hash
+PUSH_HASH="$(echo "${REPO_PATH}:${BRANCH}:$(git rev-parse HEAD):$(date +%s)" | sha256sum | cut -d' ' -f1)"
+NODE_ID="${PUSH_HASH:0:16}"
+TIMESTAMP="$(date -u +%s)"
+
+# Check for pre-push state file
+PRE_PUSH_STATE="${CRCDM_ROOT}/state/pre-push-*.json"
+PRE_PUSH_DATA=""
+for file in $PRE_PUSH_STATE; do
+  if [ -f "$file" ]; then
+    PRE_PUSH_DATA="$file"
+    break
+  fi
+done
+
+CRITICAL_COUNT=0
+HIGH_COUNT=0
+if [ -n "$PRE_PUSH_DATA" ] && command -v jq >/dev/null 2>&1; then
+  CRITICAL_COUNT="$(jq -r '.critical_count // 0' "$PRE_PUSH_DATA" 2>/dev/null || echo '0')"
+  HIGH_COUNT="$(jq -r '.high_count // 0' "$PRE_PUSH_DATA" 2>/dev/null || echo '0')"
+fi
+
+# Log completion
+echo "${TIMESTAMP} ${NODE_ID} ${REPO_NAME} ${BRANCH} POST_PUSH ${COMMITS_COUNT}_commits completed" >> "${CRCDM_ROOT}/logs/${HOOK_NAME}.log"
+
+# Update DAG
+if command -v jq >/dev/null 2>&1; then
+  DAG_FILE="${CRCDM_ROOT}/dag/dag.json"
+  if [ -f "$DAG_FILE" ]; then
+    NODE=$(jq -n \
+      --arg id "$NODE_ID" \
+      --arg repo "$REPO_NAME" \
+      --arg branch "$BRANCH" \
+      --arg remote "$REMOTE" \
+      --argjson commits "$COMMITS_COUNT" \
+      --argjson critical "$CRITICAL_COUNT" \
+      --argjson high "$HIGH_COUNT" \
+      --arg upstream "$UPSTREAM" \
+      --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+      '{id: $id, repo: $repo, branch: $branch, remote: $remote, commits: $commits, critical: $critical, high: $high, upstream: $upstream, timestamp: $timestamp, type: "push", status: "completed"}')
+    
+    jq --argjson node "$NODE" '.nodes += [$node]' "$DAG_FILE" > "${DAG_FILE}.tmp" && mv "${DAG_FILE}.tmp" "$DAG_FILE"
+    
+    # If there was a pre-push node, create edge
+    if [ -n "$PRE_PUSH_DATA" ]; then
+      PRE_ID="$(jq -r '.node_id' "$PRE_PUSH_DATA" 2>/dev/null || echo '')"
+      if [ -n "$PRE_ID" ]; then
+        EDGE=$(jq -n \
+          --arg from "$PRE_ID" \
+          --arg to "$NODE_ID" \
+          --arg type "completes" \
+          '{from: $from, to: $to, type: $type, timestamp: "'"$(date -u +"%Y-%m-%dT%H:%M:%SZ")"'"}')
+        jq --argjson edge "$EDGE" '.edges += [$edge]' "$DAG_FILE" > "${DAG_FILE}.tmp" && mv "${DAG_FILE}.tmp" "$DAG_FILE"
+      fi
+    fi
+  fi
+fi
+
+# Summary
+echo "  ✅ Push recorded: ${NODE_ID}"
+echo "  🌿 Branch: ${BRANCH}"
+echo "  🌐 Remote: ${REMOTE}"
+echo "  📦 Commits: ${COMMITS_COUNT}"
+
+# Create notification for critical/high impact pushes
+if [ "$CRITICAL_COUNT" -gt 0 ] || [ "$HIGH_COUNT" -gt 0 ]; then
+  echo ""
+  echo "  🔔 High-impact push detected — creating notifications..."
+  
+  NOTIFICATION="${CRCDM_ROOT}/notifications/push-$(date +%s).json"
+  cat > "$NOTIFICATION" <<EOF
+{
+  "type": "high_impact_push",
+  "source": "$REPO_NAME",
+  "branch": "$BRANCH",
+  "commits": $COMMITS_COUNT,
+  "critical": $CRITICAL_COUNT,
+  "high": $HIGH_COUNT,
+  "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "node_id": "$NODE_ID",
+  "action_required": "Review dependent repositories"
+}
+EOF
+  
+  echo "  📝 Notification: $(basename "$NOTIFICATION")"
+  
+  # Show cross-repo impact
+  echo ""
+  echo "  🌐 Cross-Repo Impact Analysis:"
+  echo "  ───────────────────────────────────────────────"
+  
+  for repo in egos-lab 852 forja carteira-livre br-acc smartbuscas policia INPI; do
+    if [ "$repo" != "$REPO_NAME" ] && [ -d "/home/enio/$repo/.git" ]; then
+      # Check if this repo depends on current repo
+      if [ -f "${CRCDM_ROOT}/cross-repo-deps.json" ] && \
+         grep -qE "(\"from\": \"$REPO_NAME\".*\"to\": \"$repo\"|\"from\": \"$repo\".*\"to\": \"$REPO_NAME\")" "${CRCDM_ROOT}/cross-repo-deps.json" 2>/dev/null; then
+        echo "    ⚠️  $repo may need attention"
+      fi
+    fi
+  done
+  
+  echo "  ───────────────────────────────────────────────"
+  echo "  💡 Run: source ~/.egos_aliases && egos-sync-deps"
+fi
+
+# Update global state
+STATE_FILE="${CRCDM_ROOT}/state/last-push.json"
+cat > "$STATE_FILE" <<EOF
+{
+  "repo": "$REPO_NAME",
+  "branch": "$BRANCH",
+  "remote": "$REMOTE",
+  "commits": $COMMITS_COUNT,
+  "critical": $CRITICAL_COUNT,
+  "high": $HIGH_COUNT,
+  "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "node_id": "$NODE_ID"
+}
+EOF
+
+# Cleanup pre-push state
+if [ -n "$PRE_PUSH_DATA" ] && [ -f "$PRE_PUSH_DATA" ]; then
+  rm -f "$PRE_PUSH_DATA"
+fi
+
+echo ""
+echo "✅ CRCDM [$HOOK_NAME] — Complete"
+echo ""
+echo "  💡 View mesh status: crcdm status"
+echo "  💡 View recent changes: crcdm log"
