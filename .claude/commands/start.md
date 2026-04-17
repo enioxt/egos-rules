@@ -144,12 +144,27 @@ Verificar e testar (em paralelo quando possível):
 - NUNCA pular a fase INTEGRATIONS — é obrigatória em toda ativação
 
 ## 🔄 Session Init (T2.2 — INC-006 Sprint 1)
-**SEMPRE executar no início de /start:**
+**SEMPRE executar no início de /start (em paralelo):**
 ```bash
 bun /home/enio/egos/scripts/session-init.ts --reset
+bash /home/enio/egos/scripts/sync-review-queue.sh
 ```
-Reinicia contadores (turn_count, commit_count, elapsed_minutes) para a nova sessão.
-Se `[CHECKPOINT-NEEDED]` aparecer no output, reportar ao usuário antes de continuar.
+- `session-init --reset`: reinicia contadores da sessão
+- `sync-review-queue.sh`: puxa findings do VPS Hermes reviewer
+
+**Se output contiver `[CHECKPOINT-NEEDED]`:** reportar ao usuário antes de continuar.
+
+**Se output contiver `CRITICAL=N` onde N>0:** reportar imediatamente com detalhes:
+```bash
+cat ~/.egos/review-queue.jsonl | python3 -c "
+import sys,json
+for l in sys.stdin:
+    e=json.loads(l)
+    if e.get('severity') in ('CRITICAL','HIGH'):
+        print(f\"[{e['severity']}] {e['commit'][:7]} {e['subject']}\")
+        for f in e.get('findings',[]): print(f'  → {f}')
+"
+```
 
 **Ao fim de /start, verificar estado:**
 ```bash
