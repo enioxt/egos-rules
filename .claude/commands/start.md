@@ -46,7 +46,16 @@ Verificar e testar (em paralelo quando possível):
 1. **Memory index:** Ler primeiras 30 linhas de `~/.claude/projects/-home-enio-egos/memory/MEMORY.md` — mostra última sessão + sprint atual
 2. **Latest handoff:** `ls -t docs/_current_handoffs/*.md 2>/dev/null | head -1` → ler primeiras 40 linhas (accomplished/blockers/next)
 3. **Latest job reports:** `ls -t docs/jobs/*.md 2>/dev/null | head -3` → ler primeiras 5 linhas de cada (CCR outputs)
-4. **Context signals (SKILLS-002):** Ler últimas 10 linhas de `~/.egos/context-signals.jsonl` — cada linha é `{ts, repo, signal, detail}`. Se `signal=governance_change` → propor `/sync`. Se `signal=hook_change` → verificar hooks. Agrupa por repo para mostrar atividade recente.
+4. **Context signals + skill suggestions (SKILL-AUTO-001):** Rodar o skill-resolver para obter sugestões baseadas em sinais recentes + git:
+   ```bash
+   bun /home/enio/egos/scripts/skill-resolver.ts 2>/dev/null || true
+   ```
+   Cada linha `[SKILL-SUGGEST] /skillname PRIORITY — reason` indica uma skill a invocar. Invocar as de CRITICAL/ALWAYS imediatamente; HIGH/MEDIUM apresentar ao usuário.
+   Para matching com o primeiro prompt do usuário:
+   ```bash
+   bun /home/enio/egos/scripts/skill-resolver.ts --prompt="<primeiro prompt>" 2>/dev/null || true
+   ```
+5. **Context signals raw (debug):** Agrupar por repo para mostrar atividade recente:
    ```bash
    tail -10 ~/.egos/context-signals.jsonl 2>/dev/null | python3 -c "
    import sys, json
@@ -55,9 +64,9 @@ Verificar e testar (em paralelo quando possível):
    for s in signals:
        repos.setdefault(s['repo'], []).append(s['signal'])
    for r, sigs in repos.items():
-       print(f'  {r}: {', '.join(sigs)}')" 2>/dev/null || true
+       print(f'  {r}: {\", \".join(sigs)}')" 2>/dev/null || true
    ```
-5. **Resumo no output:** Incluir seção `## 🧠 Contexto Recuperado` com: última sessão ID, tasks concluídas, blockers ativos, repos ativos (from context signals)
+6. **Resumo no output:** Incluir seção `## 🧠 Contexto Recuperado` com: última sessão ID, tasks concluídas, blockers ativos, repos ativos (from context signals), skills sugeridas
 
 **Se MEMORY.md menciona theater/cleanup pendente:** flaggar como P0 na seção Propostas.
 
@@ -149,8 +158,10 @@ Verificar e testar (em paralelo quando possível):
 bun /home/enio/egos/scripts/session-init.ts --reset
 bash /home/enio/egos/scripts/sync-review-queue.sh
 ```
-- `session-init --reset`: reinicia contadores da sessão
+- `session-init --reset`: reinicia contadores da sessão + emite `[SKILL-SUGGEST]` via skill-resolver (SKILL-AUTO-001)
 - `sync-review-queue.sh`: puxa findings do VPS Hermes reviewer
+
+**Se output contiver `[SKILL-SUGGEST]`:** coletar todas as linhas e apresentar ao usuário como ações recomendadas. CRITICAL/ALWAYS = invocar imediatamente; HIGH = recomendar fortemente; MEDIUM/LOW = mencionar.
 
 **Se output contiver `[CHECKPOINT-NEEDED]`:** reportar ao usuário antes de continuar.
 
