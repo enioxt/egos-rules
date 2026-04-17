@@ -1,6 +1,16 @@
 ---
 name: "deep-research"
 description: "Master protocol for full-repository deep research, mapping, contextualization, and auto-healing."
+triggers:
+  - "deep research"
+  - "pesquisa profunda"
+  - "mapear repositório"
+  - "auto-heal repo"
+  - "analisar repo completo"
+  - "full repository analysis"
+anti_triggers:
+  - "research paper"
+  - "web research"
 ---
 
 # Deep Research & Auto-Heal Protocol

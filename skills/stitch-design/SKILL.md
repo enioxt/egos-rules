@@ -1,6 +1,16 @@
 ---
 name: Stitch Design Workflow
 description: Protocol for generating and validating UI components using the Stitch MCP.
+triggers:
+  - "stitch"
+  - "ui component"
+  - "gerar componente"
+  - "design system"
+  - "brand import"
+  - "ui figma"
+anti_triggers:
+  - "git stitch"
+  - "costurar"
 ---
 
 # 🧵 Stitch Design Workflow
