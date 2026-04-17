@@ -142,3 +142,16 @@ Verificar e testar (em paralelo quando possível):
 - Sempre separar: fatos verificados, inferências, propostas
 - Se integração falhar, CRIAR TASK (não ignorar)
 - NUNCA pular a fase INTEGRATIONS — é obrigatória em toda ativação
+
+## 🔄 Session Init (T2.2 — INC-006 Sprint 1)
+**SEMPRE executar no início de /start:**
+```bash
+bun /home/enio/egos/scripts/session-init.ts --reset
+```
+Reinicia contadores (turn_count, commit_count, elapsed_minutes) para a nova sessão.
+Se `[CHECKPOINT-NEEDED]` aparecer no output, reportar ao usuário antes de continuar.
+
+**Ao fim de /start, verificar estado:**
+```bash
+bun /home/enio/egos/scripts/session-init.ts --status
+```
