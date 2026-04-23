@@ -2,6 +2,9 @@
 
 ## Fonte canônica
 
+- kernel versionado: `/home/enio/egos/scripts/egos-home/hooks/`
+- mirror de instalação: `/home/enio/.egos/hooks/`
+
 - `pre-commit` — hook universal do ecossistema EGOS
 - `install-universal-hook.sh` — instalador em lote ou por repo
 
@@ -44,6 +47,15 @@ Situação atual:
 
 - Se o repo não tem hook ou tem hook mínimo, instalar o universal imediatamente.
 - Se o repo tem hook robusto específico, migrar com wrapper ou convergência funcional, não sobrescrever às cegas.
+
+## Verificação read-only
+
+```bash
+cd /home/enio/egos
+bun run governance:runtime:smoke
+bun run governance:runtime:report
+bun run claude:telemetry
+```
 
 ## Instalação em lote
 

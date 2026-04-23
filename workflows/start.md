@@ -129,33 +129,6 @@ For each agent in agents.json:
 - Extrair insights da sessão para HARVEST.md
 - Atualizar ECOSYSTEM_REGISTRY.md se houve mudança em agents
 
-### 9. CODEX REVIEWS (OBRIGATÓRIO — ler reviews pendentes)
-
-```bash
-bash ~/.egos/scripts/codex-fetch-reviews.sh
-```
-
-Para cada review FETCHED em `~/.egos/codex-reviews/`:
-1. Ler o diff
-2. Avaliar CADA sugestão contra `~/.egos/guarani/CODEX_REVIEW_CRITERIA.md`
-3. Auto-skip sugestões que violam frozen zones, SSOT, ou regras de segurança
-4. Pontuar sugestões válidas (escala 0-5 por dimensão × peso)
-5. Apresentar a Enio apenas as sugestões com score ≥ 60 (APPLY/CONSIDER)
-6. Registrar padrões em `~/.egos/codex-reviews/patterns.md`
-7. Marcar review como `evaluated_by_claude: true` no arquivo
-
-**Formato de relatório de review:**
-```
-## 🤖 Codex Reviews Pendentes
-| Arquivo | Sugestão | Score | Decisão |
-|---------|----------|-------|---------|
-| path/file.ts:42 | Fix missing return type | 78 | CONSIDER |
-| ...              | ...                     | ... | ...      |
-Padrões detectados: [lista]
-```
-
-Se não houver reviews: `✅ Nenhum review Codex pendente`
-
 ## Formato de saída obrigatório
 
 ```

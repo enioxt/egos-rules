@@ -17,8 +17,7 @@
 ├── meta/                   # Meta-prompts completos (compostos de átomos)
 │   ├── universal-strategist.md
 │   ├── brainet-collective.md
-│   ├── mycelium-orchestrator.md
-│   └── ecosystem-audit.md
+│   └── (mycelium-orchestrator.md, ecosystem-audit.md → archived, see .guarani/_archived/)
 └── (philosophy/)           # Referência: ../.guarani/philosophy/
 ```
 
@@ -32,8 +31,8 @@ Domínio-específico (Intelink): `apps/intelink/lib/prompts/` — mantém regist
 |----|------|---------|----------|------|
 | `strategy.universal` | Universal Strategist v4 | `meta/universal-strategist.md` | Decisão estratégica, negociação, conflito, investimento | Todos |
 | `intelligence.brainet` | Brainet Collective | `meta/brainet-collective.md` | Brainstorm coletivo, dissolução de ego, inteligência de rede | Todos |
-| `systems.mycelium` | Mycelium Orchestrator | `meta/mycelium-orchestrator.md` | Sync sistêmico, mesh, auto-melhoria, teia, automação recursiva | Todos |
-| `audit.ecosystem` | Ecosystem Audit | `meta/ecosystem-audit.md` | Auditoria de repo, onboarding, análise cross-repo | Todos |
+| `systems.mycelium` | Mycelium Orchestrator | ~~`meta/mycelium-orchestrator.md`~~ *archived* | Sync sistêmico, mesh, auto-melhoria | Todos |
+| `audit.ecosystem` | Ecosystem Audit | ~~`meta/ecosystem-audit.md`~~ *archived* | Auditoria de repo, onboarding | Todos |
 | `debate.tsun-cha` | Tsun-Cha Protocol | `philosophy/TSUN_CHA_PROTOCOL.md` | Questionar hipótese, verificar lógica, confronto dialético | Intelink, Agents |
 | `extraction.police` | Document Extractor | *(leaf: intelink)* `lib/intelink/meta-prompts.ts` | Extração de BO, depoimento, CS | Intelink |
 | `engineering.prompt` | Prompt Pipeline | `.windsurf/workflows/prompt.md` | Criando novos prompts | Todos |
@@ -85,7 +84,7 @@ Triggers automáticos ativam o prompt certo no contexto certo:
 
 ## Referências Cruzadas
 
-- **Ecosystem Audit:** `.guarani/prompts/meta/ecosystem-audit.md`
+- **Ecosystem Audit:** ~~`.guarani/prompts/meta/ecosystem-audit.md`~~ *archived — use `/audit` slash skill instead*
 - **Tsun-Cha Protocol:** `.guarani/philosophy/TSUN_CHA_PROTOCOL.md`
 - **Prompt Workflow:** `.windsurf/workflows/prompt.md`
 - **Stitch Workflow:** `.windsurf/workflows/stitch.md`

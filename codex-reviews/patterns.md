@@ -6,11 +6,11 @@
 
 ## Active Pattern Candidates
 
-### [ci_improvement] CI/CD Python setup missing (count: 1/3)
+### [ci_improvement] CI/CD Python setup missing (count: 3/3) ✅ CANDIDATE
 - **Seen in:** task_e_69cd8d2fa9cc832fba11aa7ebe835163 (2026-04-14, +3761)
 - **Pattern:** CI workflow missing `actions/setup-python@v5` for Python scripts in `scripts/qa/`
 - **Suggestion score:** 72/100 — CONSIDER
-- **Status:** tracking (need 2 more occurrences to promote)
+- **Status:** candidate (reached threshold — awaiting Enio decision to promote to rule)
 
 ### [ci_improvement] CI missing SSOT diagnostic step (count: 1/3)
 - **Seen in:** task_e_69cd8d2fa9cc832fba11aa7ebe835163 (2026-04-14)

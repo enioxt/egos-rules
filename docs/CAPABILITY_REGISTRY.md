@@ -95,9 +95,12 @@ Each capability has:
 > Demo: `bun run packages/guard-brasil/src/demo.ts`
 > Tests: 20/20 pass (`bun test packages/guard-brasil/src/guard.test.ts`)
 
+| **Chatbot Gateway (Hybrid)** | `egos-gateway/src/routes/chat.ts` *(PLANNED — CHAT-GW-002)* | C | — | 852, forja | `chatbot`, `gateway`, `routing`, `proxy` |
+| **Chatbot Discovery Endpoint** | `egos/packages/chatbot-core/src/discovery.ts` *(PLANNED — CHAT-GW-001)* | C | — | forja, 852 | `chatbot`, `discovery`, `registry` |
+
 ### Canonical Standard
 
-> **`egos/docs/modules/CHATBOT_SSOT.md`** — Every chatbot MUST follow this spec.
+> **`egos/docs/modules/CHATBOT_SSOT.md`** — Every chatbot MUST follow this spec. Architecture: Opção C (Hybrid Gateway) — stateless proxy → independent chatbots.
 
 ---
 
@@ -151,16 +154,16 @@ Each capability has:
 | Orchestration Pipeline (7-phase) | `.guarani/orchestration/PIPELINE.md` | A | ALL | — | `governance`, `pipeline`, `frozen` |
 | Frozen Zones | `egos/.windsurfrules` | A | ALL | — | `governance`, `frozen`, `security` |
 | **SSOT Visit Protocol v2** | `.guarani/orchestration/DOMAIN_RULES.md §7` | A | egos (kernel law) | ALL | `governance`, `ssot`, `cross-repo`, `intra-repo` |
-| **Agent Claim Contract** | `.guarani/orchestration/AGENT_CLAIM_CONTRACT.md` | A | egos | ALL | `governance`, `agent`, `taxonomy`, `proof` |
+| ~~Agent Claim Contract~~ | ~~`.guarani/orchestration/AGENT_CLAIM_CONTRACT.md`~~ | ARCHIVED | egos | — | replaced by `AGENTS.md §R2` |
 | **Agent Claim Linter** | `scripts/agent-claim-lint.ts` | A | egos | egos-lab | `governance`, `agent`, `lint`, `ci` |
 | **Ecosystem Classification Registry** | `docs/ECOSYSTEM_CLASSIFICATION_REGISTRY.md` | A | egos | ALL | `governance`, `classification`, `ssot` |
 | **Workflow Inheritance Report** | `docs/WORKFLOW_INHERITANCE_REPORT.md` | B | egos | — | `governance`, `workflow`, `inheritance` |
 | **Workflow Sync Check** | `scripts/workflow-sync-check.sh` | B | egos | ALL | `governance`, `workflow`, `drift` |
-| **Clarity Review Gate** | `.guarani/orchestration/CLARITY_REVIEW.md` | A | egos | ALL | `governance`, `review`, `monthly` |
+| ~~Clarity Review Gate~~ | ~~`.guarani/orchestration/CLARITY_REVIEW.md`~~ | ARCHIVED | egos | — | `governance`, `review`, `monthly` |
 | **Mycelium Truth Report** | `docs/MYCELIUM_TRUTH_REPORT.md` | A | egos | — | `governance`, `mycelium`, `audit` |
 | **LLM Orchestration Matrix** | `.guarani/orchestration/LLM_ORCHESTRATION_MATRIX.md` | A | egos | ALL | `ai`, `orchestration`, `routing` |
-| **Benchmark Enforcement** | `.guarani/orchestration/BENCHMARK_ENFORCEMENT.md` | A | egos | ALL | `governance`, `multi-agent`, `enforcement` |
-| **QA Loop Contract** | `.guarani/orchestration/QA_LOOP_CONTRACT.md` | A | egos | ALL | `governance`, `qa`, `contract` |
+| ~~Benchmark Enforcement~~ | ~~`.guarani/orchestration/BENCHMARK_ENFORCEMENT.md`~~ | ARCHIVED | egos | — | `governance`, `multi-agent`, `enforcement` |
+| ~~QA Loop Contract~~ | ~~`.guarani/orchestration/QA_LOOP_CONTRACT.md`~~ | ARCHIVED | egos | — | `governance`, `qa`, `contract` |
 | **Operator Map** | `docs/OPERATOR_MAP.md` | A | egos | — | `governance`, `control-plane`, `founder` |
 | **Kernel Consolidation Plan** | `docs/KERNEL_CONSOLIDATION_PLAN.md` | A | egos | — | `governance`, `consolidation`, `migration` |
 | **SSOT Registry v2** | `docs/SSOT_REGISTRY.md` | A | egos | ALL | `governance`, `ssot`, `30-domains` |
@@ -204,6 +207,8 @@ Each capability has:
 | Vercel Auto-Deploy | `egos-lab/apps/egos-web` | A | egos-lab | — | `deploy`, `vercel` |
 | Brand Import (Stitch) | `852: npm run brand:import` | B | 852 | — | `deploy`, `assets`, `stitch` |
 | Smoke Tests (curl) | `852: npm run smoke:public` | A | 852 | ALL VPS projects | `deploy`, `smoke`, `testing` |
+| egos-site deploy + network attach | `egos/infra/egos-site/deploy.sh` | A | egos (LIVE: egos.ia.br) | — | `deploy`, `docker`, `caddy` |
+| egos-site health monitor (cron 5min) | `egos/infra/egos-site/health-monitor.sh` | A | egos (cron on VPS) | — | `deploy`, `monitor`, `auto-recovery` |
 
 ---
 
@@ -273,7 +278,7 @@ Each capability has:
 
 | Capability | SSOT | Quality | Adopted By | Should Adopt | Tags |
 |-----------|------|---------|------------|-------------|------|
-| Integration Release Contract | `egos/.guarani/orchestration/INTEGRATION_RELEASE_CONTRACT.md` | A | egos | ALL | `integrations`, `governance`, `release-gate` |
+| ~~Integration Release Contract~~ | ~~`egos/.guarani/orchestration/INTEGRATION_RELEASE_CONTRACT.md`~~ | ARCHIVED | egos | — | replaced by `bun run integration:check` + manifests |
 | Chatbot Production Playbook | `852/docs/CHATBOT_PRODUCTION_REVERSE_ENGINEERING.md` | A | 852 | ALL new chatbots | `docs`, `playbook`, `deploy` |
 | Archaeology Digger Agent | `egos/agents/agents/archaeology-digger.ts` | A | egos | egos-lab | `docs`, `archaeology`, `agent` |
 | Evolution Tree (interactive) | `egos/docs/evolution-tree.html` | A | egos | — | `docs`, `visualization`, `history` |
@@ -425,7 +430,7 @@ Each capability has:
 
 ### Existing MCPs Already Covering Needs (DO NOT REBUILD)
 
-| MCP | Coverage | Used By |
+| MCP | Provides | Used By |
 |-----|---------|---------|
 | `filesystem` | File operations | All IDE agents |
 | `memory` | Knowledge graph | All IDE agents |
@@ -746,6 +751,8 @@ or HARVEST.md are missing, it skips silently. This prevents hook failures from b
 | AI Discovery Layer | `apps/egos-site/src/server.ts` (GET /llms.txt, GET /robots.txt) | A | egos (LIVE: egos.ia.br) | `seo`, `ai-discovery`, `llms.txt`, `robots.txt` |
 | Timeline KB Sync | `agents/agents/article-writer.ts#publishDraft` | A | egos (LIVE) | `timeline`, `knowledge-base`, `wiki`, `sync` |
 
+**Article System v1.1 (2026-04-17):** ARTICLE_VOICE.md v1.1 — 800-word floor enforced, bilingual (PT-BR primary + EN cultural translation) mandatory, draft stub flow (`docs/drafts/<slug>.md` → Supabase on approval), epistemic_status (seedling/budding/evergreen), tag taxonomy (§9 ARTICLE_VOICE), "Related in EGOS" block obrigatório. Schema: `word_count` + `tags` columns added via migration `20260417_article_schema_v1.sql`. 10 draft stubs ready in `docs/drafts/`.
+
 **Timeline Publishing Pipeline:** `article-writer.ts` generates LLM drafts from commits, Guard Brasil PII check, `publish.sh --approve` moves draft → article + KB. Cron 03:00 UTC daily via `scripts/timeline-cron-daily.sh`.
 
 **Rich Article Rendering:** egos-site renders articles with JSON-LD `schema.org` metadata, TOC sidebar, heading anchors, code copy buttons, reading progress bar, related articles, FAQ accordion. Server: `apps/egos-site/src/server.ts`.
@@ -769,6 +776,21 @@ or HARVEST.md are missing, it skips silently. This prevents hook failures from b
 - Preference summary injected into LLM system prompt for next generation
 
 **User flow:** Telegram inline keyboard → [A Bold][B Conv][C Tech][Edit A][Edit B][Edit C][Skip] → type edited text if editing → auto-posts to X after approval.
+
+### Timeline Bilingual Publishing (2026-04-16) — LIVE/VERIFIED
+
+**What:** Full bilingual (PT-BR + EN) article pipeline with graph interconnection layer.
+
+**Components:**
+- `agents/agents/article-writer.ts` — added `--lang pt-br|en`, `--translation-of <id>`, fetches prior articles + wiki pages for graph context (builds_on, opens_questions, wiki_refs, epistemic_status)
+- `scripts/insert-draft.ts` — inserts manually-written markdown drafts (with YAML frontmatter) into Supabase `timeline_drafts`. Supports `--translation-of` for bilingual pairing.
+- `scripts/x-post.ts` — posts article as 3-tweet X.com thread. OAuth 1.0a. HITL confirmation. Bilingual URLs: `/timeline/<slug>` (PT) + `/en/timeline/<slug>` (EN).
+- `docs/social/ARTICLE_VOICE.md` v1.0 — SSOT for voice, structure, footer, interconnection, epistemic status, bilingual rules, canonical tags
+- `supabase/migrations/20260416_timeline_interconnection.sql` — adds `lang`, `builds_on`, `opens_questions`, `wiki_refs`, `epistemic_status`, `translation_of` to `timeline_drafts` + `timeline_articles`. `timeline_backlinks` view.
+
+**First article:** `20260416-doc-drift-shield` — PT-BR (9d5c8416) + EN (eebece09), pending approval in HQ.
+
+**Epistemic status lifecycle:** seedling 🌱 → budding 🌿 → evergreen 🌳 (per ARTICLE_VOICE.md §8)
 
 ## §25 — Auto-Disseminate Pipeline (2026-04-08)
 
@@ -1001,3 +1023,51 @@ Differentiator: LGPD compliance (Guard Brasil), audit trail, frozen zones, spec-
 **Stack:** HTML5 + vanilla JS + ffmpeg.wasm (814.ffmpeg.js) | **Headers:** COOP + COEP (SharedArrayBuffer)
 
 **Não reimplementar:** o arquivo único é `/home/enio/video-editor/index.html` (~1700 linhas).
+
+---
+
+## §35 — Consulting Framework — KB-as-a-Service + Debrief Pipeline (2026-04-15)
+
+**What:** End-to-end consulting system for Brazilian sector professionals (advocacia, contabilidade, agronomia, saúde, polícia). Includes client onboarding, 5-layer debrief pipeline, trust page, and LGPD compliance API.
+
+**Repos:** `egos` (kernel), `apps/egos-gateway`, `apps/trust-page`
+**URLs:** `trust.egos.ia.br` (trust page), `api.egos.ia.br/api/lgpd/*` (LGPD API)
+
+**Components:**
+- **Trust Page** (`apps/trust-page/`): Next.js 15 standalone — landing, how-it-works, pricing, LGPD policy, sub-processors, security, status, client dashboard (`/clients/[slug]`)
+- **Debrief Pipeline** (`scripts/debrief/pipeline.ts`): 5-layer audio→KB pipeline
+  - L1: Groq Whisper transcription (pt)
+  - L2: Gemini Flash sector-context correction
+  - L3: Qwen-plus JSON extraction (DebriefInsights schema)
+  - L4: Supabase `egos_wiki_pages` cross-reference
+  - L5: File persistence + `debrief_sessions` patch
+- **LGPD Compliance API** (`apps/egos-gateway/src/channels/lgpd.ts`): `GET /api/lgpd/export/:slug`, `GET /api/lgpd/report/:slug`, `POST /api/lgpd/delete/:slug`, `GET /api/lgpd/dsrform`
+- **Client Dashboard** (`apps/trust-page/app/clients/[slug]/page.tsx`): KB stats, budget progress, category breakdown, LGPD rights
+- **KB Seed** (`scripts/kbs/seed-egos-advocacia.ts`): 75 advocacia KB pages seeded in Supabase
+
+**DB Tables (Supabase `lhscgsqhiooyatkebose`):**
+- `kb_pages`: tenant, title, content, category, source_url, tags, quality_score, slug — RLS per tenant
+- `consulting_clients`: slug, name, sector, api_budget_brl, api_used_brl, google_refresh_token, active
+- `debrief_sessions`: client_slug, meeting_date, transcript, insights, gaps, status
+- `debrief_questions`: client_slug, question, layer (L3 extraction schema)
+
+**CLI:** `bun scripts/debrief/pipeline.ts --client advocacia-1 --audio meeting.mp3 [--dry]`
+**CLI:** `bun scripts/kbs/seed-egos-advocacia.ts [--dry-run]`
+
+**LGPD Auth:** Bearer `LGPD_AUTH_TOKEN` (admin) or `${slug}-lgpd-access` (client self-service)
+
+**Não reimplementar:** pipeline completo funcional. Tabelas já criadas. Seeds aplicados. Google OAuth integrado no orchestrator (tools 16–19).
+
+**Novos componentes (2026-04-16):**
+- **WhatsApp Onboarding Bot** — chip dedicado + bot qualificação mini-DPIO (5-7 perguntas, score ≥25 gate) + `notify_human` tool + whitelist por tenant. Spec: `docs/strategy/appendix/WHATSAPP_ONBOARDING_GUIDE.md`
+- **Retention Cron** (`scripts/consulting/retention-cron.ts`): LGPD art.16 — deleta dados >6 meses de clientes inativos
+- **PJe Demo** (`scripts/demos/pje-demo.ts`): Demo seed 8 KB pages + 2 queries IA (<10s)
+- **Contrato Template** (`docs/strategy/CONTRATO_SERVICO_TEMPLATE.md`): 9 cláusulas + LGPD + subprocessadores
+- **DataFlow SVG** (`apps/trust-page/app/components/DataFlowSVG.tsx`): Pipeline visual interativo 5 nós
+- **Kit instalação** (planned): VS Code + Claude Code ($20/mês embutido) + Obsidian + Notion
+- **Ratio patterns absorbed** (planned): Hybrid Search RRF, Citation Verification, Anti-Sycophancy Guard, Token Accounting per-query
+
+**Novos componentes (2026-04-17 — esta sessão):**
+- **Skill Resolver** (`scripts/skill-resolver.ts`): SKILL-AUTO-001 — lê context-signals.jsonl + git log + prompt text → emite `[SKILL-SUGGEST] /skill PRIORITY — reason`. Integrado ao session-init --reset. Trigger patterns: §18 completo (PT+EN).
+- **Recency Decay KB Search** (`supabase/migrations/20260417_kb_recency_decay.sql`): RATIO-ABSORB-005 — `match_kb_hybrid` com `decay_rate float default 0.01`, `final_score = rrf_score * exp(-0.01 * days_since_update)`. Half-life ≈70 dias. `decay_rate=0` desativa.
+- **Content Track** (TASKS.md §CONTENT TRACK): Pipeline editorial completo — ART-001..008 + X-001..004 + TL-001..004 + SITE-010..013 + TOP-011..018. Foco: artigos técnicos reais → threads X.com → egos.ia.br/timeline.

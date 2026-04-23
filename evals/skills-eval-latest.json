@@ -1,0 +1,78 @@
+{
+  "timestamp": "2026-04-17T02:56:20.125Z",
+  "overallPassRate": 1,
+  "reports": [
+    {
+      "skill": "kbs-discovery",
+      "totalPositive": 9,
+      "passedPositive": 9,
+      "totalNegative": 4,
+      "passedNegative": 4,
+      "passRate": 1,
+      "failures": []
+    },
+    {
+      "skill": "guard-brasil",
+      "totalPositive": 9,
+      "passedPositive": 9,
+      "totalNegative": 2,
+      "passedNegative": 2,
+      "passRate": 1,
+      "failures": []
+    },
+    {
+      "skill": "egos-governance",
+      "totalPositive": 8,
+      "passedPositive": 8,
+      "totalNegative": 2,
+      "passedNegative": 2,
+      "passRate": 1,
+      "failures": []
+    },
+    {
+      "skill": "timeline-article",
+      "totalPositive": 10,
+      "passedPositive": 10,
+      "totalNegative": 3,
+      "passedNegative": 3,
+      "passRate": 1,
+      "failures": []
+    },
+    {
+      "skill": "consulting-onboarding",
+      "totalPositive": 10,
+      "passedPositive": 10,
+      "totalNegative": 4,
+      "passedNegative": 4,
+      "passRate": 1,
+      "failures": []
+    },
+    {
+      "skill": "site-reliability",
+      "totalPositive": 10,
+      "passedPositive": 10,
+      "totalNegative": 3,
+      "passedNegative": 3,
+      "passRate": 1,
+      "failures": []
+    },
+    {
+      "skill": "Stitch Design Workflow",
+      "totalPositive": 6,
+      "passedPositive": 6,
+      "totalNegative": 2,
+      "passedNegative": 2,
+      "passRate": 1,
+      "failures": []
+    },
+    {
+      "skill": "deep-research",
+      "totalPositive": 6,
+      "passedPositive": 6,
+      "totalNegative": 2,
+      "passedNegative": 2,
+      "passRate": 1,
+      "failures": []
+    }
+  ]
+}

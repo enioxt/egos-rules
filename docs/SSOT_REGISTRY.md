@@ -52,7 +52,7 @@
 | Telemetry schema | `egos/docs/TELEMETRY_SSOT.md` | enioxt | Update when telemetry fields change; consumers must implement | 2026-03-30 |
 | Telemetry runtime | `egos/packages/shared/src/telemetry.ts` | enioxt | Implements TELEMETRY_SSOT.md contract; dual output (Supabase + JSON logs) | 2026-03-30 |
 | WhatsApp integration | `egos/docs/knowledge/WHATSAPP_SSOT.md` | enioxt | kernel_canonical; validated 2026-03-30 with forja-notifications | 2026-03-30 |
-| Integration release gate | `egos/.guarani/orchestration/INTEGRATION_RELEASE_CONTRACT.md` | enioxt | Update when new integration surface is added; `bun run integration:check` | 2026-03-30 |
+| Integration release gate | `egos/integrations/manifests/` | enioxt | Update when new integration surface is added; `bun run integration:check` (INTEGRATION_RELEASE_CONTRACT.md archived) | 2026-04-18 |
 | Integration manifests | `egos/integrations/manifests/` | enioxt | New bundle = new manifest; validated via `integration:check` | 2026-03-30 |
 | BRACC Neo4j boundary | `br-acc/` + `docs/ECOSYSTEM_CLASSIFICATION_REGISTRY.md` | enioxt | leaf_local; BRACC remains standalone OSINT and must not be merged into kernel Mycelium/reference-graph surfaces | 2026-04-06 |
 | Intelink v3 (SSOT canônico) | `/home/enio/egos-inteligencia/` | enioxt | leaf_local; repo separado, docker-compose próprio, api Python + frontend Next.js + neo4j. **DECISÃO 2026-04-09**: este é o único repositório canônico. `egos-lab/apps/intelink` = ARCHIVED. `/home/enio/INTELINK` = ARCHIVED (migração incompleta). `egos-archive/v2/EGOSv2/intelink-*` = LIXO | 2026-04-09 |
@@ -89,23 +89,21 @@
 
 ## Per-Repo SSOT Adoption Status
 
-| Repo | Grade | AGENTS.md | TASKS.md | SSOT Pointer | Notes |
-|------|-------|-----------|----------|--------------|-------|
-| `egos` | A | ✅ | ✅ | ✅ `docs/SSOT_REGISTRY.md` is canonical | Kernel. All global SSOT lives here. |
-| `egos-lab` | B | ✅ | ✅ | ⚠ Partial — lab claims some global truth without kernel pointer | Needs LAB-ARCHIVE-006 |
-| `br-acc` | C | ✅ | ✅ | ❌ No pointer to kernel SSOT_REGISTRY | AGENTS.md + TASKS.md exist but no SSOT declarations |
-| `carteira-livre` | C | ✅ | ✅ | ❌ No pointer to kernel SSOT_REGISTRY | Has docs/ but no SSOT contract |
-| `852` | C | ✅ | ✅ | ❌ No pointer to kernel SSOT_REGISTRY | Has docker-compose, no SSOT contract |
-| `commons` | D | ❌ | ❌ | ❌ No SSOT declarations at all | Needs AGENTS.md + TASKS.md + pointer |
-| `forja` | B | ✅ | ✅ | ⚠ Has INTEGRATIONS_MEMORY.md but no kernel SSOT pointer | Close to A — add pointer |
-| `policia` | C | ? | ? | ❌ Not verified | Needs /start audit |
-| `INPI` | D | ❌ | ? | ❌ Not verified | Has app structure, no governance docs visible |
+> Assessment method: `find /home/enio/<repo> -name AGENTS.md -o -name TASKS.md` + grep for SSOT_REGISTRY pointer. Spot-checked 2026-04-06, confirmed AGENTS.md propagation 2026-04-17.
 
-**Grade Scale:**
-- A: All required SSOTs present, kernel pointer declared, freshness rule exists
-- B: Most surfaces present, one or two missing pieces
-- C: AGENTS.md + TASKS.md present, no SSOT registry pointer
-- D: Missing core governance surfaces
+| Repo | AGENTS.md | TASKS.md | SSOT Pointer | Status | Notes |
+|------|-----------|----------|--------------|--------|-------|
+| `egos` | ✅ | ✅ | ✅ `docs/SSOT_REGISTRY.md` is canonical | Full SSOT | Kernel. All global SSOT lives here. |
+| `egos-lab` | ✅ | ✅ | ⚠ Partial — lab claims some global truth without kernel pointer | Partial SSOT | Needs LAB-ARCHIVE-006 |
+| `br-acc` | ✅ | ✅ | ❌ No pointer to kernel SSOT_REGISTRY | Missing pointer | AGENTS.md + TASKS.md exist but no SSOT declarations |
+| `carteira-livre` | ✅ | ✅ | ❌ No pointer to kernel SSOT_REGISTRY | Missing pointer | Has docs/ but no SSOT contract |
+| `852` | ✅ | ✅ | ❌ No pointer to kernel SSOT_REGISTRY | Missing pointer | Has docker-compose, no SSOT contract |
+| `commons` | ❌ | ❌ | ❌ No SSOT declarations at all | No governance | Needs AGENTS.md + TASKS.md + pointer |
+| `forja` | ✅ | ✅ | ⚠ Has INTEGRATIONS_MEMORY.md but no kernel SSOT pointer | Partial SSOT | Close to Full — add pointer |
+| `policia` | ? | ? | ❌ Not verified | Unverified | Needs /start audit |
+| `INPI` | ❌ | ? | ❌ Not verified | Unverified | Has app structure, no governance docs visible |
+
+**Status values:** Full SSOT · Partial SSOT · Missing pointer · No governance · Unverified
 
 ---
 

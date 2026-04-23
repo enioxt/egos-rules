@@ -1,5 +1,8 @@
 # Hook Migration Status — EGOS Mesh
 
+Fonte canônica versionada: `/home/enio/egos/scripts/egos-home/hooks/`
+Mirror consumido pelos repos: `/home/enio/.egos/hooks/`
+
 ## Estado em 2026-03-11
 
 | Repo | AGENTS | TASKS | .windsurfrules | .egos | .guarani | workflows | hook atual | dirty files | ação recomendada |

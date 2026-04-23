@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0",
+  "session_id": "e5b6ef0e-597c-4d9f-bfb7-c3a4ff4748c1",
+  "started_at": "2026-04-17T21:56:58.369Z",
+  "repo": "/home/enio/egos",
+  "turn_count": 0,
+  "token_estimate": 0,
+  "elapsed_minutes": 0,
+  "commit_count": 106,
+  "last_checkpoint_at": "",
+  "last_tasks_md_read_at": "",
+  "checkpoint_triggered": false,
+  "thresholds": {
+    "turns": 10,
+    "tokens": 1000,
+    "minutes": 90,
+    "commits": 15
+  },
+  "flags": {
+    "checkpoint_needed": false,
+    "tasks_md_stale": false
+  }
+}

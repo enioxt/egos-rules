@@ -18,13 +18,9 @@
 | **Reports** | REPORT_SSOT.md | `docs/REPORT_SSOT.md` |
 | **Code quality** | PREFERENCES.md | `.guarani/PREFERENCES.md` |
 | **Rollout / launch planning** | PREFERENCES.md + DOMAIN_RULES.md | `.guarani/PREFERENCES.md`, `.guarani/orchestration/DOMAIN_RULES.md` |
-| **Agent claims** | AGENT_CLAIM_CONTRACT.md | `.guarani/orchestration/AGENT_CLAIM_CONTRACT.md` |
-| **Worktree workflow** | WORKTREE_CONTRACT.md | `.guarani/orchestration/WORKTREE_CONTRACT.md` |
-| **QA/Testing** | QA_LOOP_CONTRACT.md | `.guarani/orchestration/QA_LOOP_CONTRACT.md` |
-| **Integration releases** | INTEGRATION_RELEASE_CONTRACT.md | `.guarani/orchestration/INTEGRATION_RELEASE_CONTRACT.md` |
-| **Spec pipeline** | SPEC_PIPELINE_CONTRACT.md | `.guarani/orchestration/SPEC_PIPELINE_CONTRACT.md` |
-| **Monthly review** | CLARITY_REVIEW.md | `.guarani/orchestration/CLARITY_REVIEW.md` |
-| **Benchmarks** | BENCHMARK_ENFORCEMENT.md | `.guarani/orchestration/BENCHMARK_ENFORCEMENT.md` |
+| **Agent taxonomy/claims** | AGENTS.md §R2 | `AGENTS.md` (canonical) |
+| **Integration releases** | `bun run integration:check` | `integrations/manifests/`, `integrations/distribution/` |
+| **Archived contracts** | _archived/ | `.guarani/_archived/` (24 archived files — list with `ls .guarani/_archived/`) |
 | **LLM routing** | LLM_ORCHESTRATION_MATRIX.md | `.guarani/orchestration/LLM_ORCHESTRATION_MATRIX.md` |
 | **PII/LGPD** | Guard Brasil | `packages/guard-brasil/src/pii-patterns.ts` |
 | **PII masking API** | Guard Brasil API | `apps/api/src/server.ts` (POST /v1/inspect) |
@@ -77,8 +73,8 @@ When starting any work, check:
 6. `docs/REPORT_SSOT.md` — if generating reports
 
 > **Rule:** Never generate a report without reading REPORT_SSOT.md first.
-> **Rule:** Never claim an agent without reading AGENT_CLAIM_CONTRACT.md first.
-> **Rule:** Never release an integration without reading INTEGRATION_RELEASE_CONTRACT.md first.
+> **Rule:** Never claim an agent capability without proof-of-function (§L CLAUDE.md, AGENTS.md §R2).
+> **Rule:** Never release an integration without running `bun run integration:check` and updating `integrations/manifests/`.
 > **Rule:** Default to maximum autonomy — act first, report after (§15).
 > **Rule:** Challenge stale P0s, scope creep, and false claims (§16).
 > **Rule:** Every discovery/architecture decision must produce FACT/INFERENCE/PROPOSAL (§20).

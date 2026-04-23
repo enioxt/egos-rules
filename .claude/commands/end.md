@@ -36,6 +36,20 @@ Cannot finalize if:
 - New capability AND `AGENTS.md` not updated
 - `TASKS.md` not current
 
+## Phase 4.5: Auto-Disseminate Check (conditional)
+
+```bash
+# Count feat commits since last disseminate marker in log
+FEAT_COUNT=$(git log --oneline | grep -m1 -c "disseminate\|/disseminate" || true)
+FEAT_COMMITS=$(git log --oneline origin/main..HEAD 2>/dev/null | grep "^.\{8\} feat(" | wc -l)
+echo "feat commits unpropagated: $FEAT_COMMITS"
+```
+
+- If `feat commits > 0` AND disseminate not already run this session → invoke `/disseminate` before Phase 5
+- If `feat commits = 0` → skip (no noise)
+- Goal: zero cognitive overhead. /disseminate always happens at session close when there's something to propagate.
+- /disseminate remains independently callable mid-session after large features.
+
 ## Phase 5: Record Learnings + Disseminate Knowledge
 
 Record session learnings to the Knowledge System (what worked, what failed, insights):
