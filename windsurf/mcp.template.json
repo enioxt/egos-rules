@@ -1,0 +1,42 @@
+{
+  "mcpServers": {
+    "composio-helper": {
+      "command": "npx",
+      "args": ["-y", "composio-helper-mcp@latest"]
+    },
+    "egos-core": {
+      "command": "node",
+      "args": ["${EGOS_MCP_SERVER_PATH}"],
+      "env": {
+        "SUPABASE_URL": "${SUPABASE_URL}",
+        "SUPABASE_SERVICE_ROLE_KEY": "${SUPABASE_SERVICE_ROLE_KEY}",
+        "EXA_API_KEY": "${EXA_API_KEY}",
+        "GROQ_API_KEY": "${GROQ_API_KEY}"
+      }
+    },
+    "exa": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-exa"]
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${HOME}/egos"]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    },
+    "supabase-mcp-server": {
+      "command": "npx",
+      "args": ["-y", "@supabase/mcp-server@latest"],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN}"
+      }
+    },
+    "sentry": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote@latest", "https://mcp.sentry.dev/mcp"],
+      "env": {}
+    }
+  }
+}

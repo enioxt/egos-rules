@@ -12,3 +12,4 @@ crcdm/notifications/
 
 # Local Claude config overrides
 .claude/config
+windsurf/.env.local
