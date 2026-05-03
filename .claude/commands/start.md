@@ -107,6 +107,11 @@ Verificar e testar (em paralelo quando possível):
   - O que foi alterado, onde, próximos passos (P0/P1/P2)
   - Estado das integrações (tabela resumo)
 
+### 7.5 CAPABILITY SCAN (se in egos repo)
+- Rodar `bun capability:scan` e reportar candidatos não registrados (★)
+- Se houver ★ não registrados: sugerir atualização do CAPABILITY_REGISTRY.md como próximo passo
+- Não bloqueia sessão — informativo apenas
+
 ### 8. DISSEMINATE (se /disseminate estiver disponível)
 - Extrair insights da sessão para HARVEST.md
 - Atualizar ECOSYSTEM_REGISTRY.md se houve mudança em agents
@@ -145,6 +150,47 @@ Verificar e testar (em paralelo quando possível):
 
 ✅ /start concluído — Kernel ativo | Integrações: X/Y OK
 ```
+
+## 🚔 INTELINK STATUS (nova fase obrigatória — 2026-05-03)
+
+Enio trabalha no Setor de Inteligência da delegacia. O Intelink é o SSOT operacional.
+**Toda sessão deve verificar o estado do Intelink ANTES de qualquer outra coisa.**
+
+```bash
+# 1. Site up?
+curl -s -o /dev/null -w "%{http_code}" https://intelink.ia.br/ && echo ""
+
+# 2. Neo4j — quantos dados temos?
+ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 'curl -s -u neo4j:IntelinkReds2026! http://localhost:7475/db/neo4j/tx/commit -H "Content-Type: application/json" -d "{\"statements\":[{\"statement\":\"MATCH (p:Person) RETURN count(p) as pessoas, sum(coalesce(toInteger(p.reds_count),0)) as total_reds\"}]}"' 2>/dev/null | python3 -c "import json,sys; d=json.load(sys.stdin); r=d['results'][0]['data'][0]['row']; print(f'Pessoas: {r[0]:,} | REDS: {r[1]:,}')" 2>/dev/null
+
+# 3. Evolution API (WhatsApp)
+ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 'APIKEY=$(grep EVOLUTION_API_KEY /opt/evolution-api/.env | cut -d= -f2); curl -s http://localhost:8080/instance/fetchInstances -H "apikey: $APIKEY"' 2>/dev/null | python3 -c "import json,sys; d=json.load(sys.stdin); [print(f'WA: {i[\"name\"]} — {i[\"connectionStatus\"]}') for i in d]" 2>/dev/null
+
+# 4. Última ingestão BISP
+ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 "ls -lt /tmp/bisp-xlsx/*.xlsx 2>/dev/null | head -3 || echo 'Sem XLSX pendente'" 2>/dev/null
+```
+
+**Incluir no briefing:**
+- Intelink HTTP status
+- Contagem Neo4j (pessoas / registros REDS)
+- WhatsApp: instância conectada? (sim/não)
+- Operações ativas (se aplicável)
+
+**Pergunta obrigatória ao usuário no final do /start:**
+> "O que avança a investigação hoje?" (Single Pursuit — delegacia/Lídia até 2026-05-12)
+
+## 🧠 Nova forma de agir (2026-05-03)
+
+Após meses de construção, o Intelink passou a ser usado operacionalmente por investigadores.
+Isso muda como o agente deve se comportar:
+
+1. **INTELINK = SSOT das investigações** — toda referência a dados de pessoas, crimes, veículos deve confirmar no Intelink antes de afirmar qualquer coisa.
+2. **Tool Registry ativo** — quando uma pessoa tem dados faltantes (sem endereço, sem telefone, sem foto), o agente deve sugerir a ferramenta correta via `lib/config/tool-registry.ts`.
+3. **BISP pipeline** — XLSX do BISP → `bun scripts/ingest-xlsx-reds.ts --file <arquivo>` → Neo4j. Dedup por número REDS normalizado (remove hífens). 33REGIAO1.xlsx (61k linhas) ainda pendente.
+4. **WhatsApp** — Evolution API em `127.0.0.1:8080` no VPS. Instância `forja-notifications` (reconectar se `connectionStatus != open`). Para nova instância do número do Enio: criar via API e escanear QR.
+5. **Privacidade é crítica** — CPF, RG, nome completo, histórico policial são dados sensíveis. NUNCA logar em arquivos públicos, commits, ou output de CI. Guard Brasil audita antes de qualquer publicação.
+6. **Máquina split** — Linux (esta máquina) = kernel EGOS + VPS + intelink deploy. Windows = LLM local (Ollama) + NER + ETL pesado. Não misturar.
+7. **Operação 100kg ativa** — tarefas `OP-100KG-*` são urgentes e têm prioridade sobre refatoração técnica.
 
 ## Regras fundamentais
 - Não afirmar leitura de "todos os repositórios" sem evidência
