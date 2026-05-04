@@ -1,260 +1,284 @@
 ---
-description: Ativação canônica EGOS — validação de integrações + governança + plano de execução
+description: Ativação EGOS v6.0 — Kernel → Seleção de Projeto → Deep-dive Focado
 ---
 
-# Workflow: /start (Full Integration Validation + Kernel Activation)
+# /start — Session Initialization v6.0
 
-## Objetivo
-Ativar o kernel EGOS validando TODAS as integrações do ambiente, testando cada uma, consertando o que puder e criando tasks para o que for complexo. NUNCA iniciar trabalho sem verificar o estado real do ecossistema.
-
-## Ordem obrigatória (9 fases)
-
-### 0. INTEGRATIONS (OBRIGATÓRIO — teste tudo)
-
-**REGRA:** Toda ativação DEVE testar e reportar o estado de cada integração.
-
-Verificar e testar (em paralelo quando possível):
-
-| Integração | Teste | Como |
-|-----------|-------|------|
-| **MCP Servers** | Listar todos conectados | Verificar quais MCP servers estão ativos na sessão |
-| **Guard Brasil API** | `curl -s https://guard.egos.ia.br/health` | Esperar `{"status":"healthy"}` |
-| **ARCH API** | `curl -s https://arch.egos.ia.br/api/health` | Se ativo (pode estar pausado) |
-| **Telegram Bot** | Verificar TELEGRAM_BOT_TOKEN em .env | Enviar /getMe via API |
-| **HuggingFace** | `python3 -c "from huggingface_hub import HfApi; print(HfApi().whoami())"` | Login status |
-| **Supabase** | Verificar SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY em .env | MCP test query |
-| **VPS Hetzner** | `ssh hetzner 'uptime && docker ps --format "table {{.Names}}\t{{.Status}}"'` | Containers up |
-| **Docker local** | `docker ps` | Se aplicável |
-| **Git remotes** | `git remote -v` em egos + egos-lab | Push access |
-| **NPM registry** | Verificar @egosbr/guard-brasil publicado | `npm view @egosbr/guard-brasil version` |
-| **Gitleaks** | `which gitleaks` | Deve estar instalado |
-| **Bun** | `bun --version` | Versão atual |
-| **Agent registry** | `bun agent:lint` (egos-lab) | 0 errors |
-| **Pre-commit hooks** | Verificar .husky/pre-commit existe | File intelligence ativo |
-| **Env vars** | Contar keys em .env (egos + egos-lab) | Mínimo esperado: 6 |
-
-**Para cada integração:**
-- ✅ Funcionando → reportar versão/status
-- ⚠️ Degradado → tentar consertar, reportar
-- ❌ Falha → criar task, reportar blocker
-- 🔇 Pausado → marcar como intencionalmente parado (ex: ARCH)
-
-### 0.4 README + DOCS CORE (novo — 2026-05-04)
-
-**OBRIGATÓRIO para qualquer sessão em repo ativo** — READMEs são a fonte de verdade do estado do projeto.
-
-```bash
-# 1. README do repo atual
-head -80 README.md 2>/dev/null
-
-# 2. Documentação SSOT crítica (ler pelo menos os títulos)
-echo "=== CAPABILITY_REGISTRY (seções) ===" && grep "^## " docs/CAPABILITY_REGISTRY.md 2>/dev/null | head -20
-echo "=== TASKS P0 ===" && grep "^\- \[ \].*\[P0\]" TASKS.md 2>/dev/null | head -10
-
-# 3. Docs de guias ativos (ler se o projeto tem)
-ls docs/guides/ 2>/dev/null | head -10
-
-# 4. Handoffs e estratégia
-ls docs/strategy/ 2>/dev/null | head -5
-```
-
-**Regra:** Se o README não foi atualizado nos últimos 7 dias e houve commits → adicionar `README-UPDATE` ao P1 da sessão.
-
-**Skill `/refresh`** — quando o usuário pede para recarregar contexto sem reiniciar sessão:
-```bash
-# Roda durante a sessão, não no início
-cat README.md | head -50
-grep "^\- \[ \].*\[P0\]" TASKS.md | head -10
-ls -t docs/_current_handoffs/*.md | head -1 | xargs head -20
-```
+> **Princípio:** Não carregue tudo. Carregue o certo.
+> **Fluxo:** KERNEL (sempre) → ESCOLHA DO PROJETO (interativo) → DEEP-DIVE (focado)
 
 ---
 
-### 0.5 CONTEXT RECOVERY (auto-carrega estado da última sessão)
+## FASE 1 — KERNEL (sempre, ~2min, antes de qualquer outra coisa)
 
-**OBRIGATÓRIO** — garante que toda nova sessão herda contexto completo:
+Lê o que é imutável entre projetos: regras globais, saúde do sistema, última sessão.
 
-1. **Memory index:** Ler primeiras 30 linhas de `~/.claude/projects/-home-enio-egos/memory/MEMORY.md` — mostra última sessão + sprint atual
-2. **Latest handoff:** `ls -t docs/_current_handoffs/*.md 2>/dev/null | head -1` → ler primeiras 40 linhas (accomplished/blockers/next)
-3. **Latest job reports:** `ls -t docs/jobs/*.md 2>/dev/null | head -3` → ler primeiras 5 linhas de cada (CCR outputs)
-4. **Context signals + skill suggestions (SKILL-AUTO-001):** Rodar o skill-resolver para obter sugestões baseadas em sinais recentes + git:
-   ```bash
-   bun /home/enio/egos/scripts/skill-resolver.ts 2>/dev/null || true
-   ```
-   Cada linha `[SKILL-SUGGEST] /skillname PRIORITY — reason` indica uma skill a invocar. Invocar as de CRITICAL/ALWAYS imediatamente; HIGH/MEDIUM apresentar ao usuário.
-   Para matching com o primeiro prompt do usuário:
-   ```bash
-   bun /home/enio/egos/scripts/skill-resolver.ts --prompt="<primeiro prompt>" 2>/dev/null || true
-   ```
-5. **Context signals raw (debug):** Agrupar por repo para mostrar atividade recente:
-   ```bash
-   tail -10 ~/.egos/context-signals.jsonl 2>/dev/null | python3 -c "
-   import sys, json
-   signals = [json.loads(l) for l in sys.stdin if l.strip()]
-   repos = {}
-   for s in signals:
-       repos.setdefault(s['repo'], []).append(s['signal'])
-   for r, sigs in repos.items():
-       print(f'  {r}: {\", \".join(sigs)}')" 2>/dev/null || true
-   ```
-6. **Resumo no output:** Incluir seção `## 🧠 Contexto Recuperado` com: última sessão ID, tasks concluídas, blockers ativos, repos ativos (from context signals), skills sugeridas
-
-**Se MEMORY.md menciona theater/cleanup pendente:** flaggar como P0 na seção Propostas.
-
-### 1. INTAKE
-- Ler: `AGENTS.md`, `TASKS.md`, `.guarani/RULES_INDEX.md`, `docs/SYSTEM_MAP.md`
-- Ler: últimos 5 commits (`git log --oneline -5`) em egos + egos-lab
-- Confirmar data da sessão e registrar no resumo
-
-### 2. CHALLENGE
-- Verificar contradições entre pedido e frozen zones
-- Se houver ambiguidade sobre escopo, assumir postura conservadora
-- Ler memory SSOT para contexto de sessões anteriores
-- **Gem Hunter:** Ler último relatório em `egos-lab/docs/gem-hunter/gems-*.md` (mais recente). Flaggar CRITICAL como P0. Config SSOT: `egos/docs/gem-hunter/SSOT.md`
-
-### 3. PLAN
-- Definir onde cada artefato deve viver:
-  - **Comandos `/` e operação**: `.agents/workflows/`
-  - **Prioridades e fases**: `TASKS.md`
-  - **Mapa arquitetural**: `docs/SYSTEM_MAP.md`
-  - **Regras**: `.guarani/RULES_INDEX.md`
-
-### 4. GATE
-- `bun run governance:check` antes de mudanças estruturais
-- `bun run doctor --json` se disponível (exit 2 = block)
-- Nunca editar frozen zones sem pedido explícito
-
-### 5. EXECUTE
-- Aplicar mudanças de documentação/planejamento em SSOT
-- Iniciar por contrato/interface, depois migração física
-
-### 6. VERIFY
-- `bun run agent:lint`
-- `bun run typecheck` (quando houver mudança TS)
-- `bash scripts/file-intelligence.sh` (se arquivos staged)
-
-### 7. LEARN
-- Registrar no retorno final:
-  - O que foi alterado, onde, próximos passos (P0/P1/P2)
-  - Estado das integrações (tabela resumo)
-
-### 7.5 CAPABILITY SCAN (se in egos repo)
-- Rodar `bun capability:scan` e reportar candidatos não registrados (★)
-- Se houver ★ não registrados: sugerir atualização do CAPABILITY_REGISTRY.md como próximo passo
-- Não bloqueia sessão — informativo apenas
-
-### 8. DISSEMINATE (se /disseminate estiver disponível)
-- Extrair insights da sessão para HARVEST.md
-- Atualizar ECOSYSTEM_REGISTRY.md se houve mudança em agents
-
-## Formato de saída obrigatório
-
-```
-## 🔌 Estado das Integrações
-| Integração | Status | Detalhe |
-|-----------|--------|---------|
-| Guard Brasil | ✅ | healthy, 4ms |
-| Telegram | ✅ | @EGOSin_bot |
-| VPS Hetzner | ✅ | 13 containers |
-| ... | ... | ... |
-
-## 📊 Governança
-- Drift: X issues
-- TASKS.md: Y/500 linhas
-- Último commit: <hash> <msg>
-
-## 🧠 Contexto Recuperado
-- Última sessão: <P_ID> — <resumo 1 linha>
-- Blockers ativos: <lista ou "nenhum">
-- Theater pendente: <lista ou "limpo">
-
-## ✅ Fatos Verificados
-- <arquivo/comando> → <resultado observado>
-
-## 🔮 Inferências
-- <hipótese> (baseada em: <fato>)
-
-## 📋 Propostas
-- P0: <ação> (dono: <quem>)
-- P1: <ação>
-- P2: <ação>
-
-✅ /start concluído — Kernel ativo | Integrações: X/Y OK
-```
-
-## 🚔 INTELINK STATUS (nova fase obrigatória — 2026-05-03)
-
-Enio trabalha no Setor de Inteligência da delegacia. O Intelink é o SSOT operacional.
-**Toda sessão deve verificar o estado do Intelink ANTES de qualquer outra coisa.**
+### 1.1 Regras globais (T0-T4)
 
 ```bash
-# 1. Site up?
-curl -s -o /dev/null -w "%{http_code}" https://intelink.ia.br/ && echo ""
-
-# 2. Neo4j — quantos dados temos?
-ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 'curl -s -u neo4j:IntelinkReds2026! http://localhost:7475/db/neo4j/tx/commit -H "Content-Type: application/json" -d "{\"statements\":[{\"statement\":\"MATCH (p:Person) RETURN count(p) as pessoas, sum(coalesce(toInteger(p.reds_count),0)) as total_reds\"}]}"' 2>/dev/null | python3 -c "import json,sys; d=json.load(sys.stdin); r=d['results'][0]['data'][0]['row']; print(f'Pessoas: {r[0]:,} | REDS: {r[1]:,}')" 2>/dev/null
-
-# 3. Evolution API (WhatsApp)
-ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 'APIKEY=$(grep EVOLUTION_API_KEY /opt/evolution-api/.env | cut -d= -f2); curl -s http://localhost:8080/instance/fetchInstances -H "apikey: $APIKEY"' 2>/dev/null | python3 -c "import json,sys; d=json.load(sys.stdin); [print(f'WA: {i[\"name\"]} — {i[\"connectionStatus\"]}') for i in d]" 2>/dev/null
-
-# 4. Última ingestão BISP
-ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 "ls -lt /tmp/bisp-xlsx/*.xlsx 2>/dev/null | head -3 || echo 'Sem XLSX pendente'" 2>/dev/null
+# Hierarquia de regras — ler nesta ordem exata
+cat ~/.claude/CLAUDE.md | head -80          # T0-T2 críticos
+cat ~/.claude/egos-rules/posture-autonomy.md 2>/dev/null | head -30  # postura
 ```
 
-**Incluir no briefing:**
-- Intelink HTTP status
-- Contagem Neo4j (pessoas / registros REDS)
-- WhatsApp: instância conectada? (sim/não)
-- Operações ativas (se aplicável)
+**Regras que NUNCA mudam (memorize, não releia):**
+- T0: nunca force-push main, nunca log secrets, nunca publicar sem aprovação, nunca `git add -A` em agentes
+- T1: read antes de edit, grep antes de referenciar função, verificar claims com evidência
+- T2: Sonnet por padrão (Opus só para decisões críticas), nova sessão quando custo > $3
 
-**Pergunta obrigatória ao usuário no final do /start:**
-> "O que avança a investigação hoje?" (Single Pursuit — delegacia/Lídia até 2026-05-12)
+### 1.2 Saúde do sistema (paralelo — 30s)
 
-## 🧠 Nova forma de agir (2026-05-03)
-
-Após meses de construção, o Intelink passou a ser usado operacionalmente por investigadores.
-Isso muda como o agente deve se comportar:
-
-1. **INTELINK = SSOT das investigações** — toda referência a dados de pessoas, crimes, veículos deve confirmar no Intelink antes de afirmar qualquer coisa.
-2. **Tool Registry ativo** — quando uma pessoa tem dados faltantes (sem endereço, sem telefone, sem foto), o agente deve sugerir a ferramenta correta via `lib/config/tool-registry.ts`.
-3. **BISP pipeline** — XLSX do BISP → `bun scripts/ingest-xlsx-reds.ts --file <arquivo>` → Neo4j. Dedup por número REDS normalizado (remove hífens). 33REGIAO1.xlsx (61k linhas) ainda pendente.
-4. **WhatsApp** — Evolution API em `127.0.0.1:8080` no VPS. Instância `forja-notifications` (reconectar se `connectionStatus != open`). Para nova instância do número do Enio: criar via API e escanear QR.
-5. **Privacidade é crítica** — CPF, RG, nome completo, histórico policial são dados sensíveis. NUNCA logar em arquivos públicos, commits, ou output de CI. Guard Brasil audita antes de qualquer publicação.
-6. **Máquina split** — Linux (esta máquina) = kernel EGOS + VPS + intelink deploy. Windows = LLM local (Ollama) + NER + ETL pesado. Não misturar.
-7. **Operação 100kg ativa** — tarefas `OP-100KG-*` são urgentes e têm prioridade sobre refatoração técnica.
-
-## Regras fundamentais
-- Não afirmar leitura de "todos os repositórios" sem evidência
-- Sempre separar: fatos verificados, inferências, propostas
-- Se integração falhar, CRIAR TASK (não ignorar)
-- NUNCA pular a fase INTEGRATIONS — é obrigatória em toda ativação
-
-## 🔄 Session Init (T2.2 — INC-006 Sprint 1)
-**SEMPRE executar no início de /start (em paralelo):**
 ```bash
-bun /home/enio/egos/scripts/session-init.ts --reset
-bash /home/enio/egos/scripts/sync-review-queue.sh
+# VPS + sites críticos
+echo "=== VPS ===" && ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 "
+  free -h | grep Mem | awk '{print \"RAM:\", \$3\"/\"\$2}';
+  df -h / | tail -1 | awk '{print \"Disk:\", \$3\"/\"\$2, \"(\"\$5\")\"}';
+  docker ps --format '{{.Names}}:{{.Status}}' | grep -v healthy | grep -v 'Up [0-9]' | head -5
+" 2>/dev/null
+
+# WhatsApp instâncias
+ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 '
+APIKEY=$(grep EVOLUTION_API_KEY /opt/evolution-api/.env | cut -d= -f2)
+curl -s http://localhost:8080/instance/fetchInstances -H "apikey: $APIKEY"
+' 2>/dev/null | python3 -c "
+import json,sys
+try:
+  d=json.load(sys.stdin)
+  for i in d: print(f'WA {i[\"name\"]}: {i.get(\"connectionStatus\",\"?\")}')
+except: pass
+" 2>/dev/null
+
+# Sites principais
+for s in "https://hq.egos.ia.br" "https://intelink.ia.br" "https://guard.egos.ia.br/health"; do
+  code=$(curl -s -o /dev/null -w "%{http_code}" "$s" 2>/dev/null)
+  echo "$code $s"
+done
 ```
-- `session-init --reset`: reinicia contadores da sessão + emite `[SKILL-SUGGEST]` via skill-resolver (SKILL-AUTO-001)
-- `sync-review-queue.sh`: puxa findings do VPS Hermes reviewer
 
-**Se output contiver `[SKILL-SUGGEST]`:** coletar todas as linhas e apresentar ao usuário como ações recomendadas. CRITICAL/ALWAYS = invocar imediatamente; HIGH = recomendar fortemente; MEDIUM/LOW = mencionar.
+### 1.3 Última sessão (memory index)
 
-**Se output contiver `[CHECKPOINT-NEEDED]`:** reportar ao usuário antes de continuar.
-
-**Se output contiver `CRITICAL=N` onde N>0:** reportar imediatamente com detalhes:
 ```bash
-cat ~/.egos/review-queue.jsonl | python3 -c "
-import sys,json
-for l in sys.stdin:
-    e=json.loads(l)
-    if e.get('severity') in ('CRITICAL','HIGH'):
-        print(f\"[{e['severity']}] {e['commit'][:7]} {e['subject']}\")
-        for f in e.get('findings',[]): print(f'  → {f}')
-"
+head -15 ~/.claude/projects/-home-enio-egos/memory/MEMORY.md 2>/dev/null
 ```
 
-**Ao fim de /start, verificar estado:**
-```bash
-bun /home/enio/egos/scripts/session-init.ts --status
+### 1.4 Output da Fase 1
+
+Apresentar ao usuário:
+
 ```
+🧠 KERNEL ATIVO — [data]
+
+⚡ Sistema:
+  RAM: X/Y | Disk: X% | VPS: [ok/alerta]
+  WA enio-personal: [open/connecting]
+  Sites: hq ✅ | intelink ✅ | guard ✅
+
+📝 Última sessão:
+  [1 linha do MEMORY.md]
+
+💰 Custo desta sessão: $X.XX (alarme em $2)
+```
+
+---
+
+## FASE 2 — SELEÇÃO DO PROJETO (interativo)
+
+**PARE AQUI e pergunte ao usuário.**
+
+Não assuma o projeto. Não carregue docs de nenhum projeto ainda.
+
+### 2.1 Listar projetos ativos
+
+```bash
+echo "=== Repos com atividade recente ==="
+for repo in /home/enio/egos /home/enio/intelink /home/enio/egos-lab /home/enio/pixelart /home/enio/852; do
+  if [ -d "$repo/.git" ]; then
+    name=$(basename $repo)
+    last=$(git -C "$repo" log --oneline -1 2>/dev/null | cut -c1-60)
+    p0=$(grep -c "^\- \[ \].*\[P0\]" "$repo/TASKS.md" 2>/dev/null || echo 0)
+    pending=$(grep -c "^\- \[ \]" "$repo/TASKS.md" 2>/dev/null || echo 0)
+    echo "  $name | P0: $p0 | Pendentes: $pending | $last"
+  fi
+done
+
+echo ""
+echo "=== Sites live ==="
+echo "  hq.egos.ia.br | lab.egos.ia.br | chatbot.egos.ia.br"
+echo "  intelink.ia.br | pixelart.egos.ia.br | 852.egos.ia.br"
+```
+
+### 2.2 Pergunta ao usuário
+
+```
+Em qual projeto/área vamos trabalhar hoje?
+
+  1. egos (kernel, regras, capacidades, Atlas)
+  2. intelink (delegacia, Neo4j, agente policial)
+  3. egos-lab (lab-kb, chatbot qualificador, WhatsApp agent)
+  4. pixelart (bot PixelArt, Lucas)
+  5. 852 (Tira-Voz)
+  6. infra/VPS (segurança, containers, deploy)
+  7. estratégia (LinkedIn, consulting kit, EGOS instalável)
+  8. outro: [diga qual]
+```
+
+**Aguardar resposta antes de continuar.**
+
+---
+
+## FASE 3 — DEEP-DIVE DO PROJETO ESCOLHIDO
+
+Após a escolha, carregar APENAS o contexto daquele projeto.
+
+### Se escolheu: `egos`
+
+```bash
+cd /home/enio/egos
+echo "=== README ===" && head -60 README.md
+echo "=== P0 ===" && grep "^\- \[ \].*\[P0\]" TASKS.md
+echo "=== P1 top 10 ===" && grep "^\- \[ \].*\[P1\]" TASKS.md | head -10
+echo "=== Capabilities (seções) ===" && grep "^## §" docs/CAPABILITY_REGISTRY.md | tail -10
+echo "=== Último handoff ===" && ls -t docs/_current_handoffs/*.md | head -1 | xargs head -25
+echo "=== Last 5 commits ===" && git log --oneline -5
+```
+
+**Output:** briefing egos + recomendação de task
+
+---
+
+### Se escolheu: `intelink`
+
+```bash
+cd /home/enio/intelink
+echo "=== README ===" && head -50 README.md
+echo "=== P0 ===" && grep "^\- \[ \].*\[P0\]" TASKS.md | head -10
+echo "=== Neo4j stats ==="
+ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 '
+  curl -s -u neo4j:IntelinkReds2026! http://localhost:7475/db/neo4j/tx/commit \
+    -H "Content-Type: application/json" \
+    -d "{\"statements\":[{\"statement\":\"MATCH (p:Person) RETURN count(p) as pessoas, sum(coalesce(toInteger(p.reds_count),0)) as reds\"}]}"
+' 2>/dev/null | python3 -c "
+import json,sys
+d=json.load(sys.stdin); r=d['results'][0]['data'][0]['row']
+print(f'Pessoas: {r[0]:,} | REDS: {r[1]:,}')
+" 2>/dev/null
+echo "=== Operações ativas ===" && grep "^\- \[ \].*OP-" TASKS.md | head -5
+echo "=== Last 5 commits ===" && git log --oneline -5
+echo ""
+echo "⚠️ Máquina split: intelink pesado → delegacia (Windows). Aqui: deploy + fixes VPS."
+echo "❓ O que avança a investigação hoje?"
+```
+
+---
+
+### Se escolheu: `egos-lab` / chatbot / WhatsApp
+
+```bash
+cd /home/enio/egos-lab
+echo "=== README ===" && head -40 README.md 2>/dev/null
+echo "=== CHATBOT-Q tasks ===" && grep "CHATBOT-Q\|WA-AGENT" /home/enio/egos/TASKS.md
+echo "=== Lab KB status ===" && ls /home/enio/egos-lab/apps/egos-lab-kb/ 2>/dev/null
+echo "=== Qualification Protocol ===" && head -30 /home/enio/egos/docs/guides/CHATBOT_QUALIFICATION_PROTOCOL.md
+echo "=== WA instances ===" 
+ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 '
+  APIKEY=$(grep EVOLUTION_API_KEY /opt/evolution-api/.env | cut -d= -f2)
+  curl -s http://localhost:8080/instance/fetchInstances -H "apikey: $APIKEY"
+' 2>/dev/null | python3 -c "
+import json,sys; [print(f'{i[\"name\"]}: {i.get(\"connectionStatus\")} | msgs={i.get(\"_count\",{}).get(\"Message\",0)}') for i in json.load(sys.stdin)]
+" 2>/dev/null
+```
+
+---
+
+### Se escolheu: `pixelart`
+
+```bash
+cd /home/enio/pixelart
+echo "=== README ===" && head -40 README.md 2>/dev/null
+echo "=== CBC Cards Pixel ===" && ls /home/enio/egos/docs/capabilities/CBC-PIXELART-*.md
+echo "=== Pixel tasks no egos ===" && grep "BOT-\|IG-\|IMG-\|LUCAS\|PIXEL" /home/enio/egos/TASKS.md | grep "^\- \[ \]" | head -10
+echo "=== WA pixelart-bot ===" 
+ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 '
+  APIKEY=$(grep EVOLUTION_API_KEY /opt/evolution-api/.env | cut -d= -f2)
+  curl -s http://localhost:8080/instance/connectionState/pixelart-bot -H "apikey: $APIKEY"
+' 2>/dev/null
+```
+
+---
+
+### Se escolheu: `infra/VPS`
+
+```bash
+ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 "
+echo '=== Containers ===' && docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' | head -30
+echo '=== Swap ===' && free -h | grep Swap
+echo '=== Portas expostas ==='
+ss -tlnp | grep -v '127.0.0.1\|::1' | grep LISTEN | grep -v '0.0.0.53'
+echo '=== Disk ===' && df -h / | tail -1
+" 2>/dev/null
+
+echo "=== Vulnerabilidades conhecidas ==="
+echo "  🔴 PostgreSQL sinapi exposto (0.0.0.0:5432)"
+echo "  🔴 Firewall rule ACCEPT all (rule 7)"
+echo "  🟡 Ollama 11434 exposto (tem bearer, mas exposto)"
+echo "  🟡 8090/3071/3070 diretos sem Caddy"
+```
+
+---
+
+### Se escolheu: `estratégia`
+
+```bash
+echo "=== EGOS instalável — contexto atual ===" && head -30 /home/enio/egos/docs/strategy/EGOS_PROJECT_ATLAS.md
+echo "=== Consulting kit tasks ===" && grep "CHATBOT-Q\|WA-AGENT\|create-egos\|consulting" /home/enio/egos/TASKS.md | grep "^\- \[ \]" | head -15
+echo "=== LinkedIn post draft ===" && ls /home/enio/egos/docs/drafts/ | grep -i "linkedin\|post" | head -3
+echo "=== CBC cards existentes ===" && ls /home/enio/egos/docs/capabilities/
+```
+
+---
+
+## /refresh — Recarregar contexto mid-session
+
+**Usar quando:** sessão longa, mudou de assunto, esqueceu onde estava.
+
+```bash
+# Roda durante a sessão (não reinicia)
+REPO=$(git rev-parse --show-toplevel 2>/dev/null || echo "?")
+echo "=== Repo atual: $REPO ==="
+head -30 README.md 2>/dev/null
+grep "^\- \[ \].*\[P0\]" TASKS.md 2>/dev/null | head -5
+ls -t docs/_current_handoffs/*.md 2>/dev/null | head -1 | xargs head -15 2>/dev/null
+git log --oneline -3 2>/dev/null
+```
+
+---
+
+## Regras fundamentais do /start
+
+1. **NUNCA pule a Fase 1** — kernel sempre, mesmo sessão rápida
+2. **SEMPRE pergunte o projeto** — nunca assuma, nunca carregue tudo
+3. **Fase 3 é seletiva** — só o projeto escolhido, só o que for necessário
+4. **README desatualizado** (>7 dias + commits) → adicionar `README-UPDATE` ao P1
+5. **Custo > $1.60** → mencionar `/compact` ou troca de modelo
+6. **Custo > $3** → sugerir nova sessão
+
+---
+
+## Output final (após Fase 3)
+
+```
+✅ /start completo — [PROJETO] | [data]
+
+🧠 Kernel: regras T0-T2 ativas | custo $X.XX
+⚡ Sistema: [status resumido]
+📋 [PROJETO]: P0=[N] | P1=[N] | Último commit: [hash msg]
+
+🎯 Próxima ação recomendada:
+  [task específica baseada no P0 do projeto]
+
+❓ Confirma ou quer mudar o foco?
+```
+
+---
+
+*v6.0 — 2026-05-04 | Kernel → Seleção → Deep-dive | Substitui v5.8*
