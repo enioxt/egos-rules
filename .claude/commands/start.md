@@ -39,6 +39,37 @@ Verificar e testar (em paralelo quando possível):
 - ❌ Falha → criar task, reportar blocker
 - 🔇 Pausado → marcar como intencionalmente parado (ex: ARCH)
 
+### 0.4 README + DOCS CORE (novo — 2026-05-04)
+
+**OBRIGATÓRIO para qualquer sessão em repo ativo** — READMEs são a fonte de verdade do estado do projeto.
+
+```bash
+# 1. README do repo atual
+head -80 README.md 2>/dev/null
+
+# 2. Documentação SSOT crítica (ler pelo menos os títulos)
+echo "=== CAPABILITY_REGISTRY (seções) ===" && grep "^## " docs/CAPABILITY_REGISTRY.md 2>/dev/null | head -20
+echo "=== TASKS P0 ===" && grep "^\- \[ \].*\[P0\]" TASKS.md 2>/dev/null | head -10
+
+# 3. Docs de guias ativos (ler se o projeto tem)
+ls docs/guides/ 2>/dev/null | head -10
+
+# 4. Handoffs e estratégia
+ls docs/strategy/ 2>/dev/null | head -5
+```
+
+**Regra:** Se o README não foi atualizado nos últimos 7 dias e houve commits → adicionar `README-UPDATE` ao P1 da sessão.
+
+**Skill `/refresh`** — quando o usuário pede para recarregar contexto sem reiniciar sessão:
+```bash
+# Roda durante a sessão, não no início
+cat README.md | head -50
+grep "^\- \[ \].*\[P0\]" TASKS.md | head -10
+ls -t docs/_current_handoffs/*.md | head -1 | xargs head -20
+```
+
+---
+
 ### 0.5 CONTEXT RECOVERY (auto-carrega estado da última sessão)
 
 **OBRIGATÓRIO** — garante que toda nova sessão herda contexto completo:
