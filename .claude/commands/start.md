@@ -1,284 +1,239 @@
 ---
-description: Ativação EGOS v6.0 — Kernel → Seleção de Projeto → Deep-dive Focado
+description: Session Initialization v6.1 — Force-Read All Layers + Verification Checkpoint
 ---
 
-# /start — Session Initialization v6.0
+# /start — Session Initialization v6.1 (EGOS)
 
-> **Princípio:** Não carregue tudo. Carregue o certo.
-> **Fluxo:** KERNEL (sempre) → ESCOLHA DO PROJETO (interativo) → DEEP-DIVE (focado)
+> **Princípio:** Não basta verificar existência — é preciso LER o conteúdo.
+> **Bug v5.9 corrigido:** `head -60` e `[ -f ]` perdiam 70%+ do contexto crítico.
+> **Pacto:** ao final, o agente DEVE provar leitura via verification checkpoint.
 
 ---
 
-## FASE 1 — KERNEL (sempre, ~2min, antes de qualquer outra coisa)
+## CONTRATO COM O AGENTE (ler primeiro)
 
-Lê o que é imutável entre projetos: regras globais, saúde do sistema, última sessão.
+Você está executando `/start`. Sua obrigação:
 
-### 1.1 Regras globais (T0-T4)
+1. **LER** (não verificar existência) cada arquivo das Layers 1-4 com a **Read tool**.
+2. **NÃO** usar `head -N` ou `cat` para arquivos canonical — isso trunca contexto.
+3. **PARALELIZAR** Read tools que não dependem entre si.
+4. Ao final, preencher o **Verification Checkpoint** (Layer 7) com respostas concretas.
+5. Se omitir uma layer, **declare explicitamente** o motivo (ex: "Layer 5 skipped: VPS unreachable").
+
+---
+
+## LAYER 1 — Global Rules (T0-T2 + Lazy-loaded T3)
+
+**LEIA com Read tool (paralelo):**
+
+- `/home/enio/.claude/CLAUDE.md` — completo (T0-T2 rules, ~250L)
+- `/home/enio/.claude/egos-rules/enio-profile.md` — Single Pursuit + NO JOBS rule
+- `/home/enio/.claude/egos-rules/posture-autonomy.md` — challenge mode, blockers
+- `/home/enio/.claude/egos-rules/karpathy-principles.md` — simplicity, surgical, goal-driven
+- `/home/enio/.claude/egos-rules/session-checklist.md` — formato ✅/🔄/⏳ no fim
+
+**Após leitura, internalize (não repita ao usuário):**
+- 5 regras T0 (force-push, secrets, publish, git add -A, COMMIT TASKS.md)
+- Verification gates T1 (INC-005 external LLM, INC-006 subagent, INC-009 estimate)
+- Edit safety T1 (read-before-edit, max 3 edits, simplicity-first)
+- Token economy T2 (Sonnet default, alarme $2, nova sessão >$3)
+
+---
+
+## LAYER 2 — Project Bootstrap (canonical SSOT)
+
+**LEIA completo com Read tool:**
+
+- `/home/enio/egos/docs/EGOS_BOOTSTRAP.md` — TODAS as 191 linhas, 16 seções
+
+**Internalize:**
+- Single Pursuit ATIVO (data mais recente sempre vence)
+- Architecture diagram 3-camadas (acquisition → deployment → operation)
+- Stack tech (Bun+TS, Postgres RLS, Gemini 2.0 Flash, OpenRouter)
+- SSOT map (18 domínios → 1 arquivo cada)
+- Estado atual snapshot (último parágrafo do BOOTSTRAP)
+
+---
+
+## LAYER 3 — Tier 1 ADRs (decisões locked)
+
+**LEIA completo com Read tool (paralelo):**
+
+- `/home/enio/egos/docs/governance/CENTRAL_EGOS_ARCHITECTURE_DECISION.md` (84L)
+- `/home/enio/egos/docs/governance/HERMES_EGOS_FORK_DECISION.md` (84L)
+- `/home/enio/egos/docs/capabilities/PRODUCT_NAMING_DECISION.md` (se existe)
+
+**Internalize:**
+- 22 decisões locked (não re-discutir)
+- Tiers Solo/Pro/Enterprise + setup + mensalidade
+- Padrão PAI plugins-only (NUNCA modificar core Hermes)
+- Naming map: deprecated → canonical
+
+---
+
+## LAYER 4 — Memory Top 3 (recência)
+
+**LEIA com Read tool (paralelo, primeiros 3 arquivos referenciados em MEMORY.md):**
 
 ```bash
-# Hierarquia de regras — ler nesta ordem exata
-cat ~/.claude/CLAUDE.md | head -80          # T0-T2 críticos
-cat ~/.claude/egos-rules/posture-autonomy.md 2>/dev/null | head -30  # postura
+# Identificar os 3 arquivos top da MEMORY.md (sem ler ainda)
+grep -E "^- \[" /home/enio/.claude/projects/-home-enio-egos/memory/MEMORY.md | head -3
 ```
 
-**Regras que NUNCA mudam (memorize, não releia):**
-- T0: nunca force-push main, nunca log secrets, nunca publicar sem aprovação, nunca `git add -A` em agentes
-- T1: read antes de edit, grep antes de referenciar função, verificar claims com evidência
-- T2: Sonnet por padrão (Opus só para decisões críticas), nova sessão quando custo > $3
+Pegue os 3 primeiros paths citados (exceto MEMORY.md) e use Read tool em cada um.
 
-### 1.2 Saúde do sistema (paralelo — 30s)
+**Por quê:** o reminder inicial trunca MEMORY.md em 200 linhas; os arquivos linkados precisam de Read explícita.
+
+---
+
+## LAYER 5 — System State (bash, fatos)
 
 ```bash
-# VPS + sites críticos
-echo "=== VPS ===" && ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 "
-  free -h | grep Mem | awk '{print \"RAM:\", \$3\"/\"\$2}';
-  df -h / | tail -1 | awk '{print \"Disk:\", \$3\"/\"\$2, \"(\"\$5\")\"}';
-  docker ps --format '{{.Names}}:{{.Status}}' | grep -v healthy | grep -v 'Up [0-9]' | head -5
-" 2>/dev/null
+# Repo state
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo $PWD)
+echo "Repo: $(basename $ROOT) | Branch: $(git branch --show-current)"
+git log --oneline -5
+echo "Uncommitted: $(git status --short | wc -l) files"
+git status --short
 
-# WhatsApp instâncias
-ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 '
-APIKEY=$(grep EVOLUTION_API_KEY /opt/evolution-api/.env | cut -d= -f2)
-curl -s http://localhost:8080/instance/fetchInstances -H "apikey: $APIKEY"
-' 2>/dev/null | python3 -c "
-import json,sys
-try:
-  d=json.load(sys.stdin)
-  for i in d: print(f'WA {i[\"name\"]}: {i.get(\"connectionStatus\",\"?\")}')
-except: pass
-" 2>/dev/null
+# Resources
+df -h / | tail -1
+free -h | head -2
 
-# Sites principais
-for s in "https://hq.egos.ia.br" "https://intelink.ia.br" "https://guard.egos.ia.br/health"; do
-  code=$(curl -s -o /dev/null -w "%{http_code}" "$s" 2>/dev/null)
-  echo "$code $s"
-done
+# TASKS.md metrics
+DONE=$(grep -c "^- \[x\]" TASKS.md 2>/dev/null || echo 0)
+PEND=$(grep -c "^- \[ \]" TASKS.md 2>/dev/null || echo 0)
+P0=$(grep -c "^- \[ \].*\[P0\]" TASKS.md 2>/dev/null || echo 0)
+LINES=$(wc -l < TASKS.md 2>/dev/null || echo 0)
+echo "TASKS: ${DONE} done, ${PEND} pending, ${P0} P0 | TASKS.md: ${LINES}L"
 ```
 
-### 1.3 Última sessão (memory index)
+---
+
+## LAYER 6 — Skills/Tooling Inventory
 
 ```bash
-head -15 ~/.claude/projects/-home-enio-egos/memory/MEMORY.md 2>/dev/null
-```
+# Skills (counts only, não listagem completa)
+PERSONAS=$(ls -d docs/skills/personas/*/ 2>/dev/null | wc -l)
+DPIO=$(ls docs/guides/dpio/*.md 2>/dev/null | wc -l)
+SLASH=$(ls .claude/commands/*.md 2>/dev/null | wc -l)
+SLASH_GLOBAL=$(ls /home/enio/.claude/commands/*.md 2>/dev/null | wc -l)
+AGENT_TS=$(ls agents/skills/*.ts 2>/dev/null | wc -l)
+HERMES=$(ls -d /home/enio/hermes-egos/plugins/egos-* 2>/dev/null | wc -l)
 
-### 1.4 Output da Fase 1
+echo "Skills: ${PERSONAS} personas | ${DPIO} DPIO | ${SLASH} slash local | ${SLASH_GLOBAL} slash global | ${AGENT_TS} agent.ts | ${HERMES} hermes plugins"
 
-Apresentar ao usuário:
-
-```
-🧠 KERNEL ATIVO — [data]
-
-⚡ Sistema:
-  RAM: X/Y | Disk: X% | VPS: [ok/alerta]
-  WA enio-personal: [open/connecting]
-  Sites: hq ✅ | intelink ✅ | guard ✅
-
-📝 Última sessão:
-  [1 linha do MEMORY.md]
-
-💰 Custo desta sessão: $X.XX (alarme em $2)
+# Tools
+echo -n "Alibaba Qwen: "; grep -q ALIBABA_DASHSCOPE .env 2>/dev/null && echo "✅" || echo "❌"
+echo -n "Supabase: "; grep -q SUPABASE_URL .env 2>/dev/null && echo "✅" || echo "❌"
+echo -n "codebase-memory-mcp: "; command -v codebase-memory-mcp >/dev/null && echo "✅" || echo "❌"
 ```
 
 ---
 
-## FASE 2 — SELEÇÃO DO PROJETO (interativo)
+## LAYER 7 — Verification Checkpoint (OBRIGATÓRIO)
 
-**PARE AQUI e pergunte ao usuário.**
+**Após Layers 1-6, produza este briefing EXATO. Sem esta seção, /start está incompleto.**
 
-Não assuma o projeto. Não carregue docs de nenhum projeto ainda.
+```
+═══════════════════════════════════════════════════════════
+EGOS /start v6.1 — Verification Checkpoint
+═══════════════════════════════════════════════════════════
 
-### 2.1 Listar projetos ativos
+🔒 LAYERS LOADED (prove leitura)
+
+Layer 1 — Global Rules
+  ✓ T0 #N citada de memória: [exemplo: "NEVER force-push main"]
+  ✓ Lazy-loaded rules lidas: [enio-profile / posture / karpathy / outras]
+  ✓ Single Pursuit identificado em enio-profile: [data + descrição]
+
+Layer 2 — Bootstrap
+  ✓ EGOS_BOOTSTRAP.md lido: [versão + última atualização]
+  ✓ Single Pursuit canônico (BOOTSTRAP wins): [Central EGOS / outro]
+  ✓ Architecture 3-camadas: [resumo de 1 linha]
+
+Layer 3 — ADRs
+  ✓ Total decisões locked: [N]
+  ✓ Pricing tiers: Solo R$X/setup R$X/mês | Pro ... | Ent ...
+  ✓ Padrão fork: PAI plugins-only / outro
+
+Layer 4 — Memory Top 3
+  ✓ Entry 1: [filename + 1 linha do conteúdo]
+  ✓ Entry 2: ...
+  ✓ Entry 3: ...
+
+Layer 5 — System State
+  HEAD: [hash + msg curta] | Uncommitted: [N files]
+  TASKS: [done/pending/P0] | Lines: [N]
+  Disk: [N%] | RAM: [used/total]
+
+Layer 6 — Inventário
+  Personas: N | DPIO: N | Slash: local/global | Agent.ts: N | Hermes plugins: N
+  Tools: Alibaba ✅ | Supabase ✅ | codebase-memory-mcp ✅
+
+⚠️  CONFLITOS/UPDATES DETECTADOS
+  [listar se houver, ex: Single Pursuit mudou de X para Y]
+  [listar arquivos uncommitted relevantes]
+
+🎯 SINGLE PURSUIT ATIVO
+  [colar do BOOTSTRAP, NÃO do enio-profile se houver conflito]
+
+🚨 P0 BLOCKERS
+  [listar do TASKS.md ou "✅ nenhum P0 ativo"]
+
+🔗 PRÓXIMOS PASSOS RECOMENDADOS (3 opções)
+  1. [task concreta com ID do TASKS.md]
+  2. [task concreta com ID do TASKS.md]
+  3. [task concreta com ID do TASKS.md]
+
+❓ Em qual quer trabalhar? Ou outra coisa?
+═══════════════════════════════════════════════════════════
+```
+
+---
+
+## REGRAS DE PARADA (skip allowed)
+
+| Layer | Pode pular se | Reportar como |
+|-------|---------------|---------------|
+| 1 | NUNCA — global rules são obrigatórias | — |
+| 2 | NUNCA — BOOTSTRAP é canonical | — |
+| 3 | ADR não existe (raro) | "Layer 3: ADR X ausente" |
+| 4 | MEMORY.md vazio | "Layer 4: sem entries" |
+| 5 | bash falha | "Layer 5: comando X falhou" |
+| 6 | skill dirs vazios | "Layer 6: 0 skills" |
+| 7 | NUNCA — checkpoint é a prova | — |
+
+---
+
+## COMPARATIVO v5.9 → v6.1
+
+| Aspecto | v5.9 (anterior) | v6.1 (esta) |
+|---------|-----------------|-------------|
+| BOOTSTRAP | `head -60` (60/191L) | Read tool completo (191L) |
+| CLAUDE.md global | não lido | Read tool completo |
+| ADRs Tier 1 | `[ -f ]` checks | Read tool nos 3 |
+| Lazy-loaded | não lido | Read tool em 4 arquivos |
+| Memory | só MEMORY.md truncado | Read top 3 entries |
+| Verification | declarativo (frágil) | checkpoint forçado |
+| Custo extra | — | ~10k tokens (vale) |
+
+---
+
+## /refresh — Recarregar mid-session
+
+Se sessão >10 turnos ou trocou de assunto:
 
 ```bash
-echo "=== Repos com atividade recente ==="
-for repo in /home/enio/egos /home/enio/intelink /home/enio/egos-lab /home/enio/pixelart /home/enio/852; do
-  if [ -d "$repo/.git" ]; then
-    name=$(basename $repo)
-    last=$(git -C "$repo" log --oneline -1 2>/dev/null | cut -c1-60)
-    p0=$(grep -c "^\- \[ \].*\[P0\]" "$repo/TASKS.md" 2>/dev/null || echo 0)
-    pending=$(grep -c "^\- \[ \]" "$repo/TASKS.md" 2>/dev/null || echo 0)
-    echo "  $name | P0: $p0 | Pendentes: $pending | $last"
-  fi
-done
-
-echo ""
-echo "=== Sites live ==="
-echo "  hq.egos.ia.br | lab.egos.ia.br | chatbot.egos.ia.br"
-echo "  intelink.ia.br | pixelart.egos.ia.br | 852.egos.ia.br"
+git log --oneline -3
+git status --short
+grep "^- \[ \].*\[P0\]" TASKS.md | head -3
+ls -t docs/_current_handoffs/*.md 2>/dev/null | head -1
 ```
 
-### 2.2 Pergunta ao usuário
-
-```
-Em qual projeto/área vamos trabalhar hoje?
-
-  1. egos (kernel, regras, capacidades, Atlas)
-  2. intelink (delegacia, Neo4j, agente policial)
-  3. egos-lab (lab-kb, chatbot qualificador, WhatsApp agent)
-  4. pixelart (bot PixelArt, Lucas)
-  5. 852 (Tira-Voz)
-  6. infra/VPS (segurança, containers, deploy)
-  7. estratégia (LinkedIn, consulting kit, EGOS instalável)
-  8. outro: [diga qual]
-```
-
-**Aguardar resposta antes de continuar.**
+E re-leia EGOS_BOOTSTRAP.md (Layer 2) — só esse arquivo.
 
 ---
 
-## FASE 3 — DEEP-DIVE DO PROJETO ESCOLHIDO
-
-Após a escolha, carregar APENAS o contexto daquele projeto.
-
-### Se escolheu: `egos`
-
-```bash
-cd /home/enio/egos
-echo "=== README ===" && head -60 README.md
-echo "=== P0 ===" && grep "^\- \[ \].*\[P0\]" TASKS.md
-echo "=== P1 top 10 ===" && grep "^\- \[ \].*\[P1\]" TASKS.md | head -10
-echo "=== Capabilities (seções) ===" && grep "^## §" docs/CAPABILITY_REGISTRY.md | tail -10
-echo "=== Último handoff ===" && ls -t docs/_current_handoffs/*.md | head -1 | xargs head -25
-echo "=== Last 5 commits ===" && git log --oneline -5
-```
-
-**Output:** briefing egos + recomendação de task
-
----
-
-### Se escolheu: `intelink`
-
-```bash
-cd /home/enio/intelink
-echo "=== README ===" && head -50 README.md
-echo "=== P0 ===" && grep "^\- \[ \].*\[P0\]" TASKS.md | head -10
-echo "=== Neo4j stats ==="
-ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 '
-  curl -s -u neo4j:IntelinkReds2026! http://localhost:7475/db/neo4j/tx/commit \
-    -H "Content-Type: application/json" \
-    -d "{\"statements\":[{\"statement\":\"MATCH (p:Person) RETURN count(p) as pessoas, sum(coalesce(toInteger(p.reds_count),0)) as reds\"}]}"
-' 2>/dev/null | python3 -c "
-import json,sys
-d=json.load(sys.stdin); r=d['results'][0]['data'][0]['row']
-print(f'Pessoas: {r[0]:,} | REDS: {r[1]:,}')
-" 2>/dev/null
-echo "=== Operações ativas ===" && grep "^\- \[ \].*OP-" TASKS.md | head -5
-echo "=== Last 5 commits ===" && git log --oneline -5
-echo ""
-echo "⚠️ Máquina split: intelink pesado → delegacia (Windows). Aqui: deploy + fixes VPS."
-echo "❓ O que avança a investigação hoje?"
-```
-
----
-
-### Se escolheu: `egos-lab` / chatbot / WhatsApp
-
-```bash
-cd /home/enio/egos-lab
-echo "=== README ===" && head -40 README.md 2>/dev/null
-echo "=== CHATBOT-Q tasks ===" && grep "CHATBOT-Q\|WA-AGENT" /home/enio/egos/TASKS.md
-echo "=== Lab KB status ===" && ls /home/enio/egos-lab/apps/egos-lab-kb/ 2>/dev/null
-echo "=== Qualification Protocol ===" && head -30 /home/enio/egos/docs/guides/CHATBOT_QUALIFICATION_PROTOCOL.md
-echo "=== WA instances ===" 
-ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 '
-  APIKEY=$(grep EVOLUTION_API_KEY /opt/evolution-api/.env | cut -d= -f2)
-  curl -s http://localhost:8080/instance/fetchInstances -H "apikey: $APIKEY"
-' 2>/dev/null | python3 -c "
-import json,sys; [print(f'{i[\"name\"]}: {i.get(\"connectionStatus\")} | msgs={i.get(\"_count\",{}).get(\"Message\",0)}') for i in json.load(sys.stdin)]
-" 2>/dev/null
-```
-
----
-
-### Se escolheu: `pixelart`
-
-```bash
-cd /home/enio/pixelart
-echo "=== README ===" && head -40 README.md 2>/dev/null
-echo "=== CBC Cards Pixel ===" && ls /home/enio/egos/docs/capabilities/CBC-PIXELART-*.md
-echo "=== Pixel tasks no egos ===" && grep "BOT-\|IG-\|IMG-\|LUCAS\|PIXEL" /home/enio/egos/TASKS.md | grep "^\- \[ \]" | head -10
-echo "=== WA pixelart-bot ===" 
-ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 '
-  APIKEY=$(grep EVOLUTION_API_KEY /opt/evolution-api/.env | cut -d= -f2)
-  curl -s http://localhost:8080/instance/connectionState/pixelart-bot -H "apikey: $APIKEY"
-' 2>/dev/null
-```
-
----
-
-### Se escolheu: `infra/VPS`
-
-```bash
-ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 "
-echo '=== Containers ===' && docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' | head -30
-echo '=== Swap ===' && free -h | grep Swap
-echo '=== Portas expostas ==='
-ss -tlnp | grep -v '127.0.0.1\|::1' | grep LISTEN | grep -v '0.0.0.53'
-echo '=== Disk ===' && df -h / | tail -1
-" 2>/dev/null
-
-echo "=== Vulnerabilidades conhecidas ==="
-echo "  🔴 PostgreSQL sinapi exposto (0.0.0.0:5432)"
-echo "  🔴 Firewall rule ACCEPT all (rule 7)"
-echo "  🟡 Ollama 11434 exposto (tem bearer, mas exposto)"
-echo "  🟡 8090/3071/3070 diretos sem Caddy"
-```
-
----
-
-### Se escolheu: `estratégia`
-
-```bash
-echo "=== EGOS instalável — contexto atual ===" && head -30 /home/enio/egos/docs/strategy/EGOS_PROJECT_ATLAS.md
-echo "=== Consulting kit tasks ===" && grep "CHATBOT-Q\|WA-AGENT\|create-egos\|consulting" /home/enio/egos/TASKS.md | grep "^\- \[ \]" | head -15
-echo "=== LinkedIn post draft ===" && ls /home/enio/egos/docs/drafts/ | grep -i "linkedin\|post" | head -3
-echo "=== CBC cards existentes ===" && ls /home/enio/egos/docs/capabilities/
-```
-
----
-
-## /refresh — Recarregar contexto mid-session
-
-**Usar quando:** sessão longa, mudou de assunto, esqueceu onde estava.
-
-```bash
-# Roda durante a sessão (não reinicia)
-REPO=$(git rev-parse --show-toplevel 2>/dev/null || echo "?")
-echo "=== Repo atual: $REPO ==="
-head -30 README.md 2>/dev/null
-grep "^\- \[ \].*\[P0\]" TASKS.md 2>/dev/null | head -5
-ls -t docs/_current_handoffs/*.md 2>/dev/null | head -1 | xargs head -15 2>/dev/null
-git log --oneline -3 2>/dev/null
-```
-
----
-
-## Regras fundamentais do /start
-
-1. **NUNCA pule a Fase 1** — kernel sempre, mesmo sessão rápida
-2. **SEMPRE pergunte o projeto** — nunca assuma, nunca carregue tudo
-3. **Fase 3 é seletiva** — só o projeto escolhido, só o que for necessário
-4. **README desatualizado** (>7 dias + commits) → adicionar `README-UPDATE` ao P1
-5. **Custo > $1.60** → mencionar `/compact` ou troca de modelo
-6. **Custo > $3** → sugerir nova sessão
-
----
-
-## Output final (após Fase 3)
-
-```
-✅ /start completo — [PROJETO] | [data]
-
-🧠 Kernel: regras T0-T2 ativas | custo $X.XX
-⚡ Sistema: [status resumido]
-📋 [PROJETO]: P0=[N] | P1=[N] | Último commit: [hash msg]
-
-🎯 Próxima ação recomendada:
-  [task específica baseada no P0 do projeto]
-
-❓ Confirma ou quer mudar o foco?
-```
-
----
-
-*v6.0 — 2026-05-04 | Kernel → Seleção → Deep-dive | Substitui v5.8*
+*v6.1 — 2026-05-07 | Force-read all layers + Verification Checkpoint | Substitui v5.9 (egos local) e v6.0 (.egos global)*
+*Bug fix: v5.9 perdia 70%+ do contexto via head/[-f] checks. v6.1 garante leitura completa.*

@@ -1,4 +1,5 @@
 ---
+description: Repo capability audit: skills, docs, drift, quality score. Use when: onboarding new repo, after major refactor, or user asks 'how is this repo?'. Skip when: user wants a quick status check (use /diag instead).
 id: audit.ecosystem
 name: Ecosystem Audit
 version: 1.0.0

@@ -1,5 +1,5 @@
 ---
-description: Disseminar conhecimento e governanca do kernel para todo o ecossistema EGOS
+description: Disseminate kernel rules and governance to all leaf repos. Use when: 3+ feat: commits without propagating, AGENTS.md changed, or user asks to sync governance. Skip when zero feat: commits this session.
 ---
 
 # Workflow: /disseminate (Knowledge + Governance Propagation)

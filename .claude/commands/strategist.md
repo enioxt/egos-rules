@@ -1,4 +1,5 @@
 ---
+description: Strategic advisor for business decisions, pricing, partnerships, pivots. Use when user asks 'how should we approach X', 'what's the best strategy', or any decision with long-term implications. Skip for technical implementation questions.
 id: strategy.universal
 name: "Universal Strategist"
 version: "4.1.0"

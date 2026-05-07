@@ -1,3 +1,7 @@
+---
+description: List, run and manage EGOS agents with full orchestration. Use when: checking agent registry, running scheduled agents, querying agent status or logs. Skip when: asking about Claude Code skills (use /diag or /start).
+---
+
 # /agents — Agent Orchestration
 
 ## List all registered agents

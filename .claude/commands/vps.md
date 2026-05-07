@@ -1,3 +1,7 @@
+---
+description: Manage Hetzner VPS (204.168.217.125): SSH, deploy, containers, logs, Caddy, cron. Use when anything touches production server. Skip when issue is in code, not server.
+---
+
 # /vps — Connect & Manage Contabo VPS
 
 Connect to VPS and inspect/manage agents.

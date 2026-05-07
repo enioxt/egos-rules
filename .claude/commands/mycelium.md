@@ -1,3 +1,7 @@
+---
+description: Full Mycelium mesh reality check via VPS SSH. Use when: cross-repo sync needed, agents misbehaving, release validation, or weekly health sweep. Skip for quick governance-only checks (use /mycelium-check).
+---
+
 # /mycelium — Kernel Reality Check (EGOS)
 
 Validate Mycelium mesh reality, references, and maturity.

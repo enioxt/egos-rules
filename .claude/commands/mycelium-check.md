@@ -1,4 +1,5 @@
 ---
+description: Quick EGOS kernel health check (no SSH needed). Use when: checking governance sync state, pre-release drift validation, or kernel→leaf repo consistency. Skip when: VPS or container issues (use /vps or /diag).
 id: systems.mycelium
 name: "Mycelium Orchestrator"
 version: "1.0.0"
