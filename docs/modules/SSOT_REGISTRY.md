@@ -11,7 +11,7 @@
   - `docs/DOCUMENTATION_ARCHITECTURE_MAP.md` — documentation navigation and permanence rules
 <!-- llmrefs:end -->
 
-> **VERSION:** 2.1.0 | **UPDATED:** 2026-04-06
+> **VERSION:** 2.2.0 | **UPDATED:** 2026-05-01
 > **PURPOSE:** canonical registry for all SSOT surfaces across the EGOS workspace.
 > **TASK:** EGOS-083 (created), EGOS-085 (expanded)
 
@@ -55,7 +55,7 @@
 | Integration release gate | `egos/integrations/manifests/` | enioxt | Update when new integration surface is added; `bun run integration:check` (INTEGRATION_RELEASE_CONTRACT.md archived) | 2026-04-18 |
 | Integration manifests | `egos/integrations/manifests/` | enioxt | New bundle = new manifest; validated via `integration:check` | 2026-03-30 |
 | BRACC Neo4j boundary | `br-acc/` + `docs/ECOSYSTEM_CLASSIFICATION_REGISTRY.md` | enioxt | leaf_local; BRACC remains standalone OSINT and must not be merged into kernel Mycelium/reference-graph surfaces | 2026-04-06 |
-| Intelink v3 (SSOT canônico) | `/home/enio/egos-inteligencia/` | enioxt | leaf_local; repo separado, docker-compose próprio, api Python + frontend Next.js + neo4j. **DECISÃO 2026-04-09**: este é o único repositório canônico. `egos-lab/apps/intelink` = ARCHIVED. `/home/enio/INTELINK` = ARCHIVED (migração incompleta). `egos-archive/v2/EGOSv2/intelink-*` = LIXO | 2026-04-09 |
+| Intelink (SSOT canônico) | `/home/enio/intelink/` (github.com/enioxt/intelink) | enioxt | leaf_local; repo privado, Next.js 15 + Neo4j 5 + Supabase. **DECISÃO 2026-04-18**: canônico é `/home/enio/intelink`. `egos-inteligencia` = LEGACY/ARCHIVED. | 2026-05-01 |
 | Capability registry | `egos/docs/CAPABILITY_REGISTRY.md` | enioxt | kernel_canonical; update when capability added or removed | 2026-03-30 |
 | System map (kernel) | `egos/docs/SYSTEM_MAP.md` | enioxt | kernel_canonical; update when architecture changes; LLM activation map | 2026-03-30 |
 | SSOT Registry | `egos/docs/SSOT_REGISTRY.md` (this file) | enioxt | kernel_canonical; update when SSOT added/changed/resolved | 2026-03-30 |
@@ -89,43 +89,43 @@
 
 ## Per-Repo SSOT Adoption Status
 
-> Assessment method: `find /home/enio/<repo> -name AGENTS.md -o -name TASKS.md` + grep for SSOT_REGISTRY pointer. Spot-checked 2026-04-06, confirmed AGENTS.md propagation 2026-04-17.
+> Verificado 2026-05-01 — 9 repos ativos com READMEs cross-reference atualizados.
 
-| Repo | AGENTS.md | TASKS.md | SSOT Pointer | Status | Notes |
-|------|-----------|----------|--------------|--------|-------|
-| `egos` | ✅ | ✅ | ✅ `docs/SSOT_REGISTRY.md` is canonical | Full SSOT | Kernel. All global SSOT lives here. |
-| `egos-lab` | ✅ | ✅ | ⚠ Partial — lab claims some global truth without kernel pointer | Partial SSOT | Needs LAB-ARCHIVE-006 |
-| `br-acc` | ✅ | ✅ | ❌ No pointer to kernel SSOT_REGISTRY | Missing pointer | AGENTS.md + TASKS.md exist but no SSOT declarations |
-| `carteira-livre` | ✅ | ✅ | ❌ No pointer to kernel SSOT_REGISTRY | Missing pointer | Has docs/ but no SSOT contract |
-| `852` | ✅ | ✅ | ❌ No pointer to kernel SSOT_REGISTRY | Missing pointer | Has docker-compose, no SSOT contract |
-| `commons` | ❌ | ❌ | ❌ No SSOT declarations at all | No governance | Needs AGENTS.md + TASKS.md + pointer |
-| `forja` | ✅ | ✅ | ⚠ Has INTEGRATIONS_MEMORY.md but no kernel SSOT pointer | Partial SSOT | Close to Full — add pointer |
-| `policia` | ? | ? | ❌ Not verified | Unverified | Needs /start audit |
-| `INPI` | ❌ | ? | ❌ Not verified | Unverified | Has app structure, no governance docs visible |
+| Repo | AGENTS.md | TASKS.md | README v+status | Status |
+|------|-----------|----------|-----------------|--------|
+| `egos` | ✅ | ✅ | ✅ v1.5.0 PROD | Full SSOT — kernel canônico |
+| `intelink` | ✅ | ✅ | ✅ v2.0.0 PROD | Full SSOT — privado PCMG |
+| `852` | ✅ | ✅ | ✅ v1.3.0 BETA | Partial — SSOT pointer ausente |
+| `carteira-livre` | ✅ | ✅ | ✅ v2.0.0 PROD | Partial — SSOT pointer ausente |
+| `policia` | ✅ | ✅ | ✅ v0.2.0 BETA | Partial — privado PCMG |
+| `egos-lab` | ✅ | ✅ | ✅ v0.5.0 PAUSA | Partial — runtime migrado ao kernel |
+| `br-acc` | ✅ | ✅ | ✅ v0.8.0 PAUSA | Partial — SSOT pointer ausente |
+| `forja` | ✅ | ✅ | ✅ v0.3.0 PAUSA | Partial — SSOT pointer ausente |
+| `arch` | ✅ | ✅ | ✅ v0.2.0 PAUSA | Partial — SSOT pointer ausente |
 
 **Status values:** Full SSOT · Partial SSOT · Missing pointer · No governance · Unverified
 
 ---
 
-## Workspace Adoption Rollout (EGOS-085 Execution)
+## Workspace Adoption Rollout
 
-### Completed
+### Completed (2026-05-01)
 
-- [x] `egos` — kernel SSOT_REGISTRY created (EGOS-083)
-- [x] `egos` — governance sync extended to cover SSOT docs (EGOS-084)
-
-### In Progress
-
-- [ ] `egos-lab` — LAB-ARCHIVE-006: add kernel SSOT pointer to AGENTS.md + TASKS.md (Phase 2-A of KERNEL_CONSOLIDATION_PLAN)
+- [x] `egos` — kernel SSOT_REGISTRY + CAPABILITY_REGISTRY canonical
+- [x] `egos` — README cross-reference v1.5.0
+- [x] `intelink` — README cross-reference v2.0.0 + UPSTREAM_KERNEL.md
+- [x] `852` — README cross-reference v1.3.0
+- [x] `carteira-livre` — README cross-reference v2.0.0
+- [x] `policia` — README cross-reference v0.2.0
+- [x] `egos-lab` — README cross-reference v0.5.0
+- [x] `br-acc` — README cross-reference v0.8.0
+- [x] `forja` — README cross-reference v0.3.0
+- [x] `arch` — README cross-reference v0.2.0
 
 ### Next Wave
 
-- [ ] `br-acc` — add SSOT pointer section to AGENTS.md and TASKS.md
-- [ ] `carteira-livre` — add SSOT pointer section
-- [ ] `852` — add SSOT pointer section
-- [ ] `forja` — add kernel SSOT_REGISTRY pointer to AGENTS.md
-- [ ] `commons` — create AGENTS.md + TASKS.md + SSOT pointer
-- [ ] `policia` — /start audit needed first
+- [ ] Adicionar seção `## Upstream SSOT` em AGENTS.md de cada leaf repo apontando para este arquivo
+- [ ] `DOC-CLEAN-007`: resolver 112 broken refs detectados pelo cross-ref checker
 
 ---
 
