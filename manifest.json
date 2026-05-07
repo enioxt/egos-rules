@@ -39,15 +39,15 @@
   ],
 
   "repos": {
-    "egos":           { "path": "/home/enio/egos",           "mode": "auto-sync", "hooks": true },
+    "egos":           { "path": "/home/enio/egos",           "mode": "auto-sync", "hooks": false },
     "egos-lab":       { "path": "/home/enio/egos-lab",       "mode": "auto-sync", "hooks": true },
     "852":            { "path": "/home/enio/852",            "mode": "auto-sync", "hooks": true },
-    "INPI":           { "path": "/home/enio/INPI",           "mode": "auto-sync", "hooks": true },
+    "INPI":           { "path": "/home/enio/INPI",           "mode": "auto-sync", "hooks": false },
     "br-acc":         { "path": "/home/enio/br-acc",         "mode": "auto-sync", "hooks": true },
     "carteira-livre": { "path": "/home/enio/carteira-livre", "mode": "auto-sync", "hooks": true },
     "forja":          { "path": "/home/enio/forja",          "mode": "auto-sync", "hooks": true },
     "egos-self":      { "path": "/home/enio/egos-self",      "mode": "auto-sync", "hooks": true },
-    "commons":        { "path": "/home/enio/commons",        "mode": "auto-sync", "hooks": true },
+    "commons":        { "path": "/home/enio/commons",        "mode": "auto-sync", "hooks": false },
     "smartbuscas":    { "path": "/home/enio/smartbuscas",    "mode": "auto-sync", "hooks": true },
     "santiago":       { "path": "/home/enio/santiago",       "mode": "auto-sync", "hooks": true },
     "arch":           { "path": "/home/enio/arch",           "mode": "auto-sync", "hooks": true },
