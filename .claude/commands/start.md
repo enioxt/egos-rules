@@ -1,12 +1,13 @@
 ---
-description: Session Initialization v6.2 — Force-Read All Layers + Handoff + Hook Warnings
+description: Session Initialization v6.3 — Force-Read All Layers + Handoff + Governance Smoke
 ---
 
-# /start — Session Initialization v6.2 (EGOS)
+# /start — Session Initialization v6.3 (EGOS)
 
 > **Princípio:** Não basta verificar existência — é preciso LER o conteúdo.
 > **Bug v5.9 corrigido:** `head -60` e `[ -f ]` perdiam 70%+ do contexto crítico.
 > **Bug v6.1 corrigido:** handoff não lido + hook warnings ignorados + ADR sem Glob = próximos passos errados.
+> **Bug v6.2 corrigido:** hook warnings grep no log JSON (sempre vazio) → smoke check direto (`runtime-smoke.ts`).
 > **Pacto:** ao final, o agente DEVE provar leitura via verification checkpoint.
 
 ---
@@ -134,11 +135,16 @@ P0=$(grep -c "^- \[ \].*\[P0\]" TASKS.md 2>/dev/null || echo 0)
 LINES=$(wc -l < TASKS.md 2>/dev/null || echo 0)
 echo "TASKS: ${DONE} done, ${PEND} pending, ${P0} P0 | TASKS.md: ${LINES}L"
 
-# Session-start hook warnings ← NOVO em v6.2
-SESSION_LOG=$(ls -t ~/.claude/logs/session-*.log 2>/dev/null | head -1)
-if [ -n "$SESSION_LOG" ]; then
-  WARN=$(grep -E "^(❌|⚠️)" "$SESSION_LOG" 2>/dev/null | head -10)
-  [ -n "$WARN" ] && echo "=== Hook Warnings ===" && echo "$WARN" || echo "=== Hook Warnings: nenhum ==="
+# Governance smoke check (fonte canônica de warnings — session log é JSON, não texto)
+EGOS_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")
+if [ -f "$EGOS_ROOT/scripts/runtime-smoke.ts" ] && command -v bun >/dev/null 2>&1; then
+  SMOKE=$(cd "$EGOS_ROOT" && bun scripts/runtime-smoke.ts --quiet 2>&1)
+  WARN=$(echo "$SMOKE" | grep -E "(❌|⚠️)" | head -10)
+  echo "=== Governance Smoke ==="
+  echo "$SMOKE" | head -1
+  [ -n "$WARN" ] && echo "$WARN" || echo "✅ sem warnings"
+else
+  echo "=== Governance Smoke: script ausente ou bun indisponível ==="
 fi
 ```
 
@@ -171,7 +177,7 @@ echo -n "codebase-memory-mcp: "; command -v codebase-memory-mcp >/dev/null && ec
 
 ```
 ═══════════════════════════════════════════════════════════
-EGOS /start v6.1 — Verification Checkpoint
+EGOS /start v6.3 — Verification Checkpoint
 ═══════════════════════════════════════════════════════════
 
 🔒 LAYERS LOADED (prove leitura)
@@ -206,7 +212,7 @@ Layer 5 — System State
   HEAD: [hash + msg curta] | Uncommitted: [N files]
   TASKS: [done/pending/P0] | Lines: [N]
   Disk: [N%] | RAM: [used/total]
-  Hook Warnings: [❌/⚠️ lines do session-start.sh ou "✅ nenhum"]
+  Governance Smoke: [summary line + ❌/⚠️ warnings, ou "✅ sem warnings"]
 
 Layer 6 — Inventário
   Personas: N | DPIO: N | Slash: local/global | Agent.ts: N | Hermes plugins: N
@@ -250,20 +256,20 @@ Layer 6 — Inventário
 
 ---
 
-## COMPARATIVO v5.9 → v6.1 → v6.2
+## COMPARATIVO v5.9 → v6.1 → v6.2 → v6.3
 
-| Aspecto | v5.9 | v6.1 | v6.2 (esta) |
-|---------|------|------|-------------|
-| BOOTSTRAP | `head -60` truncado | Read completo | Read completo |
-| CLAUDE.md global | não lido | Read completo | Read completo |
-| ADRs Tier 1 | `[ -f ]` checks | Read tool nos 3 (sem verificar) | **Glob bash primeiro, Read só se existir** |
-| Lazy-loaded | não lido | Read em 4 arquivos | Read em 4 arquivos |
-| Memory | MEMORY.md truncado | Read top 3 entries | Read top 3 entries |
-| Handoff atual | não lido | não lido | **Layer 4.5 — Read handoff mais recente** |
-| Hook warnings | ignorados | ignorados | **Layer 5 captura ❌/⚠️ do session-start.sh** |
-| Próximos passos | grep P0 TASKS.md | grep P0 TASKS.md | **handoff.next → P0 Single Pursuit → P0 geral** |
-| Verification | declarativo | checkpoint forçado | checkpoint + Layer 4.5 + Hook Warnings |
-| Custo extra | — | ~10k tokens | ~12k tokens (vale) |
+| Aspecto | v5.9 | v6.1 | v6.2 | v6.3 (esta) |
+|---------|------|------|------|-------------|
+| BOOTSTRAP | `head -60` truncado | Read completo | Read completo | Read completo |
+| CLAUDE.md global | não lido | Read completo | Read completo | Read completo |
+| ADRs Tier 1 | `[ -f ]` checks | Read tool nos 3 (sem verificar) | **Glob bash primeiro, Read só se existir** | idem |
+| Lazy-loaded | não lido | Read em 4 arquivos | Read em 4 arquivos | idem |
+| Memory | MEMORY.md truncado | Read top 3 entries | Read top 3 entries | idem |
+| Handoff atual | não lido | não lido | **Layer 4.5 — Read handoff mais recente** | idem |
+| Governance smoke | ignorado | ignorado | grep no log JSON (sempre vazio ❌) | **`bun runtime-smoke.ts` direto ✅** |
+| Próximos passos | grep P0 TASKS.md | grep P0 TASKS.md | **handoff.next → P0 Single Pursuit → P0 geral** | idem |
+| Verification | declarativo | checkpoint forçado | checkpoint + Layer 4.5 | checkpoint + smoke real |
+| Custo extra | — | ~10k tokens | ~12k tokens | ~13k tokens (vale) |
 
 ---
 
@@ -282,7 +288,7 @@ E re-leia EGOS_BOOTSTRAP.md (Layer 2) + handoff mais recente (Layer 4.5) — só
 
 ---
 
-*v6.2 — 2026-05-07 | +Layer 4.5 (handoff) +F2 (hook warnings) +F3 (ADR Glob) +F5 (próximos passos por prioridade)*
-*Bug fix v6.1: handoff não lido → recomendações erradas. Hook warnings ignorados. ADR sem Glob.*
+*v6.3 — 2026-05-07 | Bug fix: governance smoke via `bun runtime-smoke.ts` (log JSON era sempre vazio)*
+*v6.2 — 2026-05-07 | +Layer 4.5 (handoff) +F3 (ADR Glob) +F5 (próximos passos por prioridade)*
 *v6.1 — 2026-05-07 | Force-read all layers + Verification Checkpoint*
 *v5.9 bug: `head -60` perdia 70%+ do contexto.*
