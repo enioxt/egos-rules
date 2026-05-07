@@ -1,7 +1,7 @@
 # CHATBOT_SSOT — Canonical Chatbot Standard
 
-> **VERSION:** 2.0.0 | **UPDATED:** 2026-04-07
-> **REFERENCE IMPLEMENTATION:** `/home/enio/852` (852 Inteligência) + reusable core modules in `/home/enio/egos/packages/shared`
+> **VERSION:** 2.1.0 | **UPDATED:** 2026-05-01
+> **REFERENCE IMPLEMENTATIONS:** `/home/enio/852` (chatbot SSE + ATRiAN) + `/home/enio/intelink` (5-tier LLM router + tool-calling + RAG)
 > **STATUS:** Active — all new chatbots MUST follow this standard
 
 ---
@@ -772,4 +772,116 @@ Campo para admissibilidade legal em investigações (intelink) e auditoria de ca
 
 ---
 
-*Last updated: 2026-04-22 (INTELINK-001 — Chatbot Integration Protocol formalized)*
+## 18. Local LLM Tier — Intelink Agente Pattern (2026-04-29)
+
+**Reference:** `/home/enio/intelink/lib/intelink-llm-router.ts`
+
+### 18.1 5-Tier Fallback Chain
+
+Padrão canônico para chatbots que precisam de LLM local (custo zero) com fallback robusto:
+
+```typescript
+const TIERS = [
+  { name: 'local',     endpoint: 'http://localhost:11434',           model: 'intelink-agente-v1' },
+  { name: 'vps',       endpoint: 'http://vps-host:11434',            model: 'intelink-agente-v1' },
+  { name: 'or-free',   endpoint: 'https://openrouter.ai/api/v1',     model: 'qwen/qwen-2.5-7b-instruct:free' },
+  { name: 'or-paid',   endpoint: 'https://openrouter.ai/api/v1',     model: 'google/gemini-2.0-flash-001' },
+  { name: 'anthropic', endpoint: 'https://api.anthropic.com/v1',     model: 'claude-haiku-4-5-20251001' },
+];
+```
+
+**Trigger de fallback:** timeout 30s, HTTP 5xx, ou resposta vazia. Cada tier tenta uma vez antes de descer.
+
+### 18.2 Fine-Tuning Pipeline (Optional)
+
+Se o domínio é especializado o suficiente (ex: linguagem policial PCMG), vale fine-tunar:
+
+| Componente | Path | Responsabilidade |
+|-----------|------|------------------|
+| Training script | `intelink-agente/scripts/train.py` | QLoRA fine-tuning com PyTorch |
+| Dataset | `intelink-agente/data/training_pairs.jsonl` | 76+ pares de instrução/resposta |
+| LoRA adapters | `intelink-agente/models/v1/lora_adapters/` | Pesos fine-tunados (~50MB) |
+| Eval suite | `intelink-agente/scripts/run_eval.py` | Benchmark contra base model |
+| Ollama Modelfile | `intelink-agente/Modelfile` | Empacota base + adapters |
+
+**Custo:** Run #1 do Intelink rodou em 1m13s (Qwen2.5-7B, RTX 5060 Ti, 1 epoch).
+
+### 18.3 Quando usar local LLM
+
+| Caso | Decisão |
+|------|---------|
+| Dados sensíveis (LGPD, sigilo policial) | **Sim** — não pode sair do servidor |
+| Volume alto, queries repetitivas | **Sim** — economia significativa |
+| Domínio muito especializado | **Sim** — fine-tuning melhora resposta |
+| Generalista (chat aberto) | **Não** — Claude/Gemini são melhores |
+| Latência crítica (<500ms) | **Sim** — local elimina round-trip |
+
+### 18.4 Tool-Calling com LLM Local
+
+Modelos pequenos (7B) têm tool-calling fraco. Padrão recomendado:
+
+1. **LLM local** decide intenção → emite `{tool: "buscar", args: {...}}`
+2. **Backend** executa tool → retorna resultado
+3. **LLM local OU paid tier** sintetiza resposta final
+4. Para tools críticas com dados sensíveis: Guard Brasil disponível como módulo opcional de compliance LGPD — ativar quando cliente exigir auditoria formal ou operar em setor regulado (saúde, financeiro, jurídico)
+
+Reference: `intelink/app/api/chat/route.ts` — chat handler com 6 tools (`buscarPessoa`, `getOccurrences`, `getLinks`, `getPhoto`, `criarProposta`, `lerObservacoes`).
+
+### 18.5 Reference Implementation Status
+
+| Capability | 852 | intelink | Notes |
+|-----------|-----|----------|-------|
+| Streaming SSE | ✅ | ✅ | Both implement SSE per §17.2 |
+| ATRiAN validation | ✅ | ✅ | `lib/atrian.ts` |
+| PII Scanner | ✅ | ✅ | `lib/pii-scanner.ts` |
+| Conversation Memory | ✅ | ✅ | 10-turn rolling window |
+| Multi-LLM router | ✅ (3-tier) | ✅ (5-tier) | intelink adds local + VPS |
+| Tool-calling | ❌ | ✅ (6 tools) | intelink leads here |
+| RAG | ❌ | ✅ | `lib/intelligence/rag-context-retriever.ts` |
+| Fine-tuned model | ❌ | ✅ (v1) | Qwen2.5-7B QLoRA |
+| Provenance hash chain | ❌ | ✅ | SHA-256 chained audit log |
+
+**Gap closed (2026-05-01):** `packages/shared/src/local-llm-router.ts` ✅ — fábrica genérica `createLocalLLMRouter(config)`. Sem deps de SDK (usa fetch). `intelink-llm-router.ts` é wrapper fino sobre o genérico.
+
+```typescript
+import { createLocalLLMRouter } from '@egos/shared';
+
+const route = createLocalLLMRouter({
+  localModel: 'forja-agent-v1',
+  systemPrompt: 'Você é o assistente Forja...',
+  vpsURLEnv: 'FORJA_LLM_VPS_URL',
+  vpsTokenEnv: 'FORJA_LLM_VPS_TOKEN',
+});
+
+const result = await route([{ role: 'user', content: 'consulta de estoque' }]);
+```
+
+### 18.6 Eval-Runner Vendoring Protocol (EVAL-X5)
+
+When a downstream repo (e.g., intelink) needs the eval harness before `@egos/shared` publishes it:
+
+**Pattern: local vendor copy**
+```
+intelink/
+  lib/eval/
+    eval-runner.ts   ← vendor copy of packages/shared/src/eval/runner.ts
+    golden/
+      intelink.ts    ← golden cases specific to intelink chatbot
+```
+
+**Rules:**
+1. Vendor copy lives at `lib/eval/eval-runner.ts` (NOT in `src/eval/`)
+2. Top of file must have: `// VENDORED from @egos/shared — sync on shared update`
+3. When `@egos/shared` publishes `eval/runner`, replace vendor with: `export * from '@egos/shared/eval/runner'`
+4. Golden cases (`lib/eval/golden/*.ts`) are always repo-specific — never vendored
+
+**Current state (2026-05-02):**
+| Repo | Eval harness | Status |
+|------|-------------|--------|
+| 852 | `src/eval/eval-runner.ts` | Primary implementation, not yet shared |
+| intelink | `lib/eval/eval-runner.ts` (if exists) | Vendor copy from 852 |
+| @egos/shared | Not yet exported | Pending EVAL-MIGRATE-001 |
+
+---
+
+*Last updated: 2026-05-02 (§18.6 — Eval-Runner Vendoring Protocol EVAL-X5)*

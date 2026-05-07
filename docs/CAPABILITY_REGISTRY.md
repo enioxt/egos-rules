@@ -11,7 +11,7 @@
   - `docs/SYSTEM_MAP.md` — architecture placement of capabilities
 <!-- llmrefs:end -->
 
-> **VERSION:** 1.10.0 | **UPDATED:** 2026-04-12
+> **VERSION:** 1.11.0 | **UPDATED:** 2026-05-01
 > **PURPOSE:** Master index of all capabilities across the EGOS ecosystem
 > **SSOT STATUS:** This file IS the canonical capability map
 > **LATEST:** Timeline Publishing Pipeline, Rich Article Rendering, AI Discovery Layer, Timeline KB Sync (§23)
@@ -94,6 +94,8 @@ Each capability has:
 > Package: `packages/guard-brasil/` | Product brief: `docs/strategy/FLAGSHIP_BRIEF.md`
 > Demo: `bun run packages/guard-brasil/src/demo.ts`
 > Tests: 20/20 pass (`bun test packages/guard-brasil/src/guard.test.ts`)
+>
+> **⚠️ Posicionamento:** Módulo **OPCIONAL** de compliance LGPD — não é pré-requisito de venda. Ativar para setores regulados (saúde, financeiro, jurídico, governo) ou quando cliente exigir auditoria formal. Ver: `docs/strategy/GUARD_BRASIL_POSITIONING.md`
 
 | **Chatbot Gateway (Hybrid)** | `egos-gateway/src/routes/chat.ts` *(PLANNED — CHAT-GW-002)* | C | — | 852, forja | `chatbot`, `gateway`, `routing`, `proxy` |
 | **Chatbot Discovery Endpoint** | `egos/packages/chatbot-core/src/discovery.ts` *(PLANNED — CHAT-GW-001)* | C | — | forja, 852 | `chatbot`, `discovery`, `registry` |
@@ -108,6 +110,7 @@ Each capability has:
 
 | Capability | SSOT | Quality | Adopted By | Should Adopt | Tags |
 |-----------|------|---------|------------|-------------|------|
+| **Google AI (Gemini 2.5 Flash)** | `egos/packages/chatbot-core/src/google-ai-provider.ts` | A | egos | 852, forja, intelink | `ai`, `gemini`, `google`, `llm` |
 | Multi-LLM Provider (TS) | `egos/packages/shared/src/llm-provider.ts` | A | egos, egos-lab | 852 (has own) | `ai`, `provider`, `shared` |
 | DashScope Fallback Chain | `egos/packages/shared/src/llm-provider.ts` | A | egos, egos-lab | 852, forja | `ai`, `dashscope`, `fallback` |
 | qwq-plus Reasoning Tier | `egos/packages/shared/src/llm-provider.ts` | A | egos | ALL (deep tasks) | `ai`, `reasoning`, `qwq` |
@@ -325,6 +328,37 @@ Each capability has:
 
 > **Propósito:** Extrair capabilities universais como packages `@egos/*` para uso em consultorias de KB + agentes para terceiros.
 > **Plano de extração:** ver `TASKS.md` track `🧬 INTELINK HARVEST`.
+
+### Intelink Capacidades Únicas (Audit 2026-05-05)
+
+> **Origem:** CAPABILITY_INDEX.md auditado e commitado em `intelink/CAPABILITY_INDEX.md`
+> **Evidências:** file:line verificadas no código real
+
+| Capability | SSOT | Quality | Tags |
+|-----------|------|---------|------|
+| **Rho Governance** (anti-tunnel vision, centralização max 10%) | `intelink/lib/rho-governance.ts` | A | `governance`, `graph`, `bias-detection` |
+| **Adamic-Adar Link Prediction** (ML análise de rede criminal) | `intelink/lib/intelligence/graph-algorithms.ts` | A | `algorithms`, `network-analysis`, `ml` |
+| **Reconhecimento Facial** (face embedding + busca comparativa) | `intelink/app/api/face/embed/route.ts` | B | `face-recognition`, `biometrics` |
+| **OCR Tesseract.js** (PNG/JPG/PDF → texto) | `intelink/app/api/ocr/route.ts` | A | `ocr`, `document-processing` |
+| **Dedup multi-nível 6-tier** (Jaro-Winkler + Soundex + Levenshtein + CPF + placa) | `intelink/lib/entity-resolution/matcher.ts` | A | `dedup`, `entity-resolution` |
+| **Pipeline NER em massa (Ollama)** (batch local/VPS) | `intelink/scripts/ner-mass-run.sh` | B | `nlp`, `batch`, `local-llm` |
+| **Cross-case analysis** (entidades em múltiplas operações) | `intelink/lib/intelligence/cross-case-utils.ts` | A | `intelligence`, `cross-reference` |
+| **Mobile hub /m** (interface mobile para campo) | `intelink/app/m/` | B | `mobile`, `responsive`, `field-ops` |
+
+---
+
+## 12c. CHATBOT SETORIAL — ESPIRAL DE ESCUTA (2026-05-05)
+
+> **Repo:** `egos-lab-chat` (github.com/enioxt/egos-lab-chat — privado)
+> **Live:** lab.egos.ia.br · **Stack:** Bun + Hono + Supabase + OpenRouter
+> **Pattern:** 3 partes — Usuário + IA + Enio (monitoramento ao vivo)
+
+| Capability | SSOT | Quality | Tags |
+|-----------|------|---------|------|
+| **Sector Routing (8 setores)** (advocacia, saúde, varejo, indústria, imóveis, contabilidade, educação, outros) | `egos-lab-chat/src/index.ts` | A | `chatbot`, `routing`, `sectors` |
+| **Espiral de Escuta** (Enio monitora via SSE, pausa IA, injeta mensagens) | `egos-lab-chat/src/index.ts:renderMonitorPage()` | A | `chatbot`, `sse`, `live-monitoring`, `human-in-loop` |
+| **Lead Persistence + Insights** (coleta + geração LLM após qualificação) | `egos-lab-chat/src/index.ts:generateInsights()` | A | `chatbot`, `crm`, `leads`, `insights` |
+| **Telegram First-Contact Alert** (notificação imediata + link monitoramento) | `egos-lab-chat/src/index.ts:sendTelegramNotif()` | A | `chatbot`, `telegram`, `alerts` |
 
 ---
 
@@ -1071,3 +1105,817 @@ Differentiator: LGPD compliance (Guard Brasil), audit trail, frozen zones, spec-
 - **Skill Resolver** (`scripts/skill-resolver.ts`): SKILL-AUTO-001 — lê context-signals.jsonl + git log + prompt text → emite `[SKILL-SUGGEST] /skill PRIORITY — reason`. Integrado ao session-init --reset. Trigger patterns: §18 completo (PT+EN).
 - **Recency Decay KB Search** (`supabase/migrations/20260417_kb_recency_decay.sql`): RATIO-ABSORB-005 — `match_kb_hybrid` com `decay_rate float default 0.01`, `final_score = rrf_score * exp(-0.01 * days_since_update)`. Half-life ≈70 dias. `decay_rate=0` desativa.
 - **Content Track** (TASKS.md §CONTENT TRACK): Pipeline editorial completo — ART-001..008 + X-001..004 + TL-001..004 + SITE-010..013 + TOP-011..018. Foco: artigos técnicos reais → threads X.com → egos.ia.br/timeline.
+
+## §36 — CRC-PATTERN-v1 — Cross-Repo Coordination Protocol (2026-04-26)
+
+**Trigger:** N parallel agent sessions in different EGOS repos (kernel + leaf-apps) need to coordinate without falling into wrong "merge/absorb" frames or phantom claims about each other.
+
+**Canonical doc:** `docs/COORDINATION_PATTERN.md` (kernel SSOT, written by Janela A intelink, 2026-04-26).
+
+**Components verified live 2026-04-26:**
+- `docs/COORDINATION.md` — kernel SSOT for active/closed coord entries
+- `docs/CROSS_REPO_CONTEXT_ROUTER.md` — pull-based topic→repo resolver
+- `intelink/docs/UPSTREAM_KERNEL.md` — leaf-side reciprocity contract (commit `bd9e5f5`)
+- Supabase `coord_events` table (egos-lab, RLS public-read + service-role write)
+- Public endpoint `https://intelink.ia.br/api/coord` (HTTP 200, JSON, 60s cache)
+- CLI `intelink/scripts/coord-register.ts` (commit `7a12fa7`)
+- Mutual Error Acknowledgement section in `docs/COORDINATION.md` — public template for symmetric verification failures
+
+**5 rules of CRC-v1:**
+1. Repos distintos não mergeiam — somos camadas (kernel + leaf), não horizontal
+2. Verificação simétrica obrigatória — CLAUDE.md §1 aplica nos dois sentidos (about-self AND about-others)
+3. Acordo só com SHAs em remotes públicos — não com palavras
+4. Cada turno termina com `git push` — outra janela verifica via `git ls-remote`, não por confiança
+5. User is the third vertex, not a supervisor — sem ele o canal síncrono cross-repo não existe
+
+**Reference impl SHAs (verifiable on remotes):**
+- `enioxt/egos@16eaf75` — kernel registers COORD-A/B/C
+- `enioxt/intelink@b2f69a9` — leaf retracts merge frame
+- `enioxt/egos@2ce5cba` — kernel counter-signs + Mutual Error
+- `enioxt/intelink@bd9e5f5` — leaf creates UPSTREAM_KERNEL.md
+- `enioxt/egos@542af99` — kernel adopts CRC-PATTERN-v1 canonical
+- `enioxt/intelink@7a12fa7` — leaf ships /api/coord + Supabase + CLI
+
+**First case shipped:** `egos.ia.br/timeline/two-windows-one-mind` (PT-BR + EN, HTTP 200, published 2026-04-26).
+
+---
+
+## §36 — Cross-Repo Coordination Pattern v1 (CRC-PATTERN-v1) (2026-04-26)
+
+**Quality:** A (validated end-to-end with two real SHAs in two public remotes)
+**Owner:** egos kernel
+**Adoption:** intelink (leaf)
+**Tags:** `coordination`, `governance`, `multi-agent`, `cross-repo`
+
+### Summary
+Reusable protocol for parallel agent windows operating on related-but-separate repos in the EGOS ecosystem. Replaces ad-hoc "absorb/discard" framing with material reciprocity proven via git SHAs across remotes.
+
+### Components
+| Artifact | Location | Purpose |
+|----------|----------|---------|
+| Canonical doc | `egos/docs/COORDINATION_PATTERN.md` | 5 rules + 6-step protocol |
+| Active registry | `egos/docs/COORDINATION.md` | Live entries (pending → done) |
+| Leaf reference | `<leaf>/docs/UPSTREAM_KERNEL.md` | Each leaf-app commits this once |
+| Supabase table | `coord_events` (egos-lab project) | Persistent record with both SHAs |
+| Public feed | `https://intelink.ia.br/api/coord` | JSON, no auth, cache 60s |
+| Register script | `intelink/scripts/coord-register.ts` | CLI to add new event |
+
+### Reference run (first validated execution)
+- `COORD-2026-04-26-A` — kernel `16eaf75` ↔ leaf `7ab4577` (Intelink CPF normalization)
+- `COORD-2026-04-26-B` — kernel `d57c633` (HQ ChatPanel privacy fix)
+- `COORD-2026-04-26-C` — kernel `2ce5cba` ↔ leaf `bd9e5f5` (reciprocity proof)
+
+### Adoption checklist for new leaf-apps
+1. Commit `docs/UPSTREAM_KERNEL.md` referencing `enioxt/egos`
+2. Add upstream pointer in `AGENTS.md` header
+3. When parallel session arises: open coord entry in `egos/docs/COORDINATION.md` first
+4. Each turn ends with `git push` — never trust verbal/textual claims about other repos
+
+### Anti-patterns (recorded)
+- ❌ "Absorb the other window" framing
+- ❌ Cross-repo `git merge` (remotes are separate)
+- ❌ Narrative templates without verification (violates CLAUDE.md §1 + INC-005)
+- ❌ Hierarchy by perceived "size" of work (only by function: kernel vs leaf)
+
+---
+
+## §37 — HQ Live Dashboard — Agent Events + Hermes Panel (2026-04-30)
+
+**Quality:** A | **Repo:** egos (`apps/egos-hq/`) | **Commits:** `07d7a9e`, `5cd8fdb`, `f73229f`
+
+Real-time observability dashboard for the EGOS kernel. Wires 4 cron agents to `egos_agent_events` Supabase table and displays them live.
+
+| Component | Path | Description |
+|-----------|------|-------------|
+| Agent Events Dashboard | `apps/egos-hq/app/hq/agents/` | Live event stream per agent |
+| Hermes Panel | `apps/egos-hq/app/hq/hermes/` | Hermes gateway status + free model list |
+| Agents Status Strip | `apps/egos-hq/components/AgentStatusStrip.tsx` | Top-bar live agent health |
+| Deep Drill Sheets | `apps/egos-hq/app/hq/agents/[id]/` | Per-agent metrics + governance gates |
+| Guided Tour Modal | `apps/egos-hq/components/GuidedTour.tsx` | First-visit onboarding overlay |
+| Live Verification | `apps/egos-hq/app/api/hq/verify/` | Endpoint health checks with UI buttons |
+
+**Adopted by:** egos-hq (origin) | **Should adopt:** — (HQ-specific)
+**Tags:** `hq`, `observability`, `dashboard`, `agents`, `real-time`
+
+---
+
+## §38 — Full-System Health-Check + Periodic Monitor (2026-04-30)
+
+**Quality:** A | **Repo:** egos (`scripts/health-check.ts`) | **Commit:** `de12c70`
+
+Periodic health-check that runs across all VPS services and reports to `egos_agent_events`.
+
+| Component | Path | Description |
+|-----------|------|-------------|
+| Health check script | `scripts/health-check.ts` | Checks Guard Brasil API, HQ, Hermes, Neo4j |
+| Hermes free models fix | `packages/shared/src/llm-providers/hermes.ts` | Updated free model list (Qwen3 free tier) |
+| Snapshot KB | `scripts/snapshot-kb.ts` | KB state snapshot on each health run |
+
+**Adopted by:** egos (origin), VPS cron | **Tags:** `infra`, `health`, `monitoring`, `hermes`
+
+---
+
+## §39 — Intelink Agente — Local Police LLM (2026-04-29)
+
+**Quality:** B | **Repo:** intelink + egos | **Commits:** `5018e54`, `cea1e60`, `f55bd5d`
+
+Fine-tuned local LLM for police investigation queries. QLoRA Qwen2.5-7B, 76 training pairs, runs on local RTX 5060 Ti + VPS Ollama.
+
+| Component | Path | Description |
+|-----------|------|-------------|
+| LLM Router (5-tier) | `intelink/lib/intelink-llm-router.ts` | local→VPS→OR-free→OR-paid→Anthropic |
+| LoRA Adapters | `intelink-agente/models/v1/lora_adapters/` | Fine-tuned weights (QLoRA run #1) |
+| Training Pipeline | `intelink-agente/scripts/train.py` | QLoRA training with PyTorch + Blackwell |
+| Eval Suite | `intelink-agente/scripts/run_eval.py` | Benchmark against base model |
+| GitHub Repo | `github.com/enioxt/intelink-agente` | Public training artifacts |
+
+**Adopted by:** intelink (origin) | **Should adopt:** policia (when Windows migration complete)
+**Tags:** `llm`, `fine-tuning`, `local`, `police`, `qlora`, `intelink`
+
+---
+
+## §40 — Instagram Caption Generator + Lead Capture (2026-05-01)
+
+**Quality:** A | **Repo:** egos (`scripts/instagram-caption-generator.ts`) | **Commit:** `388431d`
+
+Automated caption generation for 4 content types (educacao/caso/demo/social) + Supabase lead capture for Instagram-driven prospects.
+
+| Component | Path | Description |
+|-----------|------|-------------|
+| Caption generator | `scripts/instagram-caption-generator.ts` | 4 content types, hashtags, CTA |
+| Lead capture table | `supabase/migrations/20260501_lead_discovery.sql` | `lead_discovery_sessions` with source tracking |
+| Landing page | `apps/egos-hq/app/implementacoes-gratuitas/` | Hero + 3 steps + Instagram CTA |
+| Deploy pipeline | `scripts/deploy-hq.sh` | 4-step automated HQ deploy to VPS |
+
+**Adopted by:** egos (origin) | **Should adopt:** 852, carteira-livre (lead capture pattern)
+**Tags:** `instagram`, `marketing`, `lead-capture`, `gtm`, `content`
+
+---
+
+## §41 — EGOS Practitioner Certification (2026-04-30)
+
+**Quality:** A | **Repo:** egos (`apps/egos-hq/`) | **Commit:** `1e5071c`
+
+Automatic lightweight certification issued after 90 days of active EGOS Lab membership. Verifiable via Supabase + public badge endpoint.
+
+| Component | Path | Description |
+|-----------|------|-------------|
+| Certification logic | `apps/api/src/routes/lab-certification.ts` | 90-day check + badge generation |
+| Badge endpoint | `apps/egos-hq/app/api/certifications/` | Public verification URL |
+| Lab landing page | `apps/egos-hq/app/lab/` | EGOS Lab CTA + pricing + certification info |
+
+**Adopted by:** egos (origin) | **Tags:** `lab`, `certification`, `community`, `gamification`
+
+---
+
+## §42 — Intelink Intelligence Modules (2026-04-12 → 2026-05-01)
+
+**Quality:** A | **Repo:** intelink | **Multiple commits**
+
+Advanced investigation capabilities built into the Intelink platform for PCMG.
+
+| Capability | Commit | Description |
+|-----------|--------|-------------|
+| BR-ACC Cross-reference | `b3f29b7` | PEP + sanction flags on Person nodes via br-acc API |
+| CEAP → Neo4j import | `b3f29b7` | Deputy spending data linked to REDS occurrences |
+| Web Search tool (chat) | `ad2b560` | DuckDuckGo + Brave opt-in in investigation chat |
+| Journey Tracker | `021e814` | Click-through navigation audit trail per investigation |
+| Vehicle detail page | `0e8d8d6` | `/veiculo/[placa]` with journey tracking |
+| Occurrence detail | `ce24889` | `/ocorrencia/[reds]` with full timeline |
+| Family relation scan | `5af2327` | Detect sibling/family pairs in dedup pipeline |
+| NER prompt v7 | `1601e0b` | Unified entity extraction prompt for all document types |
+| Nightly cross-ref cron | `1601e0b` | Scheduled pipeline for overnight enrichment |
+| Documents tab + viewer | `76b3c7b` | Inline document viewer per Person page |
+| Mobile hub `/m` | `a591f6a` | Mobile-optimized search + agent (busca + chat SSE) |
+
+**Adopted by:** intelink (origin) | **Should adopt:** policia (subset)
+**Tags:** `intelink`, `investigation`, `neo4j`, `police`, `enrichment`, `mobile`
+
+---
+
+## §43 — Capability Registry Scanner (2026-05-01)
+
+**Quality:** A | **Repo:** egos (`scripts/update-capability-registry.ts`)
+
+Automated scanner that reads git log `--since` last registry update across all ecosystem repos and identifies feat commits not yet registered. Non-destructive — outputs candidates for human review.
+
+```bash
+bun scripts/update-capability-registry.ts              # scan all repos since last update
+bun scripts/update-capability-registry.ts --since 7d   # last 7 days
+bun scripts/update-capability-registry.ts --repo intelink
+```
+
+**Adopted by:** egos (origin) | **Should adopt:** runs as pre-commit advisory (non-blocking)
+**Tags:** `governance`, `documentation`, `automation`, `registry`
+
+---
+
+## §44 — README Cross-Reference System (2026-05-01)
+
+**Quality:** A | **Repo:** all 9 active repos | **Commit:** this session
+
+Standardized README format across all ecosystem repos with versioning, real status, upstream/downstream dependency mapping.
+
+**Fields per repo:**
+
+- `Versão: X.Y.Z | Atualizado: YYYY-MM-DD | Status: PROD/BETA/PAUSA`
+- `Parte do ecossistema EGOS`
+- `## Ecossistema EGOS — Dependências` section with upstream/downstream
+
+**Repos with updated READMEs:** egos, intelink, 852, carteira-livre, forja, arch, egos-lab, br-acc, policia
+**Tags:** `documentation`, `cross-reference`, `ecosystem`, `governance`
+
+---
+
+## §45 — Chatbot Portal Multi-Agente (2026-05-03)
+
+**Quality:** A (Phase 0 live) | **Repo:** egos | **Commit:** a4b3597, 255bf1e
+
+Portal `chatbot.egos.ia.br` com 5 agentes (Labs/Pixel/Tira-Voz/Forja/Arch) + lead capture com funil `agent_clicked`.
+
+**Componentes:**
+- `docs/projects/chatbot-portal-snapshot-2026-05-03.html` — Phase 0 estático, live
+- `supabase/migrations/20260504_egos_lab_leads.sql` — tabela `egos_lab_leads` (email, agent_clicked, status funil)
+- `apps/egos-hq/app/api/hq/leads/route.ts` — POST /api/hq/leads + Telegram notify
+- `egos-lab/apps/egos-lab-kb/` — bootstrap Phase 1 (RAG chat + KB upload + schema multi-tenant)
+
+**Adotado por:** chatbot.egos.ia.br (live), hq.egos.ia.br (API)
+**Tags:** `chatbot`, `portal`, `lead-capture`, `rag`, `multi-tenant`
+
+---
+
+## §46 — BISP/REDS Ingestion Pipeline (2026-05-04)
+
+**Quality:** A | **Repo:** intelink | **Commit:** b815c0c
+
+Pipeline ETL para ingestão de planilhas XLSX exportadas do BISP (sistema policial) no Neo4j, com dedup inteligente por número REDS normalizado.
+
+**Componentes:**
+- `scripts/ingest-xlsx-reds.ts` — parser multi-aba (Ocorrências + Envolvidos + Armas), MERGE por REDS norm, detecção REDS referenciados no histórico
+- Dedup: REDS number normalizado (strip hífens) = chave única; Person MERGE por CPF → nome+mãe+nasc
+- Testado: 121REGIAO1 (8.803 ocorrências, 4.682 pessoas novas, 2.338 referências cruzadas)
+
+**Tags:** `etl`, `neo4j`, `bisp`, `reds`, `police`, `dedup`
+
+---
+
+## §47 — Cross-Ref Nightly v2 (7 steps) (2026-05-04)
+
+**Quality:** A | **Repo:** intelink | **Commit:** b815c0c
+
+Cron diário expandido de 5 para 7 etapas automáticas.
+
+**Novos steps (4.5, 6, 7):**
+- **4.5 ETL-BAIRRO**: fuzzy match Jaro-Winkler ≥0.88 contra 85 bairros de Patos de Minas → preenche `bairro_fato`
+- **6 FAMILY_DETECTOR**: `detectSiblingsByRegistry(500, true)` + `createFamilyEdgesFromNER()` — SIBLING_OF automático
+- **7 VEHICLE_NODES**: MERGE Vehicle nodes de `vehicle_plates[]` + `(Person)-[:OPERATES_VEHICLE]->(Vehicle)`
+
+**Componentes:**
+- `lib/etl/bairro-matcher.ts` — dicionário 85 bairros + sliding window fuzzy
+- `scripts/auto-merge-sameas.ts` — runner para 1.510 SAME_AS (conf≥95% auto, conf≥85%+CPF=igual)
+- `scripts/fix-cpf-type.ts` — detecção e correção de CPF como StringArray
+
+**Tags:** `etl`, `neo4j`, `cron`, `family-detection`, `vehicle`, `bairro`, `dedup`
+
+---
+
+## §48 — Tool Registry de Investigação (2026-05-03)
+
+**Quality:** B | **Repo:** intelink | **Commit:** b52f722
+
+Catálogo de 8 ferramentas de investigação policial com `suggestTools(missingFields, crimeTypes)`.
+
+**Ferramentas catalogadas:** BISP, INFOSEG, Sinesp, SESP/DHPP, Receita Federal, DETRAN-MG, Redes Sociais, WhatsApp Operacional
+
+**API:** `suggestTools(missingFields[], crimeTypes[])` → retorna ferramentas ordenadas por gravidade (homicídio > lesão > tráfico > arma > roubo > furto)
+
+**Componente:** `lib/config/tool-registry.ts`
+**Tags:** `intelligence`, `investigation`, `tools`, `police`, `suggestion`
+
+---
+
+## §49 — Chat Central Neo4j Conectado (2026-05-04)
+
+**Quality:** A | **Repo:** intelink | **Commit:** dbb7ab8
+
+Chatbot `/chat` agora conectado à base real de dados Neo4j (16k+ pessoas, REDS).
+
+**Mudanças:**
+- `loadCentralContext()` injeta stats Neo4j (total_persons, total_reds, top 5 por REDS) no contexto
+- `get_top_connected_entities` usa Neo4j em modo central (sem investigationId)
+- `GLOBAL_TOOLS` expandido: global_search + get_top_connected_entities + detect_criminal_articles + assess_risk
+- System prompt corrigido: não nega mais acesso a dados REDS
+
+**Tags:** `chatbot`, `neo4j`, `rag`, `intelligence`, `central-mode`
+
+---
+
+## §50 — EGOS Project Atlas (2026-05-04)
+
+**Quality:** A | **Repo:** egos | **Commits:** ATLAS-1.1/1.2/1.3
+
+Registry centralizado de todos os projetos EGOS no Supabase com busca híbrida FTS + semântica.
+
+**Schema:** `egos_project_atlas` — slug, name, tagline, stack[], features[], embeddings (1536 dims), searchable tsvector
+**Embeddings:** `openai/text-embedding-3-small` via OpenRouter (8 projetos seedados)
+**Endpoints:** `GET /api/atlas/search?q=&mode=semantic|fts|auto` + `GET /api/atlas/projects`
+**Populate:** `bun scripts/atlas-populate.ts --exec`
+**EGOS Network footer:** pixelart.egos.ia.br carrega projetos dinamicamente via Atlas API
+
+**Tags:** `atlas`, `search`, `registry`, `semantic`, `pgvector`, `embeddings`
+
+---
+
+## §51 — Atlas Semantic Search + pgvector RPC (2026-05-04)
+
+**Quality:** A | **Repo:** egos | **Supabase fn:** `search_atlas_semantic()`
+
+Busca semântica via cosine similarity no `embedding_purpose`. Fallback automático: semantic → FTS → ilike.
+
+**Tested:** "vídeo commercial filmmaking" → PixelArt 54.6% similarity (correto)
+**RPC function:** `search_atlas_semantic(query_embedding vector(1536), match_count int)`
+**Client:** lab.egos.ia.br/api/atlas/search?mode=semantic (gera embedding on-the-fly via OpenRouter)
+
+**Tags:** `semantic-search`, `pgvector`, `atlas`, `embeddings`, `rpc`
+
+---
+
+## §52 — llm.egos.ia.br — Ollama Gateway (2026-05-04)
+
+**Quality:** A | **Repo:** egos | **URL:** https://llm.egos.ia.br
+
+Acesso externo autenticado ao Ollama local (VPS Hetzner). Bearer token protegido via Caddy.
+
+**Modelos disponíveis:** `intelink-agente-v1` (QLoRA fine-tuned), `qwen2.5:7b`, `intelink-agente`, `llama3.1:8b`
+**Auth:** `Authorization: Bearer <token>` (token em /opt/bracc/infra/Caddyfile)
+**DNS:** `llm.egos.ia.br → 204.168.217.125` propagado (2026-05-04)
+**Timeout:** 180-240s response (modelos grandes precisam de tempo)
+
+**Tags:** `llm`, `ollama`, `gateway`, `local-model`, `auth`
+
+---
+
+## §53 — CBC-PATTERN-v1 — Capability Card System (2026-05-04)
+
+**Quality:** A | **Repo:** egos | **Path:** docs/capabilities/
+
+Sistema de registro de capabilities reutilizáveis com frontmatter YAML padronizado. 13 cards criados (5 kernel + 2 PixelArt + 4 Onda 2 + 2 Intelink).
+
+**Template:** `docs/capabilities/_TEMPLATE.md`
+**Cards kernel:** GUARD-BR-001, HERMES-001, EVOLUTION-001, TELEGRAM-ALERT-001, LEAD-CAPTURE-001
+**Cards PixelArt:** PIXEL-PROMPT-001, STORAGE-001, IMG-GEN-001, IG-PUBLISHER-001, BRIEFING-GEN-001, LEAD-SCORER-001
+**Cards Intelink:** NER-001, FACE-001 (via outra janela)
+**Disseminação:** CLAUDE.md global + egos/CLAUDE.md SSOT Map + MEMORY.md
+
+**Tags:** `governance`, `capabilities`, `cbc-pattern`, `registry`, `documentation`
+
+---
+
+## §54 — CRON_SECRET + Intelink Cross-Ref Nightly (2026-05-04)
+
+**Quality:** A | **Repo:** intelink | **Endpoint:** /api/cron/cross-ref-nightly
+
+CRON_SECRET configurado no intelink .env (era vazio, bloqueando auth). Rebuild feito. Cron nightly testado com sucesso.
+
+**Secret:** `intelink_cron_3d5f9fa9a9c4b11b93b1ec4cb69c513b`
+**Output testado:** `{"ok":true, "elapsed": 79.9s, "mentioned_in_created": 166, "fuzzy_matches": 62}`
+**Também em:** egos-hq container env (CRON_SECRET + STRIPE_SECRET_KEY + STRIPE_RESTRICTED_KEY)
+
+**Tags:** `cron`, `intelink`, `nightly`, `cross-ref`, `auth`
+
+---
+
+## §55 — EGOS Trading Dashboard (2026-05-04)
+
+**Quality:** A | **Repo:** egos | **URL:** egos.ia.br/trading | **Module:** `apps/egos-site/src/trading.ts`
+
+Dashboard de análise e automação de trading de criptomoedas integrado ao EGOS. 6 abas funcionais.
+
+### Capacidades implementadas (v2.0)
+
+| Capacidade | Endpoint | Auth | Status |
+|-----------|---------|------|--------|
+| Ticker de preços live (BTC/ETH/SOL/BNB/XRP) | `GET /trading/market` | Pública | ✅ |
+| Top 60 pares por volume (pair picker) | `GET /trading/instruments` | Pública | ✅ |
+| Klines históricos Bybit (candles) | `GET /trading/klines` | Pública | ✅ |
+| Parser CSV Bybit (3 formatos) | `POST /trading/analyze` | Sem auth | ✅ |
+| Engine de padrões + recomendações | `POST /trading/analyze` | Sem auth | ✅ |
+| API Bybit — saldos | `POST /trading/bybit/connect` | API key | ✅ |
+| API Bybit — ordem spot | `POST /trading/bybit/order` | API key | ✅ |
+| Posições abertas futuros + P&L | `POST /trading/live/positions` | API key | ✅ |
+| Histórico de ordens direto da API | `POST /trading/live/orders` | API key | ✅ |
+| Signal Executor (TradingView→Bybit) | `POST /trading/webhook` | Webhook key | ✅ |
+| Registro de webhook key | `POST /trading/webhook/register` | API key | ✅ |
+| AI Insight — análise CSV | `POST /trading/ai/analyze` | Sem auth | ✅ |
+| AI Insight — contexto mercado | `POST /trading/ai/market` | Sem auth | ✅ |
+| AI Explainer — padrão individual | `POST /trading/ai/explain` | Sem auth | ✅ |
+| Notificações Telegram | `POST /trading/notify/register` | Sem auth | ✅ |
+| Notificações Discord | `POST /trading/notify/register` | Sem auth | ✅ |
+| Notificações WhatsApp (Evolution) | `POST /trading/notify/register` | Sem auth | ✅ |
+| Broadcast em ordem executada | interno | — | ✅ |
+
+### LLM integration
+- **Modelo:** `google/gemini-2.0-flash-001` via OpenRouter (§16)
+- **Override:** `TRADING_LLM_MODEL` env var
+- **Custo estimado:** ~$0.0002/análise (600 tokens)
+- **Ref:** `apps/egos-site/src/trading-ai.ts`
+
+### Notification system
+- **Canais:** Telegram Bot, Discord Webhook, WhatsApp via Evolution API
+- **Triggers:** `order_executed` | `webhook_error` | `daily_summary`
+- **Storage:** memória de sessão (nunca persistido)
+- **Ref:** `apps/egos-site/src/trading-notify.ts`
+
+**Formatos CSV suportados:** Bybit Futures Closed P&L · Bybit Spot Orders · Bybit Order History
+
+**Tags:** `trading`, `bybit`, `csv-analysis`, `webhook`, `signal-executor`, `llm`, `notifications`, `ai-insights`
+
+---
+
+## §56 — Trading AI Engine (OpenRouter/Gemini) (2026-05-04)
+
+**Quality:** A | **Repo:** egos | **Module:** `apps/egos-site/src/trading-ai.ts`
+
+Motor de análise com LLM para o Trading Dashboard. Usa OpenRouter com Gemini 2.0 Flash.
+
+**Rotas:**
+- `POST /trading/ai/analyze` — interpreta resultado da análise CSV em PT-BR (diagnóstico + 3 ações + bot recomendado)
+- `POST /trading/ai/market` — contexto de mercado baseado em preços live e funding rate
+- `POST /trading/ai/explain` — explica um padrão detectado em linguagem simples
+
+**Config:** `OPENROUTER_API_KEY` + `TRADING_LLM_MODEL` (opcional, default: `google/gemini-2.0-flash-001`)
+**Alinhamento §16:** OpenRouter como canal, modelo configurável, nunca loga credenciais.
+
+**Tags:** `trading`, `llm`, `openrouter`, `gemini`, `insights`, `ai-analysis`
+
+---
+
+## §57 — Trading Notification System (2026-05-04)
+
+**Quality:** A | **Repo:** egos | **Module:** `apps/egos-site/src/trading-notify.ts`
+
+Sistema de notificações multi-canal para eventos do Trading Dashboard.
+
+**Canais:** Telegram · Discord · WhatsApp (Evolution API já no VPS)
+**Triggers:** `order_executed` · `webhook_error` · `daily_summary` · `price_alert`
+**Broadcast:** chamado automaticamente no webhook executor ao executar ordens
+
+**Rotas:**
+- `POST /trading/notify/register` — registra canal (valida campos obrigatórios por tipo)
+- `POST /trading/notify/test` — envia mensagem de teste formatada
+- `GET /trading/notify/list` — lista canais ativos com contadores
+- `POST /trading/notify/toggle` — ativa/desativa canal
+- `DELETE /trading/notify/remove` — remove canal
+
+**Tags:** `trading`, `notifications`, `telegram`, `discord`, `evolution`, `whatsapp`, `alerts`
+
+---
+
+## §58 — Trading Backtest Engine + Indicators (2026-05-04)
+
+**Quality:** A | **Repo:** egos | **Modules:** `apps/egos-site/src/trading-backtest.ts` + `trading-indicators.ts`
+
+Engine de backtest sobre klines reais do Bybit + biblioteca de indicadores técnicos em TS puro (zero deps).
+
+### Indicadores implementados (pure TS)
+- SMA, EMA (com seed correto), RSI (Wilder smoothing)
+- Bollinger Bands (period + multiplicador configuráveis)
+- MACD (fast, slow, signal)
+- ATR (true range com EMA smoothing)
+- crossedAbove/crossedBelow para detecção de cruzamentos
+
+### Backtest Engine
+- 10 tipos de regras (rsi_below/above, ema_cross_up/down, price_above/below_ema, price_drop/rise_pct, bb_lower/upper_touch)
+- Lógica AND/OR para combinar regras de entrada e saída
+- Stop Loss + Take Profit configuráveis (% do preço de entrada)
+- Position sizing (0-100% do capital)
+- Taxa por trade (default 0.1%)
+- Métricas: Total Return, Win Rate, Profit Factor, Max Drawdown, Sharpe Ratio, Avg Win/Loss, Best/Worst Trade
+- Equity curve por candle para visualização
+
+### Pre-built strategies
+- `rsi_mean_reversion` — RSI<30 + preço>EMA200, exit RSI>70 (conservador)
+- `ema_trend_follow` — EMA20 cruza EMA50, exit no cross-down (testado: +9.23% em 1000 candles BTC 1h)
+- `bb_squeeze` — Bollinger lower + RSI<35
+- `buy_the_dip` — queda 5% em 10 candles + preço>EMA200
+
+### Customização (frontend)
+- Strategy Builder visual: adicionar/remover regras, escolher tipo, ajustar thresholds
+- Save/Load estratégias customizadas via localStorage do browser
+- Preset selector com 4 estratégias prontas
+- Toggle de indicadores no gráfico (EMA20/50/200, Bollinger Bands)
+
+### Visualização (lightweight-charts via CDN)
+- Gráfico de candles (TradingView lightweight-charts v4.2.0, MIT)
+- Overlays de indicadores (EMAs, Bollinger Bands)
+- Markers de entrada/saída (setas verdes/vermelhas)
+- Equity curve em chart separado
+- Tabela de trades completa com motivo de saída
+
+**Endpoints:**
+- `POST /trading/backtest/run` — roda backtest e retorna resultado completo + candles + indicators
+- `GET /trading/backtest/presets` — lista estratégias prontas
+
+**Tags:** `trading`, `backtest`, `indicators`, `strategies`, `lightweight-charts`, `pure-typescript`, `customizable`
+
+---
+
+## §59 — Trading Risk Calculator (2026-05-04)
+
+**Quality:** A | **Repo:** egos | **Module:** integrado em `trading.ts` (UI + JS)
+
+Calculadora de risco no client-side (sem chamadas server).
+
+**Inputs:** Capital, Risk % por trade, Preço de entrada, Stop Loss, Alavancagem, R:R ratio
+**Outputs:**
+- Tamanho da posição em USDT
+- Tamanho em units do ativo
+- Margem necessária (com leverage)
+- Distância % do stop
+- Take Profit calculado pelo R:R
+- Max Loss em USDT
+- Reward potencial em USDT
+- Liquidação estimada (quando leverage > 1)
+
+Recálculo automático em tempo real conforme o usuário edita.
+
+**Tags:** `trading`, `risk-management`, `calculator`, `position-sizing`, `client-side`
+
+---
+
+## §60 — Trading Storage (Supabase Persistence) (2026-05-04)
+
+**Quality:** A | **Repo:** egos | **Module:** `apps/egos-site/src/trading-storage.ts`
+**Supabase Project:** `lhscgsqhiooyatkebose` (egos-lab) | **Tables:** 7 com prefixo `trading_`
+
+Camada de persistência completa para o Trading Dashboard. Substitui localStorage por DB compartilhado.
+
+### Tabelas criadas
+
+| Tabela | Descrição |
+|--------|-----------|
+| `trading_strategies` | Estratégias customizadas (regras + risk + capital) |
+| `trading_watchlists` | Watchlists customizáveis de pares (auto-cria Default) |
+| `trading_backtest_runs` | Histórico de execuções de backtest com métricas |
+| `trading_bots` | Bots ativos (DCA, Grid, webhook_strategy, price_alert) |
+| `trading_bot_executions` | Audit trail de cada ação de bot (FK → bots) |
+| `trading_price_alerts` | Alertas de preço sem execução |
+| `trading_user_prefs` | Preferências por usuário (default pair, interval, etc.) |
+
+### Pattern multi-tenant
+- `user_id` text NOT NULL — UUID gerado no browser (localStorage `egos_trading_user`)
+- Header `x-trading-user` enviado em toda request
+- Server filtra por user_id em queries (defesa-em-profundidade mesmo sem RLS)
+- Estratégias podem ser `is_public=true` para compartilhar entre usuários
+
+### Endpoints
+- CRUD em `/trading/storage/strategies`, `/watchlists`, `/backtest-runs`, `/prefs`
+- Auto-create de watchlist Default na primeira chamada
+- Triggers `set_updated_at` em strategies/watchlists/bots/prefs
+
+**Tags:** `trading`, `supabase`, `persistence`, `multi-tenant`, `user-prefs`, `watchlists`
+
+---
+
+## §61 — Trading Bot Creator (DCA + Grid via Bybit API) (2026-05-04)
+
+**Quality:** A | **Repo:** egos | **Module:** `apps/egos-site/src/trading-bots.ts`
+
+Bot creator que executa estratégias DCA (compra recorrente) e Grid (ordens em escada) via Bybit API direta. Persistência completa no Supabase.
+
+### Tipos de bot
+
+| Tipo | Como funciona |
+|------|---------------|
+| **DCA** | Market buy do valor X a cada N horas. Cron checa `next_run_at` periodicamente |
+| **Grid** | Coloca todas as ordens limit imediatamente — N compras abaixo + N vendas acima do preço atual |
+
+### Endpoints
+- `POST /trading/bots/create` — cria config (status=inactive)
+- `POST /trading/bots/start/:id` — para Grid: coloca ordens. Para DCA: ativa scheduler
+- `POST /trading/bots/stop/:id` — pausa + cancela ordens (Grid)
+- `DELETE /trading/bots/:id` — remove config
+- `GET /trading/bots/list` — lista bots (sem expor apiKey/Secret)
+- `GET /trading/bots/executions/:id` — log de execuções (até 50 últimas)
+- `POST /trading/bots/run-due` — cron endpoint: executa DCA bots com `next_run_at <= now`. Auth via `CRON_SECRET`
+
+### Multi-Timeframe Backtest
+
+Endpoint adicional em `trading-backtest.ts`:
+- `POST /trading/backtest/multi-tf` — roda mesma estratégia em 15m/1h/4h/1D simultaneamente
+- Retorna métricas comparativas para identificar melhor timeframe
+
+### Validação real
+- BTC EMA Trend Follow Multi-TF testado: 1h=+4.08% | 4h=+6.25% (best) | 1D=+1.49%
+- Mostra que estratégia funciona melhor em 4h
+
+### Cron necessário (próximo passo)
+```bash
+# Adicionar ao crontab do VPS:
+*/5 * * * * curl -X POST -H "Authorization: Bearer $CRON_SECRET" https://egos.ia.br/trading/bots/run-due
+```
+
+**Tags:** `trading`, `bot-creator`, `dca`, `grid`, `bybit`, `multi-timeframe`, `supabase`
+
+---
+
+## §62 — Trading Evolution (WhatsApp QR inline) (2026-05-04)
+
+**Quality:** A | **Repo:** egos | **Module:** `apps/egos-site/src/trading-evolution.ts`
+
+Integração nativa com Evolution API (já no VPS) — segue mesmo padrão do SSOT
+`apps/egos-hq/public/whatsapp-connect.html`. QR code inline com auto-refresh 55s,
+status polling, isolamento por usuário (instâncias prefixadas `trading-{userId}`).
+
+**Endpoints:**
+- `GET /trading/evolution/list` — lista instâncias do usuário (filtra por prefixo)
+- `POST /trading/evolution/create` — cria nova (máx 3/usuário)
+- `GET /trading/evolution/qr/:instance` — QR fresco + status polling
+- `POST /trading/evolution/disconnect/:instance` — logout (mantém)
+- `DELETE /trading/evolution/:instance` — remove
+- `POST /trading/evolution/send-test/:instance` — mensagem de teste
+
+**UX:** Modal QR com countdown bar verde→amarelo→vermelho, polling de conexão a cada 3s, ao conectar oferece "+ Adicionar como canal" que registra automaticamente em `trading-notify` com `apiKey='internal'` (usa env do servidor).
+
+**Tags:** `trading`, `whatsapp`, `evolution`, `qr-code`, `notifications`
+
+---
+
+## §63 — Trading Centralized Credentials (2026-05-04)
+
+**Quality:** A | **Repo:** egos | **Module:** `trading.ts` (settings modal + JS)
+
+Painel único de credenciais Bybit no header. Substitui inputs duplicados em 5 abas.
+
+- LocalStorage `egos_bybit_creds` `{ key, secret, mode }`
+- Mode: `readonly` (badge verde) | `trade` (badge laranja)
+- Auto-fill em todos os inputs (`bybit-key`, `live-key`, `wh-key`, `bot-api-key`, etc.) a cada 1s
+- Status indicator no header (verde pulsando = readonly, laranja = trade, cinza = não configurado)
+- Test connection antes de salvar
+- Clear creds com confirmação
+
+**Tags:** `trading`, `credentials`, `localStorage`, `single-source-of-truth`, `ux`
+
+---
+
+## §64 — Trading RLS Hardening (2026-05-04)
+
+**Quality:** A | **Repo:** egos-lab Supabase | **Migration:** `trading_dashboard_rls`
+
+Row Level Security habilitado em todas as 7 tabelas `trading_*`.
+- Anon/authenticated: acesso negado (sem policies = sem acesso)
+- Server (egos-site): usa `SUPABASE_SERVICE_KEY` que bypassa RLS
+- Exceção: policy `anon_read_public_strategies` para futura strategy library pública (`is_public=true`)
+
+**Tags:** `trading`, `supabase`, `rls`, `security`
+
+---
+
+## §65 — Trading Multi-Exchange Layer + Ticker Customization (2026-05-04)
+
+**Quality:** A | **Repo:** egos | **Modules:** `trading-exchanges.ts` + ticker config in `trading.ts`
+
+Camada de abstração para múltiplas exchanges + ticker totalmente customizável.
+
+### Multi-Exchange (`trading-exchanges.ts`)
+- Interface `ExchangeAdapter` com: id, label, status, features, signaturePattern, getTicker, validateAuth
+- **Bybit** (live) — getTicker + validateAuth implementados
+- **Binance** (beta) — getTicker + validateAuth implementados (sem order/cancel ainda)
+- **OKX** (planned) — stub
+- **Hyperliquid** (planned) — stub (RSA signing)
+
+**Endpoints:**
+- `GET /trading/exchanges/list` — lista adapters disponíveis
+- `GET /trading/exchanges/ticker/:exchange/:symbol` — ticker multi-exchange
+- `POST /trading/exchanges/validate` — valida API key em qualquer exchange
+
+### Ticker Customization
+- Pares customizáveis (até 12) via modal
+- Refresh interval: 10s / 30s / 1min / 5min / manual
+- Currency: USD ou BRL (auto-conversão via /fx-rate)
+- Source: Bybit (default) ou Binance (beta)
+- Timestamp ao vivo + tooltip com fonte
+- Persistência em localStorage `egos_ticker_cfg`
+
+### `/fx-rate` endpoint
+- Free FX via awesomeapi.com.br (USD/BRL)
+- Cache 5min server-side
+- Fallback rate=5.0 se API down
+
+**Tags:** `trading`, `multi-exchange`, `ticker`, `customization`, `fx-rate`, `binance`, `okx`, `hyperliquid`
+
+---
+
+## §66 — Trading Sprint 1 Hardening (2026-05-04)
+
+**Quality:** A | **Repo:** egos | **Modules:** `trading-crypto.ts`, `trading-alerts.ts` + middleware in `trading.ts`
+
+Sprint 1 — Operacionalização e segurança de bots/alertas.
+
+### Encryption at rest (`trading-crypto.ts`)
+- AES-256-GCM com env `TRADING_ENCRYPTION_KEY` (64 hex chars = 32 bytes)
+- Format: `enc:v1:<base64(iv[12]+tag[16]+ct)>`
+- Backward-compat: valores sem prefixo retornam plain (legacy migration lazy)
+- Aplicado em `trading_bots.config.apiKey/apiSecret` (encrypt on create, decrypt on use)
+
+### Number whitelist (`trading-evolution.ts`)
+- Env `TRADING_WHATSAPP_ALLOWED` (CSV de números) ou `WHATSAPP_ALLOWED_NUMBERS` (compat)
+- Enforcement no GET `/qr/:instance` quando status=connected
+- Auto-revoga conexão de número não autorizado + retorna 403
+
+### Price Alerts (`trading-alerts.ts`)
+- Tabela `trading_price_alerts` (já existia da Fase 5)
+- CRUD: list, create, toggle, delete
+- Cron `POST /alerts/check` (auth via CRON_SECRET):
+  - Single batch fetch Bybit tickers
+  - Para cada alert: testa above/below, anti-spam 1h
+  - Trigger via `broadcastNotification('price_alert', msg)` para todos canais ativos
+- UI inline na aba Live (criar + listar + toggle + delete)
+
+### Rate Limiting (`trading.ts` middleware)
+- Token bucket por IP, in-memory, cleanup 10min
+- 60 req/min para `/market`, `/instruments`, `/klines`, `/fx-rate`
+- 10 req/min para `/analyze` (CSV parser intensivo)
+- Headers respondidos: 429 + JSON com mensagem em PT-BR
+
+### Cron VPS (manual setup)
+```bash
+*/5 * * * * curl -fsS -X POST -H "Authorization: Bearer $CRON_SECRET" https://egos.ia.br/trading/bots/run-due
+*/2 * * * * curl -fsS -X POST -H "Authorization: Bearer $CRON_SECRET" https://egos.ia.br/trading/alerts/check
+```
+
+**Tags:** `trading`, `security`, `encryption`, `aes-256-gcm`, `rate-limit`, `whitelist`, `price-alerts`, `cron`
+
+---
+
+## §67 — Trading News Aggregator (2026-05-04)
+
+**Quality:** A | **Repo:** egos | **Module:** `trading-news.ts` + `trading_news_sources` table
+
+Agregador de notícias cripto via fontes gratuitas. Cache 10min server-side.
+
+### Fontes default (12)
+- **RSS:** CoinDesk, CoinTelegraph, Decrypt, The Block, Bitcoin Magazine, CryptoSlate, NewsBTC
+- **Reddit JSON:** r/CryptoCurrency, r/Bitcoin, r/ethereum, r/CryptoMarkets
+- **Special:** Fear & Greed Index (alternative.me)
+
+### Custom sources (per user)
+- Tabela `trading_news_sources` com tipo: rss, reddit, youtube, twitter
+- UI inline na aba News para adicionar/remover
+- YouTube via RSS oficial (`/feeds/videos.xml?channel_id=UC...`)
+
+### Endpoints
+- `GET /trading/news/feed?cacheMin=10` — feed agregado, ordenado por data desc
+- `GET /trading/news/sources` — lista defaults + custom
+- `POST /trading/news/sources` — adiciona fonte custom
+- `DELETE /trading/news/sources/:id` — remove
+
+### Custo
+$0/mês — todas fontes gratuitas, cache evita rate limit, parsing puro TS sem deps.
+
+**Tags:** `trading`, `news`, `rss`, `reddit`, `youtube`, `fear-greed`, `aggregator`
+
+---
+
+## §68 — Trading Sprint 2 Strategy Deploy (2026-05-04)
+
+**Quality:** A | **Repo:** egos | **Module:** `trading-deploy.ts`
+
+Sprint 2 — Estratégia → Production em 1-clique.
+
+### STR-001: Backtest history viewer
+- Modal com lista dos últimos 20 runs
+- Métricas: trades, win rate, profit factor, retorno
+- Click linha → detalhes (placeholder para próximo sprint)
+
+### STR-002: Deploy as webhook
+- Botão "🚀 Deploy" no Lab tab pós-backtest
+- `POST /trading/deploy/deploy` cria bot type='webhook_strategy'
+- **Auto-gera Pine Script** com strategy.entry/exit + alert_message JSON
+- Webhook key salva em `trading_bots.webhook_key`
+- Webhook receiver lê do DB se key não está em memória (persistente entre restarts)
+
+### STR-004: TP/SL auto-setup
+- Webhook payload aceita `takeProfitPct` e `stopLossPct`
+- Após entrada bem-sucedida, server calcula preços e coloca:
+  - TP: limit order do lado oposto
+  - SL: stop order com triggerPrice + triggerDirection
+
+### STR-005: Conditional orders
+- Webhook payload aceita `triggerPrice`, `triggerDirection`, `triggerBy`, `reduceOnly`
+- Permite ordens stop-loss / take-profit standalone via webhook
+- `orderFilter: 'StopOrder'` quando trigger é definido
+
+### STR-003: Strategy library
+- `GET /trading/deploy/library` — lista estratégias `is_public=true`
+- Foundation pronta, UI pública será adicionada em sprint futuro
+
+### Pine Script generator
+Mapeia 10 tipos de regras EGOS para Pine Script v5:
+- `rsi_below/above` → `ta.rsi() < N`
+- `ema_cross_up/down` → `ta.crossover/under(ta.ema(), ta.ema())`
+- `price_above/below_ema` → `close > ta.ema()`
+- `price_drop/rise_pct` → `(close[N] - close) / close[N] * 100 >= X`
+- `bb_lower/upper_touch` → `low <= ta.bb().lower`
+
+**Tags:** `trading`, `strategy-deploy`, `pine-script`, `webhook`, `tp-sl`, `conditional-orders`

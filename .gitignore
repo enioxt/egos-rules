@@ -13,3 +13,8 @@ crcdm/notifications/
 # Local Claude config overrides
 .claude/config
 windsurf/.env.local
+
+# Skills runtime (não versionar)
+skill-index.db
+skill-usage.jsonl
+last-health-check.json

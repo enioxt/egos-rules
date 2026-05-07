@@ -47,15 +47,31 @@ Repos that consume:
 3. `CLAUDE.md` / `.windsurfrules` ← adapter surfaces only
 ```
 
-## Operational Checks
+## Operational Checks (GOV-RUNTIME-003/004/005)
+
+### Canonical Commands for All Operators
 
 ```bash
-cd /home/enio/egos
-bun run governance:check
-bun run governance:runtime:smoke
-bun run governance:runtime:report
-bun run claude:telemetry
+# Truth check (non-mutating) — validates ~/.eos ↔ leaf repos chain
+bun run gov:check
+
+# Hook telemetry (diagnostic) — which hooks failed/slow this week?
+bun run gov:telemetry
+
+# Hook telemetry (daily view)
+bun run gov:telemetry:daily
+
+# Evidence-gate dissemination (dry-run) — shows proposed changes
+bun run gov:evidence-gate:dry
+
+# Governance sync (dry-run) — preview rule propagation
+bun run gov:sync:dry
+
+# Governance sync (exec) — apply rule propagation (requires approval)
+bun run gov:sync
 ```
+
+**Full documentation:** See `docs/governance/ONBOARDING.md` for operator guide + troubleshooting.
 
 ## Adding a New Repo
 

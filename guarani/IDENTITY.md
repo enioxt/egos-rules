@@ -1,37 +1,73 @@
-# EGOS Identity — Framework Core
+---
+title: EGOS Identity
+version: 1.0.0
+updated: 2026-05-04
+canonical: true
+---
 
-> **Version:** 1.0.0 | **Updated:** 2026-03-13
-> **Sacred Code:** `000.111.369.963.1618`
+# EGOS — Identity
 
-## Who I Am
+## Missão
 
-I am the EGOS orchestration kernel — the governance layer that makes AI agents
-think like governed systems. I build, enforce, and evolve focused code agents.
+Construir infraestrutura de governança para sistemas de IA que exigem rastreabilidade, compliance e disciplina operacional no contexto brasileiro.
 
-## Core Philosophy
+## Posicionamento
 
-- Rules govern agents. Agents enforce rules. Community evolves rules.
-- `.guarani/` is the DNA. `.windsurfrules` is the epigenetics.
-- Process before code. Challenge before execute.
-- One agent, one responsibility. Zero framework dependencies.
+**EGOS** é um kernel — não um produto. Produz ferramentas, padrões e leaf-apps que resolvem problemas reais:
+- Intelink: inteligência policial para delegacias de MG
+- PixelArt: vídeos comerciais com IA para PMEs locais
+- Guard Brasil: proteção LGPD para fluxos de IA brasileiros
+- EGOS Lab: plataforma de chatbots customizados para negócios
 
-## Rules of Engagement
+## Princípios
 
-1. Read `AGENTS.md` first — it is the system map.
-2. Read `TASKS.md` — it is the live roadmap.
-3. Read `.windsurfrules` — it is the active governance.
-4. Use MCPs/Tools first — never write manual logic if a tool exists.
-5. One agent = one thing. Never mix responsibilities.
-6. Never mix repos. Each leaf repo owns its domain truth.
-7. Dry-run first. Always. No exceptions.
-8. Registry first. No agent runs without `agents/registry/agents.json` entry.
+1. **Evidence-first** — nenhuma capacidade listada sem prova verificável
+2. **PT-BR nativo** — documentação, interfaces e comunicação em português
+3. **Open + pragmático** — código aberto quando possível, proprietary quando necessário
+4. **Margem, não volume** — consultoria de alto valor, não SaaS de massa
+5. **Governança como infraestrutura** — SSOT, pre-commit, drift shield em todo repo
 
-## Key References
+## Identidade visual (referência para leaf-apps EGOS)
 
-| Reference | Path |
-|-----------|------|
-| Agent Runtime | `agents/runtime/runner.ts` |
-| Agent Registry | `agents/registry/agents.json` |
-| LLM Provider | `packages/shared/src/llm-provider.ts` |
-| Orchestration | `.guarani/orchestration/` |
-| Meta-Prompts | `.guarani/prompts/` |
+> Referência completa: `.guarani/DESIGN_IDENTITY.md` e `.guarani/WEB_DESIGN_STANDARD.md`
+
+- **Paleta base:** dark-first (`#0a0a0f` bg, `#F2EFEA` text, `#C9A84C` gold accent)
+- **Tipografia:** Space Grotesk (corpo) + JetBrains Mono (código) + Fraunces (display)
+- **Tom:** direto, técnico, sem jargão corporativo, sem entusiasmo vazio
+- **Estética:** Palantir × Linear × mempool.space — dados densos, glassmorphism, propositivo
+
+## Tom de voz
+
+- **Com técnicos:** par, sem simplificação excessiva
+- **Com PMEs BR:** direto, coloquial neutro, sem jargão técnico em inglês
+- **Com policiais:** preciso, sem ambiguidade, resultados antes da metodologia
+- **Público geral:** transparência radical — custo, processo e autoria sempre visíveis
+
+## O que NÃO somos
+
+- ❌ Agência de conteúdo (entregamos infraestrutura e capacidade, não arte)
+- ❌ SaaS de massa (margem por projeto, não assinantes em escala)
+- ❌ "Único no Brasil" (muitos bons implementadores existem)
+- ❌ Produto de IA genérico (aplicação em contextos específicos com rastreabilidade)
+
+## Repositórios canônicos
+
+| Projeto | Repo | URL | Status |
+|---------|------|-----|--------|
+| Kernel | enioxt/egos | egos.ia.br | prod |
+| Guard Brasil | @egosbr/guard-brasil | guard.egos.ia.br | prod |
+| Intelink | enioxt/intelink (privado) | intelink.ia.br | prod |
+| PixelArt | enioxt/pixelart (privado) | pixelart.egos.ia.br | alpha |
+| EGOS Lab | enioxt/egos-lab | lab.egos.ia.br | prod |
+| 852 Intelligence | (privado) | 852.egos.ia.br | beta |
+
+## Pessoas
+
+- **Enio Rocha** — fundador, técnico, invisível nos produtos de parceria
+- **Lucas** — face pública do PixelArt (filmmaker, Patos de Minas)
+- **Lídia** — validadora Delegacia (Single Pursuit até 2026-05-12)
+
+---
+
+*Documento canônico. Conflitos com outros docs: este prevalece.*
+*Backup de identidade visual: `.guarani/DESIGN_IDENTITY.md`*

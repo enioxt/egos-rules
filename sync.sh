@@ -39,7 +39,7 @@ REPOS=(
   "$HOME/smartbuscas"
   "$HOME/santiago"   # EGOS-069: added 2026-03-30
   "$HOME/arch"       # EGOS governance bootstrap
-  "$HOME/egos-inteligencia"  # EGOS-Inteligência (Intelink) 2026-03-30
+  "$HOME/intelink"          # intelink (migrado de egos-inteligencia 2026-05-05)
 )
 
 # ── Step 1: Validate central governance ──
