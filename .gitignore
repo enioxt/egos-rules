@@ -18,3 +18,5 @@ windsurf/.env.local
 skill-index.db
 skill-usage.jsonl
 last-health-check.json
+review-queue*.jsonl
+review-queue*.jsonl.gz
