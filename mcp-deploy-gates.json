@@ -1,0 +1,20 @@
+{
+  "approved": true,
+  "_instructions": "Enio deve preencher e salvar em ~/.egos/mcp-deploy-gates.json antes do primeiro deploy MCP VPS",
+  "approved_by": "enio",
+  "approved_at": "2026-05-14T08:19:08-03:00",
+  "checklist": {
+    "threat_model_reviewed": false,
+    "oauth2_provider_chosen": false,
+    "oauth2_provider": "",
+    "mtls_intelink_decided": false,
+    "bearer_token_rotated": true,
+    "bearer_token_in_vps_env": true,
+    "caddy_config_reviewed": true,
+    "supabase_audit_table_created": false,
+    "rate_limit_configured": false,
+    "smoke_test_protocol_defined": true,
+    "rollback_plan_tested": true
+  },
+  "notes": "Deploy executado 2026-05-14. 9 MCPs online. DNS mcp.egos.ia.br pendente."
+}
