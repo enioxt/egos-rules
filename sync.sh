@@ -1,6 +1,6 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════
-# 🔄 EGOS Sync v2.0 — Shared Governance + Workflows + Skills
+# 🔄 EGOS Sync v2.1 — Shared Governance + Workflows + Skills + Claude Commands (EPOS-SYNC-001)
 # 
 # Creates symlinks for governance, workflows, and skills
 # in ALL registered repos. Works with Windsurf, `.agent`, and shared IDE surfaces.
@@ -18,7 +18,7 @@ RED='\033[0;31m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-echo "🔄 EGOS Sync v2.0 — Governance + Workflows + Skills"
+echo "🔄 EGOS Sync v2.1 — Governance + Workflows + Skills + Claude Commands"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 
@@ -312,6 +312,33 @@ for repo in "${REPOS[@]}"; do
     done
   fi
 
+  # ── G. Claude Code commands (.claude/commands/) — EPOS-SYNC-001 ──
+  # /start, /end, e outros slash commands devem estar disponíveis em todos os repos.
+  # Source: ~/.claude/commands/ (kernel canonical, propagado pelo governance-sync.sh)
+  # Destino: <repo>/.claude/commands/ (symlinks individuais por arquivo)
+  CLAUDE_COMMANDS_SRC="$HOME/.claude/commands"
+  if [ -d "$CLAUDE_COMMANDS_SRC" ]; then
+    mkdir -p "$repo/.claude/commands"
+    for cmd_file in "$CLAUDE_COMMANDS_SRC/"*.md; do
+      cmd_name=$(basename "$cmd_file")
+      target="$repo/.claude/commands/$cmd_name"
+      if [ -L "$target" ] && [ "$(readlink -f "$target" 2>/dev/null)" = "$cmd_file" ]; then
+        echo -e "      ${GREEN}✅${NC} .claude/commands/$cmd_name"
+      else
+        rm -f "$target"
+        ln -sf "$cmd_file" "$target"
+        echo -e "      ${GREEN}🔗${NC} .claude/commands/$cmd_name"
+      fi
+    done
+    # .claude/commands não vai para git
+    if [ -f "$repo/.gitignore" ]; then
+      if ! grep -q "^\.claude/commands/$" "$repo/.gitignore" 2>/dev/null; then
+        echo ".claude/commands/" >> "$repo/.gitignore"
+        echo -e "      ${GREEN}📝${NC} Added .claude/commands/ to .gitignore"
+      fi
+    fi
+  fi
+
   # ── E. Update .gitignore ──
   if [ -f "$repo/.gitignore" ]; then
     for pattern in ".egos"; do
@@ -342,6 +369,7 @@ echo "Shared resources:"
 echo "   📂 Governance: ~/.egos/guarani/ → all repos via .egos symlink"
 echo "   ⚡ Workflows:  ~/.egos/workflows/ → .agent + .windsurf"
 echo "   🎯 Skills:     ~/.egos/skills/ → .agent + .windsurf"
+echo "   🤖 Commands:   ~/.claude/commands/ → <repo>/.claude/commands/ (symlinks)"
 echo ""
 echo "Rule precedence (per repo):"
 echo "  1. Local files (.guarani/, workflows/)  ← HIGHEST"

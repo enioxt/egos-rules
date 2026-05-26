@@ -195,3 +195,62 @@ LIGHTWEIGHT check used for every MODERATE+ task.
 ---
 
 *"A gate that never blocks is useless. A gate that always blocks is friction. Calibrate."*
+
+---
+
+## Karpathy Doctrine — Enforcement Gates (v2, 2026-05-08)
+
+> Adicionado pós-INC-2026-05-08. Integra com Focus Gates do EPOS (docs/personal-os/FOCUS_GATES.md).
+> Propaga via governance-sync.sh → ~/.egos/guarani/ → 9 repos leaf.
+
+### K1 — Banned Absolutes Gate
+
+**Trigger:** staged diff em *.md/*.html/*.jsx/*.tsx/*.txt com palavras absolutas
+**Palavras proibidas:** "100%", "perfeito", "garantido", "infalível", "único no Brasil", "primeiro do Brasil"
+**Enforcement:** `scripts/check-banned-words.sh` wired em `.husky/pre-commit §0.75`
+**Strict mode:** `EGOS_BANNED_STRICT=1` — bloqueia. Default: warn.
+**SSOT:** `~/.claude/CLAUDE.md §1 "Banned absolutes"` + `docs/personal-os/FOCUS_GATES.md §5`
+
+### K2 — Visual Proof Gate
+
+**Trigger:** staged diff em UI surface (apps/*-landing/, *.jsx, *.tsx, *.html, components/)
+**Requirement:** `[VISUAL-PROOF: path]` no commit message OU `EGOS_VISUAL_PROOF_SKIP="motivo"`
+**Screenshot:** viewport 375x812 mobile PRIMEIRO, desktop secundário (A67 mobile-first)
+**Enforcement:** `scripts/check-visual-proof.sh` wired em `.husky/pre-commit §0.7`
+**SSOT:** `docs/personal-os/FOCUS_GATES.md §4`
+
+### K3 — Project Inception Gate (PIG)
+
+**Trigger:** primeiro commit em repo novo OU domínio fora §🟢 do ENIO_UNDERSTANDING_MAP
+**Requirement:** rodar `/inception <descrição>` e referenciar report em `docs/inception_reports/`
+**Output:** GO/NO-GO/EXTRACT-FROM-EXISTING/STUDY-FIRST
+**Enforcement:** `scripts/check-inception.sh` wired em `.husky/pre-commit §0.8`
+**SSOT:** `docs/personal-os/FOCUS_GATES.md §6` + `.claude/commands/inception.md`
+
+### K4 — Understanding Gate
+
+**Trigger:** ≥3 artefatos gerados por agente sem confirmação de entendimento do usuário
+**Requirement:** explicação PT-BR (o que foi feito, por que importa, onde pode estar errado)
+**Enforcement:** disciplina de agente (sem hook mecânico — por design: Understanding não pode ser automatizado)
+**SSOT:** `docs/personal-os/UNDERSTANDING_PROTOCOL.md §2`
+
+### K5 — CAP-MODULAR Gate
+
+**Trigger:** novo arquivo em `packages/integrations/` sem entry correspondente em `docs/CAPABILITY_REGISTRY.md`
+**Requirement:** entry com: nome, status, SHA, cliente origem, reuso esperado
+**Enforcement:** `scripts/check-cap-modular.sh` — implementar (P1 task CAP-MODULAR-001)
+**SSOT:** `docs/CAPABILITY_REGISTRY.md` + `docs/discovery/RETAIL_CAPABILITIES.md`
+
+---
+
+### Mapa completo de enforcement (pós v2)
+
+| Gate | Script | pre-commit | CI/GH Actions | /start | /end |
+|---|---|---|---|---|---|
+| K1 Banned Absolutes | check-banned-words.sh | §0.75 ✅ | pendente | karpathy §0 ✅ | ❌ |
+| K2 Visual Proof | check-visual-proof.sh | §0.7 ✅ | ❌ | Layer 0 ✅ | Phase 11.5 ✅ |
+| K3 PIG /inception | check-inception.sh | §0.8 ✅ | ❌ | Layer 0 ✅ | ❌ |
+| K4 Understanding | (agente) | ❌ intencional | ❌ | Layer 0 ✅ | Phase 11.5 ✅ |
+| K5 CAP-MODULAR | check-cap-modular.sh | P1 pendente | ❌ | ❌ | ❌ |
+
+*Versão: 2.0.0 — 2026-05-08 | Karpathy Doctrine integrada ao .guarani canônico*

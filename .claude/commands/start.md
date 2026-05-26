@@ -1,14 +1,12 @@
 ---
-description: Session Initialization v6.3 — Force-Read All Layers + Handoff + Governance Smoke
+description: Session Initialization v6.13 — MODE detection (research|write) + Cross-Platform Sanity (0.0) + EPOS/0.5 (obrigatório no checkpoint) + Codex Health (4.8) + Leaf SSOTs/4.6 + Evolution Health/4.7 + Handoff/4.5 + Capability Delta (6.5) + Governance Smoke
 ---
 
-# /start — Session Initialization v6.3 (EGOS)
+# /start — Session Initialization v6.13 (EGOS)
 
 > **Princípio:** Não basta verificar existência — é preciso LER o conteúdo.
-> **Bug v5.9 corrigido:** `head -60` e `[ -f ]` perdiam 70%+ do contexto crítico.
-> **Bug v6.1 corrigido:** handoff não lido + hook warnings ignorados + ADR sem Glob = próximos passos errados.
-> **Bug v6.2 corrigido:** hook warnings grep no log JSON (sempre vazio) → smoke check direto (`runtime-smoke.ts`).
-> **Pacto:** ao final, o agente DEVE provar leitura via verification checkpoint.
+> **Bugs corrigidos:** v5.9 (`head -60` truncava 70%+) | v6.1 (handoff não lido) | v6.2 (smoke grep JSON) | v6.4 (INC-009 leaf SSOTs) | v6.9 (Layer 4.8 bash obrigatório).
+> **Pacto:** ao final, o agente DEVE provar leitura via verification checkpoint (Layer 7).
 
 ---
 
@@ -22,129 +20,276 @@ Você está executando `/start`. Sua obrigação:
 4. Ao final, preencher o **Verification Checkpoint** (Layer 7) com respostas concretas.
 5. Se omitir uma layer, **declare explicitamente** o motivo (ex: "Layer 5 skipped: VPS unreachable").
 6. **"Próximos passos"** = handoff.next PRIMEIRO, depois P0 do Single Pursuit. Nunca só grep P0.
+7. **§4.8 OBRIGATÓRIO:** Layer 4.8 DEVE ser executada com Bash tool — rodar `scripts/codex-usage.ts --json` e reportar quota real. Citar sem rodar = checkpoint inválido (Bug v6.9).
+8. **MODELO PADRÃO SONNET 4.6:** Se você é Opus 4.7, avalie cada task via [MODEL_DELEGATION_POLICY](../../docs/governance/MODEL_DELEGATION_POLICY.md). Opus orquestra, Sonnet executa, Haiku faz mecânico. Reportar modelo atual + delegação no checkpoint.
+9. **SWARM COMMIT POLICY:** Quando 1+ `Agent` em background, **NÃO fazer git commit incremental** — race condition. Commit consolidado final. SSOT: [SWARM_COMMIT_POLICY](../../docs/governance/SWARM_COMMIT_POLICY.md).
+10. **MODE DETECTION:** Prompt com (`pesquisa`, `governança`, `leitura`, `revisão`, `auditoria`, `entender`, `só ler`) → `MODE=research` (executa só Layers `0.0+0+0.5+4.8+1+2+3+4+4.5+7`). Caso contrário → `MODE=write` (todas as layers). Declarar MODE como **primeiro campo** do checkpoint. Corte silencioso sem MODE = checkpoint inválido.
+
+---
+
+## LAYER 0.0 — Cross-Platform Sanity + Remote Staleness Check
+
+> **Origem:** 2026-05-11 — agente trabalhou 4h em `main` local 176 commits stale. Push falhou só no final.
+
+```bash
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")
+export EGOS_ROOT="$ROOT" && cd "$ROOT"
+
+# OS detection
+case "$(uname -s)" in Linux*) EGOS_OS=linux;; Darwin*) EGOS_OS=macos;; MINGW*|MSYS*|CYGWIN*) EGOS_OS=windows;; *) EGOS_OS=unknown;; esac
+export EGOS_OS && echo "OS=$EGOS_OS | ROOT=$ROOT"
+
+# jq check
+command -v jq >/dev/null 2>&1 || echo "🟡 jq missing — install: $([ $EGOS_OS = linux ] && echo 'sudo apt install jq' || echo 'brew install jq / winget install jqlang.jq')"
+
+# Remote staleness (ROOT-CAUSE FIX 2026-05-11)
+git fetch origin --quiet 2>/dev/null || echo "🟡 git fetch failed (offline?)"
+LOCAL_HEAD=$(git rev-parse HEAD 2>/dev/null)
+REMOTE_HEAD=$(git rev-parse origin/main 2>/dev/null || git rev-parse origin/HEAD 2>/dev/null)
+if [ -n "$LOCAL_HEAD" ] && [ -n "$REMOTE_HEAD" ] && [ "$LOCAL_HEAD" != "$REMOTE_HEAD" ]; then
+  BEHIND=$(git rev-list --count HEAD..origin/main 2>/dev/null || echo 0)
+  AHEAD=$(git rev-list --count origin/main..HEAD 2>/dev/null || echo 0)
+  [ "$BEHIND" -gt 0 ] && echo "🔴 P0 BLOCKER: $BEHIND commits BEHIND origin/main — run 'git pull --rebase' BEFORE writing code" && git log --oneline --max-count=3 HEAD..origin/main 2>/dev/null | sed 's/^/     - /'
+  [ "$AHEAD" -gt 0 ] && echo "🟢 $AHEAD commits ahead of origin/main (clean to push)."
+fi
+
+# Git state safety
+[ -d "$ROOT/.git/rebase-merge" ] || [ -d "$ROOT/.git/rebase-apply" ] && echo "🔴 REBASE_IN_PROGRESS"
+[ -f "$ROOT/.git/MERGE_HEAD" ] && echo "🔴 MERGE_IN_PROGRESS"
+[ -f "$ROOT/.git/CHERRY_PICK_HEAD" ] && echo "🔴 CHERRY_PICK_IN_PROGRESS"
+
+# Junk files (Windows redirect typos)
+for junk in null nul NUL; do [ -f "$junk" ] && echo "🟡 junk file '$junk' — delete"; done
+```
+
+**Rule:** qualquer 🔴 → surfaçar como P0 e **não iniciar código** até Enio decidir.
+
+---
+
+## LAYER 0 — Karpathy Doctrine + Red Zones + Profile Atoms
+
+**LEIA em paralelo (Read tool):**
+- `/home/enio/egos/docs/personal-os/UNDERSTANDING_PROTOCOL.md`
+- `/home/enio/egos/docs/personal-os/ENIO_UNDERSTANDING_MAP.md`
+- `/home/enio/egos/docs/personal-os/FOCUS_GATES.md`
+
+```bash
+ATOMS=/home/enio/egos/data/personal-os/private/enio_profile_atoms.jsonl
+STATE=/home/enio/egos/data/personal-os/private/interview_state.json
+[ -f "$ATOMS" ] && echo "EPOS atoms: $(wc -l < $ATOMS)" && cat "$STATE" 2>/dev/null
+```
+
+**Internalize:** (1) "isso aumenta entendimento ou é só produção?" antes de qualquer artefato. (2) Red Zone → PARAR, opções, esperar Enio. (3) UI deploy → Visual Proof obrigatório. (4) ≥3 artefatos sem confirmação → disparar Understanding Gate.
+
+**Se Layer 0 ausente** → reportar e pausar `/start`. Sem Layer 0, não há trava de overproduction.
+
+---
+
+## LAYER 0.5 — EPOS Continuation (OBRIGATÓRIO — não pode dormir)
+
+> **Regra absoluta:** entrevista EPOS **não pode dormir**. A cada `/start`, verificar progresso e disparar próxima pergunta.
+> **SSOT:** `prompts/personal-os/SELF_MAPPING_INTERVIEW.md` (16 perguntas, 5 blocos) + state em `data/personal-os/private/interview_state.json`.
+
+```bash
+STATE=/home/enio/egos/data/personal-os/private/interview_state.json
+ATOMS=/home/enio/egos/data/personal-os/private/enio_profile_atoms.jsonl
+[ ! -f "$STATE" ] && echo "Layer 0.5: entrevista nunca iniciada — disparar B1-Q1 obrigatório" && exit 0
+CURRENT_Q=$(jq -r '.current_question_id // "DONE"' "$STATE" 2>/dev/null || echo "ERR")
+CURRENT_B=$(jq -r '.current_block // "DONE"' "$STATE" 2>/dev/null || echo "ERR")
+ANSWERED=$(jq '.questions_answered | length' "$STATE" 2>/dev/null || echo 0)
+ATOM_COUNT=$(wc -l < "$ATOMS" 2>/dev/null || echo 0)
+LAST_ACTIVITY=$(jq -r '.last_activity // "never"' "$STATE" 2>/dev/null)
+SKIPPED=$(jq -r '.blocks_completed | map(select(. | endswith("skipped"))) | join(",")' "$STATE" 2>/dev/null)
+echo "EPOS: Bloco=$CURRENT_B | Q=$CURRENT_Q | Respondidas=$ANSWERED/16 | Atoms=$ATOM_COUNT | Última=$LAST_ACTIVITY"
+[ -n "$SKIPPED" ] && echo "⚠️  Blocos PULADOS: $SKIPPED"
+```
+
+**Decisão obrigatória:**
+
+| Estado | Ação |
+|---|---|
+| `current_question_id == "DONE"` + sem skipped | Apenas validação periódica (a cada 30d, 1 pergunta por bloco) |
+| `current_question_id != "DONE"` | **DISPARAR** próxima pergunta no checkpoint — sessão não avança até Enio responder ou pedir `pausa entrevista` |
+| `B3-skipped` detectado | Repropor B3 na próxima oportunidade |
+| `last_activity` > 7 dias | "Entrevista pausada X dias — retomar é P0?" |
+
+**Comportamento:** (1) Read `interview_state.json`. (2) Read `SELF_MAPPING_INTERVIEW.md` — §1.5 define formato 6 seções obrigatórias. (3) Apresentar pergunta atual (§1 Pergunta, §2 Por que agora, §3 Opções+arg, §4 Recomendação, §5 Critério aceitação, §6 Impacto). (4) Quando Enio responder → validar critério §5, atomizar, atualizar state, aplicar §6.
+
+**Comandos aceitos:** `próxima` | `pausa entrevista` | `volta para B1-Q2` | `mostra meu progresso` | `pula <Q> com motivo: <texto>`. **Não há comando para desabilitar permanentemente.** Layer 0.5 é constitucional.
+
+**Reportar no Verification Checkpoint:**
+```
+Layer 0.5 — EPOS Continuation
+  ✓ Bloco atual: [B*] | Pergunta: [B*-Q*]
+  ✓ Progresso: [N/16 | M atoms] | Última atividade: [data]
+  ✓ Pulados: [lista ou "nenhum"]
+  ✓ Status: [DISPARANDO PERGUNTA | AGUARDANDO ATOMS | ENTREVISTA FECHADA]
+  ✗ NÃO ACEITO: override subjetivo sem motivo válido
+```
+
+---
+
+## LAYER 4.8 — Codex Health Check (executar antes de Layers 4+)
+
+> **Posição:** após 0.5 — saber quota antes de decidir delegação. SSOT: `docs/governance/MULTI_LLM_ORCHESTRATION.md` §3.
+
+```bash
+EGOS_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$HOME/egos")
+if command -v codex >/dev/null 2>&1 && command -v bun >/dev/null 2>&1 && [ -f "$EGOS_ROOT/scripts/codex-usage.ts" ]; then
+  CODEX_JSON=$(bun "$EGOS_ROOT/scripts/codex-usage.ts" --json 2>/dev/null)
+  ALARM=$(echo "$CODEX_JSON" | python3 -c "import sys,json; print(json.load(sys.stdin).get('alarm_level','unknown'))" 2>/dev/null || echo "unknown")
+  PCT=$(echo "$CODEX_JSON" | python3 -c "import sys,json; d=json.load(sys.stdin); v=d.get('window_5h_remaining_pct'); print(v if v is not None else '?')" 2>/dev/null || echo "?")
+  case "$ALARM" in
+    green)  echo "🟢 Codex: 5h ${PCT}% remaining" ;;
+    yellow) echo "🟡 Codex: 5h ${PCT}% — parcimônia. Evitar /duo --heavy" ;;
+    red)    echo "🔴 Codex: 5h ${PCT}% — FALLBACK CLAUDE-ONLY" ;;
+    *)      echo "⚪ Codex: quota desconhecida" ;;
+  esac
+else
+  echo "Layer 4.8: Codex não instalado ou bun indisponível — skipped"
+fi
+```
+
+**Reportar no Verification Checkpoint:**
+```
+Layer 4.8 — Codex Health
+  ✓ Codex instalado: [sim/não]
+  ✓ Quota 5h: [%] | alarm_level: [green/yellow/red/unknown]
+  ✓ Ação: [normal | economizar quota | fallback Claude-only]
+```
 
 ---
 
 ## LAYER 1 — Global Rules (T0-T2 + Lazy-loaded T3)
 
 **LEIA com Read tool (paralelo):**
-
-- `/home/enio/.claude/CLAUDE.md` — completo (T0-T2 rules, ~250L)
+- `/home/enio/.claude/CLAUDE.md` — completo (T0-T2 rules)
 - `/home/enio/.claude/egos-rules/enio-profile.md` — Single Pursuit + NO JOBS rule
 - `/home/enio/.claude/egos-rules/posture-autonomy.md` — challenge mode, blockers
 - `/home/enio/.claude/egos-rules/karpathy-principles.md` — simplicity, surgical, goal-driven
-- `/home/enio/.claude/egos-rules/session-checklist.md` — formato ✅/🔄/⏳ no fim
+- `/home/enio/.claude/egos-rules/session-checklist.md` — formato ✅/🔄/⏳
 
-**Após leitura, internalize (não repita ao usuário):**
-- 5 regras T0 (force-push, secrets, publish, git add -A, COMMIT TASKS.md)
-- Verification gates T1 (INC-005 external LLM, INC-006 subagent, INC-009 estimate)
-- Edit safety T1 (read-before-edit, max 3 edits, simplicity-first)
-- Token economy T2 (Sonnet default, alarme $2, nova sessão >$3)
+**Internalize:** T0 rules (force-push, secrets, publish, git add -A, COMMIT TASKS.md) | §0.5 Karpathy Doctrine | Verification gates T1 (INC-005/006/009) | Edit safety T1 | Token economy T2 (Sonnet default, alarme $2).
 
 ---
 
-## LAYER 2 — Project Bootstrap (canonical SSOT)
+## LAYER 2 — Project Bootstrap
 
-**LEIA completo com Read tool:**
+**LEIA completo (Read tool):** `/home/enio/egos/docs/EGOS_BOOTSTRAP.md` — todas as linhas.
 
-- `/home/enio/egos/docs/EGOS_BOOTSTRAP.md` — TODAS as 191 linhas, 16 seções
-
-**Internalize:**
-- Single Pursuit ATIVO (data mais recente sempre vence)
-- Architecture diagram 3-camadas (acquisition → deployment → operation)
-- Stack tech (Bun+TS, Postgres RLS, Gemini 2.0 Flash, OpenRouter)
-- SSOT map (18 domínios → 1 arquivo cada)
-- Estado atual snapshot (último parágrafo do BOOTSTRAP)
+**Internalize:** Single Pursuit ATIVO | Architecture 3-camadas | Stack (Bun+TS, Postgres RLS, Gemini 2.0 Flash, OpenRouter) | SSOT map (18 domínios) | Estado atual snapshot.
 
 ---
 
-## LAYER 3 — Tier 1 ADRs (decisões locked)
-
-**Primeiro: verifique existência dos 3 ADRs (bash):**
+## LAYER 3 — Tier 1 ADRs
 
 ```bash
 ls /home/enio/egos/docs/governance/CENTRAL_EGOS_ARCHITECTURE_DECISION.md \
    /home/enio/egos/docs/governance/HERMES_EGOS_FORK_DECISION.md \
-   /home/enio/egos/docs/capabilities/PRODUCT_NAMING_DECISION.md 2>&1 | \
-   sed 's/^/  /'
+   /home/enio/egos/docs/capabilities/PRODUCT_NAMING_DECISION.md 2>&1 | sed 's/^/  /'
 ```
 
-**Depois: LEIA com Read tool (paralelo) os que existirem. Para os ausentes:** reportar "Layer 3: `<arquivo>` ausente" no checkpoint.
+**LEIA** os que existirem (Read tool, paralelo). Ausentes → reportar no checkpoint.
 
-**Internalize:**
-- 22 decisões locked (não re-discutir)
-- Tiers Solo/Pro/Enterprise + setup + mensalidade
-- Padrão PAI plugins-only (NUNCA modificar core Hermes)
-- Naming map: deprecated → canonical
+**Internalize:** 22 decisões locked | Tiers Solo/Pro/Enterprise | Padrão PAI plugins-only | Naming map deprecated → canonical.
 
 ---
 
-## LAYER 4 — Memory Top 3 (recência)
-
-**LEIA com Read tool (paralelo, primeiros 3 arquivos referenciados em MEMORY.md):**
+## LAYER 4 — Memory Top 3
 
 ```bash
-# Identificar os 3 arquivos top da MEMORY.md (sem ler ainda)
 grep -E "^- \[" /home/enio/.claude/projects/-home-enio-egos/memory/MEMORY.md | head -3
 ```
 
-Pegue os 3 primeiros paths citados (exceto MEMORY.md) e use Read tool em cada um.
-
-**Por quê:** o reminder inicial trunca MEMORY.md em 200 linhas; os arquivos linkados precisam de Read explícita.
+Pegue os 3 primeiros paths citados e use Read tool em cada um. (O reminder inicial trunca MEMORY.md em 200L — Read explícita é obrigatória.)
 
 ---
 
-## LAYER 4.5 — Handoff Atual (in-progress state) ← NOVO em v6.2
+## LAYER 4.5 — Handoff Atual + TASKS.md P0
 
-**Esta é a fonte mais fresca de "o que estava em andamento". Sempre leia antes de recomendar próximos passos.**
+**Duas fontes complementares — leia AMBAS:**
 
 ```bash
-# Encontrar o handoff mais recente
+# 4.5a — Handoff mais recente
 ls -t /home/enio/egos/docs/_current_handoffs/*.md 2>/dev/null | head -1
+
+# 4.5b — Top 10 P0 (INV-START-TASKS-001)
+grep "^- \[ \].*\[P0\]" /home/enio/egos/TASKS.md 2>/dev/null | head -10
 ```
 
-Pegue o path retornado e **use Read tool**. Foque em:
-- Seção **"Next / Próximos Passos"** — o que o agente anterior pediu explicitamente
-- Seção **"In Progress / Em Andamento"** — o que estava pela metade
-- Seção **"Validações Pendentes"** — testes que o agente anterior pediu ao próximo
+Use **Read tool** no handoff retornado. Foque em: "Next / Próximos Passos", "In Progress", "Validações Pendentes".
 
-Se nenhum handoff existir: reportar "Layer 4.5: sem handoff ativo" no checkpoint.
-
-**Por quê:** sem este layer, o agente usa só P0 do grep e ignora contexto de in-progress da sessão anterior. Resultado: recomendações genéricas em vez das realmente relevantes (bug detectado em v6.1).
+**Reconciliação obrigatória:**
+- handoff.next aponta task não P0 em TASKS.md → flag drift
+- P0 em TASKS.md não mencionado em handoff → adicionar como candidato
+- Ambos concordam → confiança máxima, primeira recomendação
 
 ---
 
-## LAYER 5 — System State (bash, fatos)
+## LAYER 4.6 — SSOT do Leaf-Repo (INC-009)
+
+> **Aplica quando:** cwd é leaf-repo (não `/home/enio/egos/`). Detalhe completo: [docs/start-layers/leaf-ssot.md](../docs/start-layers/leaf-ssot.md).
 
 ```bash
-# Repo state
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo $PWD)
+IS_LEAF=$([ "$(basename $ROOT)" != "egos" ] && echo "yes" || echo "no")
+[ "$IS_LEAF" = "yes" ] && echo "Leaf detectado — executar bash de docs/start-layers/leaf-ssot.md" || echo "Layer 4.6: cwd is kernel"
+```
+
+**Se leaf:** executar bash completo de `leaf-ssot.md` + Read nos arquivos detectados. **Se kernel:** verificar CAPABILITY_REGISTRY + CHATBOT_SSOT antes de criar nova capability.
+
+**Reportar no Verification Checkpoint:**
+```
+Layer 4.6 — Leaf SSOTs
+  ✓ cwd é leaf? [sim/não]
+  ✓ Sistema prompt: [path ou "greenfield"]
+  ✓ UPSTREAM_KERNEL.md: [presente/ausente]
+  ✓ Decisão: ESTENDER [files] | CRIAR NOVO [justificativa] | NENHUMA AÇÃO
+```
+
+---
+
+## LAYER 4.7 — External Integrations Health
+
+> **Aplica quando:** repo tem `.env` com `EVOLUTION_API_URL`. Detalhe completo: [docs/start-layers/evolution-health.md](../docs/start-layers/evolution-health.md).
+
+```bash
+HAS_EVOL=$(grep -lE "^EVOLUTION_API_URL" .env .env.local 2>/dev/null | head -1)
+[ -z "$HAS_EVOL" ] && echo "Layer 4.7: Evolution não configurado — skipped" || echo "Evolution configurado — executar bash de docs/start-layers/evolution-health.md"
+```
+
+**Se configurado:** executar bash completo de `evolution-health.md`. Sem Evolution → auto-população de timeline desativada (80% das fontes perdidas).
+
+**Reportar no Verification Checkpoint:**
+```
+Layer 4.7 — Evolution API Health
+  ✓ Configurado: [sim/não]
+  ✓ Instances: [N total | M open | K close]
+  ✓ Heartbeat sync: [sucesso/falhou]
+  ✓ Broken: [lista ou "nenhum"]
+```
+
+---
+
+## LAYER 5 — System State
+
+```bash
 ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo $PWD)
 echo "Repo: $(basename $ROOT) | Branch: $(git branch --show-current)"
 git log --oneline -5
-echo "Uncommitted: $(git status --short | wc -l) files"
-git status --short
-
-# Resources
-df -h / | tail -1
-free -h | head -2
-
-# TASKS.md metrics
+echo "Uncommitted: $(git status --short | wc -l) files" && git status --short
+df -h / | tail -1 && free -h | head -2
 DONE=$(grep -c "^- \[x\]" TASKS.md 2>/dev/null || echo 0)
 PEND=$(grep -c "^- \[ \]" TASKS.md 2>/dev/null || echo 0)
 P0=$(grep -c "^- \[ \].*\[P0\]" TASKS.md 2>/dev/null || echo 0)
-LINES=$(wc -l < TASKS.md 2>/dev/null || echo 0)
-echo "TASKS: ${DONE} done, ${PEND} pending, ${P0} P0 | TASKS.md: ${LINES}L"
-
-# Governance smoke check (fonte canônica de warnings — session log é JSON, não texto)
+echo "TASKS: ${DONE} done, ${PEND} pending, ${P0} P0 | $(wc -l < TASKS.md 2>/dev/null)L"
 EGOS_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")
 if [ -f "$EGOS_ROOT/scripts/runtime-smoke.ts" ] && command -v bun >/dev/null 2>&1; then
   SMOKE=$(cd "$EGOS_ROOT" && bun scripts/runtime-smoke.ts --quiet 2>&1)
-  WARN=$(echo "$SMOKE" | grep -E "(❌|⚠️)" | head -10)
-  echo "=== Governance Smoke ==="
-  echo "$SMOKE" | head -1
-  [ -n "$WARN" ] && echo "$WARN" || echo "✅ sem warnings"
+  echo "=== Governance Smoke ===" && echo "$SMOKE" | head -1
+  echo "$SMOKE" | grep -E "(❌|⚠️)" | head -10 || echo "✅ sem warnings"
 else
-  echo "=== Governance Smoke: script ausente ou bun indisponível ==="
+  echo "Governance Smoke: script ausente — skipped"
 fi
 ```
 
@@ -153,86 +298,159 @@ fi
 ## LAYER 6 — Skills/Tooling Inventory
 
 ```bash
-# Skills (counts only, não listagem completa)
 PERSONAS=$(ls -d docs/skills/personas/*/ 2>/dev/null | wc -l)
 DPIO=$(ls docs/guides/dpio/*.md 2>/dev/null | wc -l)
 SLASH=$(ls .claude/commands/*.md 2>/dev/null | wc -l)
 SLASH_GLOBAL=$(ls /home/enio/.claude/commands/*.md 2>/dev/null | wc -l)
 AGENT_TS=$(ls agents/skills/*.ts 2>/dev/null | wc -l)
 HERMES=$(ls -d /home/enio/hermes-egos/plugins/egos-* 2>/dev/null | wc -l)
-
-echo "Skills: ${PERSONAS} personas | ${DPIO} DPIO | ${SLASH} slash local | ${SLASH_GLOBAL} slash global | ${AGENT_TS} agent.ts | ${HERMES} hermes plugins"
-
-# Tools
-echo -n "Alibaba Qwen: "; grep -q ALIBABA_DASHSCOPE .env 2>/dev/null && echo "✅" || echo "❌"
+echo "Skills: ${PERSONAS} personas | ${DPIO} DPIO | ${SLASH} slash local | ${SLASH_GLOBAL} global | ${AGENT_TS} agent.ts | ${HERMES} hermes"
 echo -n "Supabase: "; grep -q SUPABASE_URL .env 2>/dev/null && echo "✅" || echo "❌"
 echo -n "codebase-memory-mcp: "; command -v codebase-memory-mcp >/dev/null && echo "✅" || echo "❌"
 ```
 
 ---
 
+## LAYER 6.5 — Capability Delta
+
+> Detalhe completo (bash MCPs + Hermes VPS): [docs/start-layers/capability-delta.md](../docs/start-layers/capability-delta.md).
+
+Executar bash de `capability-delta.md` para: novas sections em CAPABILITY_REGISTRY, INTEGRATION_REGISTRY status, MCPs ativos, Hermes VPS skills, eval coverage.
+
+**Internalize:** sections novas = usar antes de criar código novo. Verificar INTEGRATION_REGISTRY antes de propor nova integração.
+
+**Reportar no Verification Checkpoint:**
+```
+Layer 6.5 — Capability Delta
+  ✓ CAPABILITY_REGISTRY: [N sections | X novas: §N1, §N2...]
+  ✓ INTEGRATION_REGISTRY: [presente/ausente | N entradas]
+  ✓ Hermes VPS skills: [lista ou "VPS unreachable"]
+  ✓ Google Workspace auth: [AUTHENTICATED / NOT_AUTHENTICATED / unreachable]
+```
+
+---
+
+## LAYER 6.6 — Session Briefing via LLM
+
+> **Origem:** 2026-05-11 — /start listava P0 mecanicamente sem "por que agora" nem "o que pode dar errado".
+
+```bash
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo $PWD)
+P0_TASKS=$(grep "^- \[ \].*\[P0\]" TASKS.md 2>/dev/null | head -5 | sed 's/^/  /')
+RECENT=$(git log --oneline -5 2>/dev/null | sed 's/^/  /')
+HANDOFF_FILE=$(ls -t docs/_current_handoffs/*.md 2>/dev/null | head -1)
+HANDOFF_NEXT=""
+[ -n "$HANDOFF_FILE" ] && HANDOFF_NEXT=$(grep -A3 "Next Steps\|Próximos" "$HANDOFF_FILE" 2>/dev/null | head -5 | sed 's/^/  /')
+if command -v bun >/dev/null 2>&1 && [ -f "$ROOT/packages/shared/src/llm-providers/llm-router.ts" ]; then
+  bun -e "
+    import { callHermes } from '$ROOT/packages/shared/src/llm-providers/llm-router.ts'
+    const prompt = 'Session briefing. P0: ${P0_TASKS:-none} | Commits: ${RECENT:-none} | Handoff: ${HANDOFF_NEXT:-none}. Write 3-4 sentences: (1) focus TODAY and WHY, (2) main risk, (3) first action. Max 80 words.'
+    try { const r = await callHermes(prompt, { maxTokens: 120, timeoutMs: 6000 }); console.log(r.content.trim()) } catch { console.log('[briefing] LLM unavailable') }
+  " 2>/dev/null || echo "[briefing] script error"
+else
+  echo "Layer 6.6: bun/llm-router unavailable — review handoff manually"
+fi
+```
+
+**Reportar no Verification Checkpoint:**
+```
+Layer 6.6 — Session Briefing
+  ✓ Foco: [tarefa + motivo]
+  ✓ Risco: [1 linha]
+  ✓ Primeira ação: [ação concreta]
+```
+
+---
+
 ## LAYER 7 — Verification Checkpoint (OBRIGATÓRIO)
 
-**Após Layers 1-6, produza este briefing EXATO. Sem esta seção, /start está incompleto.**
+**Sem esta seção, /start está incompleto.**
 
 ```
 ═══════════════════════════════════════════════════════════
-EGOS /start v6.3 — Verification Checkpoint
+EGOS /start v6.13 — Verification Checkpoint
 ═══════════════════════════════════════════════════════════
 
-🔒 LAYERS LOADED (prove leitura)
+🔒 MODE: [research | write] — [motivo da escolha]
+
+🔒 LAYERS LOADED
+
+Layer 0 — Karpathy Doctrine
+  ✓ UNDERSTANDING_PROTOCOL.md: internalizado
+  ✓ Red Zones citadas (≥3): [ex: copy pública, pricing, arquitetura]
+  ✓ Gates ativos: Scope, Perfectionism, Understanding, Visual Proof, Ethical
+
+Layer 0.5 — EPOS Pergunta Disparada (OBRIGATÓRIO — checkpoint inválido sem este campo)
+  ✓ Pergunta: [B*-Q* + formato 6-seções] OU [motivo válido de pausa]
+  ✗ NÃO ACEITO: override subjetivo sem motivo explícito
 
 Layer 1 — Global Rules
-  ✓ T0 #N citada de memória: [exemplo: "NEVER force-push main"]
-  ✓ Lazy-loaded rules lidas: [enio-profile / posture / karpathy / outras]
-  ✓ Single Pursuit identificado em enio-profile: [data + descrição]
+  ✓ T0 citada: [ex: "NEVER force-push main"]
+  ✓ Single Pursuit (enio-profile): [data + descrição]
 
 Layer 2 — Bootstrap
-  ✓ EGOS_BOOTSTRAP.md lido: [versão + última atualização]
-  ✓ Single Pursuit canônico (BOOTSTRAP wins): [Central EGOS / outro]
-  ✓ Architecture 3-camadas: [resumo de 1 linha]
+  ✓ EGOS_BOOTSTRAP.md: [versão + última atualização]
+  ✓ Single Pursuit canônico: [Central EGOS / outro]
+  ✓ Architecture: [resumo 1 linha]
 
 Layer 3 — ADRs
-  ✓ Total decisões locked: [N]
-  ✓ Pricing tiers: Solo R$X/setup R$X/mês | Pro ... | Ent ...
-  ✓ Padrão fork: PAI plugins-only / outro
+  ✓ Decisões locked: [N]
+  ✓ Pricing tiers: Solo R$X | Pro ... | Ent ...
 
 Layer 4 — Memory Top 3
-  ✓ Entry 1: [filename + 1 linha do conteúdo]
+  ✓ Entry 1: [filename + 1 linha]
   ✓ Entry 2: ...
   ✓ Entry 3: ...
 
 Layer 4.5 — Handoff Atual
-  ✓ Arquivo lido: [path ou "sem handoff ativo"]
+  ✓ Arquivo: [path ou "sem handoff ativo"]
   ✓ In-Progress: [resumo 1 linha ou "N/A"]
-  ✓ Validações pendentes: [pedidas pelo agente anterior, ou "N/A"]
-  ✓ Next recomendado pelo handoff: [1-2 tasks, ou "N/A"]
+  ✓ Validações pendentes: [ou "N/A"]
+  ✓ Next handoff: [1-2 tasks ou "N/A"]
+
+Layer 4.6 — Leaf SSOTs
+  ✓ cwd é leaf? [sim/não]
+  ✓ Sistema prompt: [path ou "greenfield"]
+  ✓ UPSTREAM_KERNEL.md: [presente/ausente]
+  ✓ Decisão: ESTENDER | CRIAR NOVO | NENHUMA AÇÃO
+
+Layer 4.7 — Evolution API
+  ✓ Configurado: [sim/não]
+  ✓ Instances: [N open | K close]
+  ✓ Broken: [lista ou "nenhum"]
+
+Layer 4.8 — Codex Health
+  ✓ Quota 5h: [%] | alarm: [green/yellow/red]
+  ✓ Ação: [normal | economizar | fallback]
 
 Layer 5 — System State
-  HEAD: [hash + msg curta] | Uncommitted: [N files]
+  HEAD: [hash + msg] | Uncommitted: [N]
   TASKS: [done/pending/P0] | Lines: [N]
   Disk: [N%] | RAM: [used/total]
-  Governance Smoke: [summary line + ❌/⚠️ warnings, ou "✅ sem warnings"]
+  Governance Smoke: [summary + warnings ou "✅ clean"]
 
 Layer 6 — Inventário
-  Personas: N | DPIO: N | Slash: local/global | Agent.ts: N | Hermes plugins: N
-  Tools: Alibaba ✅ | Supabase ✅ | codebase-memory-mcp ✅
+  Personas: N | DPIO: N | Slash: local/global | Agent.ts: N | Hermes: N
+
+Layer 6.5 — Capability Delta
+  ✓ CAPABILITY_REGISTRY: [N sections | X novas]
+  ✓ INTEGRATION_REGISTRY: [presente/ausente | N entradas]
+  ✓ Hermes VPS: [lista ou "unreachable"]
 
 ⚠️  CONFLITOS/UPDATES DETECTADOS
-  [listar se houver, ex: Single Pursuit mudou de X para Y]
-  [listar arquivos uncommitted relevantes]
-  [ADRs ausentes detectados no Layer 3]
+  [listar se houver: Single Pursuit mudou, arquivos uncommitted relevantes, ADRs ausentes]
 
-🎯 SINGLE PURSUIT ATIVO
-  [colar do BOOTSTRAP, NÃO do enio-profile se houver conflito]
+🎯 DUAL PURSUIT + HIGHEST-LEVERAGE
+  [colar do BOOTSTRAP — não do enio-profile se houver conflito]
+  [classificar sessão: proof | extraction | canon | traceability | replication]
 
 🚨 P0 BLOCKERS
-  [listar do TASKS.md ou "✅ nenhum P0 ativo"]
+  [listar ou "✅ nenhum P0 ativo"]
 
-🔗 PRÓXIMOS PASSOS RECOMENDADOS (3 opções)
-  REGRA: prioridade = (1) handoff.next, (2) validações pendentes, (3) P0 do Single Pursuit
-  1. [do handoff.next se existir, senão P0 do Single Pursuit — com ID]
-  2. [P0/P1 do Single Pursuit — com ID]
+🔗 PRÓXIMOS PASSOS (3 opções)
+  Prioridade: (1) handoff.next → (2) validações pendentes → (3) P0 Dual Pursuit
+  1. [do handoff.next — com ID]
+  2. [P0/P1 Dual Pursuit — com ID]
   3. [P0/P1 alternativo — com ID]
 
 ❓ Em qual quer trabalhar? Ou outra coisa?
@@ -241,35 +459,19 @@ Layer 6 — Inventário
 
 ---
 
-## REGRAS DE PARADA (skip allowed)
+## REGRAS DE PARADA
 
 | Layer | Pode pular se | Reportar como |
 |-------|---------------|---------------|
-| 1 | NUNCA — global rules são obrigatórias | — |
-| 2 | NUNCA — BOOTSTRAP é canonical | — |
-| 3 | ADR verificado via bash e ausente | "Layer 3: `<arquivo>` ausente" |
+| 1 | NUNCA | — |
+| 2 | NUNCA | — |
+| 3 | ADR ausente (verificado via bash) | "Layer 3: `<arquivo>` ausente" |
 | 4 | MEMORY.md vazio | "Layer 4: sem entries" |
 | 4.5 | sem arquivos em `_current_handoffs/` | "Layer 4.5: sem handoff ativo" |
 | 5 | bash falha | "Layer 5: comando X falhou" |
 | 6 | skill dirs vazios | "Layer 6: 0 skills" |
-| 7 | NUNCA — checkpoint é a prova | — |
-
----
-
-## COMPARATIVO v5.9 → v6.1 → v6.2 → v6.3
-
-| Aspecto | v5.9 | v6.1 | v6.2 | v6.3 (esta) |
-|---------|------|------|------|-------------|
-| BOOTSTRAP | `head -60` truncado | Read completo | Read completo | Read completo |
-| CLAUDE.md global | não lido | Read completo | Read completo | Read completo |
-| ADRs Tier 1 | `[ -f ]` checks | Read tool nos 3 (sem verificar) | **Glob bash primeiro, Read só se existir** | idem |
-| Lazy-loaded | não lido | Read em 4 arquivos | Read em 4 arquivos | idem |
-| Memory | MEMORY.md truncado | Read top 3 entries | Read top 3 entries | idem |
-| Handoff atual | não lido | não lido | **Layer 4.5 — Read handoff mais recente** | idem |
-| Governance smoke | ignorado | ignorado | grep no log JSON (sempre vazio ❌) | **`bun runtime-smoke.ts` direto ✅** |
-| Próximos passos | grep P0 TASKS.md | grep P0 TASKS.md | **handoff.next → P0 Single Pursuit → P0 geral** | idem |
-| Verification | declarativo | checkpoint forçado | checkpoint + Layer 4.5 | checkpoint + smoke real |
-| Custo extra | — | ~10k tokens | ~12k tokens | ~13k tokens (vale) |
+| 6.5 | git/docs ausentes | "Layer 6.5: skipped — motivo" |
+| 7 | NUNCA | — |
 
 ---
 
@@ -278,17 +480,20 @@ Layer 6 — Inventário
 Se sessão >10 turnos ou trocou de assunto:
 
 ```bash
-git log --oneline -3
-git status --short
+git log --oneline -3 && git status --short
 grep "^- \[ \].*\[P0\]" TASKS.md | head -3
 ls -t docs/_current_handoffs/*.md 2>/dev/null | head -1
 ```
 
-E re-leia EGOS_BOOTSTRAP.md (Layer 2) + handoff mais recente (Layer 4.5) — só esses dois.
+Re-leia EGOS_BOOTSTRAP.md (Layer 2) + handoff mais recente (Layer 4.5) — só esses dois.
 
 ---
 
-*v6.3 — 2026-05-07 | Bug fix: governance smoke via `bun runtime-smoke.ts` (log JSON era sempre vazio)*
-*v6.2 — 2026-05-07 | +Layer 4.5 (handoff) +F3 (ADR Glob) +F5 (próximos passos por prioridade)*
-*v6.1 — 2026-05-07 | Force-read all layers + Verification Checkpoint*
-*v5.9 bug: `head -60` perdia 70%+ do contexto.*
+*v6.13 — 2026-05-21 | INV-START-SLIM-001: 900L → ~565L (-37%). Layers 4.6/4.7/6.5 extraídas para `docs/start-layers/`. Layer 0.0 condensada. Layer 0.5 condensada. Layer 6.6 condensada. Comparativo v5.9→v6.3 removido (coberto pelo changelog abaixo). Semântica preservada integralmente.*
+*v6.12 — 2026-05-21 | Layer 4.5 expandida (4.5a+4.5b) + reconciliação handoff↔TASKS (INV-START-TASKS-001)*
+*v6.11 — 2026-05-21 | +MODE detection + Layer 0.5 no checkpoint + Layer 4.8 movida para após 0.5*
+*v6.10 — 2026-05-20 | +SWARM_COMMIT_POLICY + MODEL_DELEGATION_POLICY*
+*v6.9 — 2026-05-13 | Bug fix: Layer 4.8 bash obrigatório*
+*v6.8 — 2026-05-11 | +Layer 6.5 (Capability Delta) + Layer 6.6 (Session Briefing)*
+*v6.7 — 2026-05-11 | +Layer 0.0 (cross-platform + remote staleness)*
+*Histórico completo: git log -- .claude/commands/start.md*
