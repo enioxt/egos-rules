@@ -148,6 +148,46 @@ fi
 
 ---
 
+## PHASE 1.6 — FLOW VALIDATION GATE [OBRIGATÓRIO — §10 CLAUDE.md]
+
+> **Regra:** toda nova API route/endpoint criada nesta sessão DEVE ter smoke test executado ANTES de /end fechar.
+> TypeScript limpo ≠ feature funcionando. Sem resposta real = [CONCEPT] no handoff, não [DONE].
+
+```bash
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo $PWD)
+
+echo "=== Phase 1.6 — Rotas novas para validar ==="
+NEW_ROUTES=$(git log --diff-filter=A --name-only --since='8 hours ago' --pretty=format: 2>/dev/null | grep "route\.ts$\|route\.js$")
+if [ -z "$NEW_ROUTES" ]; then
+  echo "✅ Nenhuma nova route — Phase 1.6 skip"
+  exit 0
+fi
+echo "Rotas criadas:"
+echo "$NEW_ROUTES" | sed 's/^/  - /'
+echo ""
+echo "Para cada rota acima, confirme:"
+echo "  1. Executou curl/smoke test contra o sistema rodando?"
+echo "  2. Colou HTTP status + resposta no commit message ou handoff?"
+echo "  3. README do app foi atualizado com o novo endpoint?"
+echo ""
+echo "Se alguma rota NÃO foi testada → marcar [CONCEPT] no handoff, não [DONE]"
+echo "Se gateway está no VPS: ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125 'curl -s http://localhost:3050/v1/health'"
+```
+
+**Para cada nova rota desta sessão, preencher:**
+```
+FLOW VALIDATION
+===============
+Route: POST /api/ops/tenant-seed
+Smoke: curl -X POST .../api/ops/tenant-seed -H "X-Ops-Token: ..." -d '{...}'
+Result: HTTP 200 {"slug":"...","status":"seeded",...}  ← colar real
+Status: [DONE] / [CONCEPT — não testado]
+```
+
+**Regra de skip:** rota existia antes da sessão → não precisa re-testar. Somente novas rotas.
+
+---
+
 ## PHASE 2 — Session Data Collection
 
 ```bash
