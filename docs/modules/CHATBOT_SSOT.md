@@ -1,7 +1,8 @@
 # CHATBOT_SSOT — Canonical Chatbot Standard
 
-> **VERSION:** 2.1.0 | **UPDATED:** 2026-05-01
-> **REFERENCE IMPLEMENTATIONS:** `/home/enio/852` (chatbot SSE + ATRiAN) + `/home/enio/intelink` (5-tier LLM router + tool-calling + RAG)
+> **VERSION:** 2.2.0 | **UPDATED:** 2026-05-14
+> **OPERATIONAL CANON:** `/home/enio/egos/docs/modules/CHATBOT_SSOT.md` + `/home/enio/egos/packages/chatbot-core/` + `/home/enio/egos/apps/egos-gateway/src/` + relevant safety primitives in `/home/enio/egos/packages/shared/src/`
+> **REFERENCE SOURCES:** `/home/enio/852` (historical chatbot SSE + eval patterns + extraction source) + `/home/enio/intelink` (5-tier LLM router + tool-calling + RAG patterns)
 > **STATUS:** Active — all new chatbots MUST follow this standard
 
 ---
@@ -9,17 +10,17 @@
 ## Purpose
 
 This document defines the canonical chatbot architecture for the EGOS ecosystem.
-Every chatbot (852, Forja, carteira-livre, future projects) MUST implement these
+Every chatbot (Forja, carteira-livre, future projects) MUST implement these
 modules or explicitly document why a module is skipped.
 
-The 852 project is the reference implementation — battle-tested in production
-with real users, VPS deployment, and full governance integration.
+The current operational canon lives in `egos`.
+The `852` project remains a high-value historical and extraction source, especially for eval patterns, chat UX, and earlier prompt/runtime primitives.
 
 ---
 
 ## 1. Modular Prompt Architecture
 
-**Reference:** `852/src/lib/prompt.ts`
+**Reference sources:** `852/src/lib/prompt.ts` + current kernel prompt/runtime composition in `egos`
 
 ### Pattern
 
@@ -884,4 +885,317 @@ intelink/
 
 ---
 
-*Last updated: 2026-05-02 (§18.6 — Eval-Runner Vendoring Protocol EVAL-X5)*
+---
+
+## 19. Memory Tiers — Extended Architecture (NEW 2026-05-21)
+
+> **Status:** PROPOSAL → SHADOW MODE → ATIVAÇÃO pós-Constitution v1.0 (2026-06-12)
+> **Premortem:** `docs/audits/premortem-chatbot-hybrid-evolution.md`
+> **Substitui §4? NÃO.** §19 **estende** §4 — episodic summaries continuam padrão; tiers superiores são opt-in via `tenant_bot_config.memory_level`.
+
+### 19.1 Motivação
+
+§4 atual entrega memória de sessão única + cross-session via episodic summaries (852 reference). Gaps identificados (audit 2026-05-21):
+
+- Memória entre sessões frágil — só FTS, sem retrieval semântico
+- Conversa > 100 msgs perdida (auto-cleanup)
+- Sem perfil persistente de usuário/cliente
+- Sem core memory editável pelo agente (Letta pattern)
+
+### 19.2 Arquitetura 4-camadas
+
+```
+Camada 0 — Working memory  (in-context, últimas N msgs)        [já existe — §4]
+Camada 1 — Episodic recall (Supabase FTS, summaries)            [já existe — §4]
+Camada 2 — Archival vectors (pgvector, msgs > 7 dias)            [NOVO §19.3]
+Camada 3 — Core memory blocks (persona, user_facts, context)     [NOVO §19.4]
+```
+
+### 19.3 Archival vectors (Wave 1A)
+
+Tabela `agent_archival_memory`:
+```sql
+CREATE TABLE agent_archival_memory (
+  id uuid PRIMARY KEY,
+  workspace_id text NOT NULL,
+  tenant_slug text NOT NULL,
+  identity_hash text NOT NULL,         -- phone hash / user_id hash
+  content text NOT NULL,
+  embedding vector(1536),
+  source_message_ids uuid[],
+  created_at timestamptz DEFAULT now()
+);
+CREATE INDEX ON agent_archival_memory USING ivfflat (embedding vector_cosine_ops);
+```
+
+**Retrieval:** top-k similarity em pgvector + filter por `tenant_slug + identity_hash`. Inject em prompt como `## CONTEXTO HISTÓRICO (sem afirmar como fato presente)`.
+
+**Geração de embeddings:** worker assíncrono, batch nightly. Modelo: `text-embedding-3-small` (OpenAI) ou `gemini-embedding-001`.
+
+### 19.4 Core memory blocks (Wave 1B)
+
+Tabela `agent_memory_blocks`:
+```sql
+CREATE TABLE agent_memory_blocks (
+  id uuid PRIMARY KEY,
+  workspace_id text NOT NULL,
+  tenant_slug text NOT NULL,
+  identity_hash text NOT NULL,
+  block_name text NOT NULL,            -- 'persona' | 'user_facts' | 'context'
+  content text NOT NULL,
+  version int DEFAULT 1,
+  updated_at timestamptz DEFAULT now(),
+  UNIQUE (tenant_slug, identity_hash, block_name)
+);
+```
+
+**Pipeline determinístico pós-turn (NÃO agent-driven):**
+
+```
+Conversa turn N termina
+  ↓
+Worker classifier (Gemini Flash 8B dedicado, NOT main LLM)
+  ↓
+Extrai propostas: { facts_to_add[], persona_updates[], context_refresh? }
+  ↓
+ATRiAN valida (categoria nova: compliance_critical_omission)
+  ↓
+Guard Brasil masking
+  ↓
+Append-only write em agent_memory_blocks (version++)
+```
+
+**Justificativa (Codex 2026-05-21):** Letta confia em LLM principal chamando `update_memory_block` — com Gemini Flash, reliability <70%. Pipeline determinístico evita contaminação cross-user e drift de persona.
+
+### 19.5 Configuração por tenant
+
+`tenant_bot_config.memory_level`:
+- `0` — só §4 episodic summaries (default, current 852/forja/intelink/carteira-livre)
+- `1` — §4 + archival vectors (G Peças pós-Wave 1A)
+- `2` — §4 + archival + core blocks (G Peças pós-Wave 1B)
+- `3` — full + summarization custom per-tenant (futuro)
+
+**Migration rule:** nunca subir level sem golden cases passando em shadow mode + 7 dias de telemetria estável.
+
+### 19.6 Implementation Checklist
+
+- [ ] Migration `agent_archival_memory` + index
+- [ ] Migration `agent_memory_blocks` + UNIQUE constraint
+- [ ] Migration `tenant_bot_config.memory_level int DEFAULT 0`
+- [ ] Worker `archival-embedder.ts` (batch nightly)
+- [ ] Worker `memory-classifier.ts` (per-turn, async)
+- [ ] Retrieval helper `getMemoryContext(tenant, identity, level)`
+- [ ] ATRiAN category `compliance_critical_omission`
+- [ ] Golden cases regression suite (shadow mode)
+- [ ] Telemetry: `memory_write_rate`, `archival_retrieval_relevance`, `block_update_count`
+
+---
+
+## 20. Slot-Filling Dialog Manager + Durable HITL (NEW 2026-05-21)
+
+> **Status:** PROPOSAL → Wave 2 (pós-Wave 0+1)
+> **Referência:** Botpress v12 slot-filling pattern + pg-boss durable execution
+> **Substrate:** Postgres-native (pg-boss). **NÃO usar Inngest** (decisão Codex 2026-05-21).
+
+### 20.1 Motivação
+
+Coleta de dados multi-step hoje (whatsapp.ts lines 1134–1164 G Peças) é hardcoded em if-statements espalhados. HITL com email-aprovação não tem state durável — se Docker reinicia, conversa volta ao zero.
+
+### 20.2 Slot-filling tabela
+
+```sql
+CREATE TABLE agent_form_state (
+  id uuid PRIMARY KEY,
+  workspace_id text NOT NULL,
+  tenant_slug text NOT NULL,
+  identity_hash text NOT NULL,
+  form_name text NOT NULL,             -- 'gpecas_lead', 'consulting_intake', etc.
+  current_step int NOT NULL,
+  collected_fields jsonb DEFAULT '{}',
+  validators jsonb DEFAULT '[]',
+  status text DEFAULT 'in_progress',   -- 'in_progress' | 'completed' | 'abandoned'
+  resume_token text UNIQUE,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+```
+
+### 20.3 Form definition (YAML)
+
+```yaml
+# forms/gpecas_lead.yaml
+name: gpecas_lead
+steps:
+  - field: customer_name
+    prompt: "Como posso te chamar?"
+    validator: { type: name, min: 2, max: 50 }
+  - field: vehicle_model
+    prompt: "Qual o modelo do seu veículo?"
+    validator: { type: text, min: 3 }
+  - field: part_needed
+    prompt: "Qual peça você procura?"
+  - field: contact_phone
+    prompt: "Confirma seu telefone para contato?"
+    validator: { type: phone_br }
+on_complete:
+  - action: create_lead
+  - action: notify_admin
+```
+
+### 20.4 Durable HITL com pg-boss
+
+**Pattern: send-email → wait → resume:**
+
+```typescript
+// Tool: request_human_approval(action, payload)
+await pgBoss.send('approval-pending', { conversation_id, action, payload, resume_token });
+// Conversation pauses; agent_form_state.status = 'awaiting_approval'
+
+// Admin clicks approval link → webhook
+await pgBoss.send('approval-received', { resume_token, decision });
+// pg-boss worker resumes conversation:
+//   - Loads agent_form_state
+//   - Injects approval result in context
+//   - Continues form flow
+```
+
+**pg-boss schemas:** `pgboss.job`, `pgboss.archive`. Idempotency via `singletonKey = resume_token`.
+
+### 20.5 Por que pg-boss (não Inngest, não BullMQ)
+
+| Critério | pg-boss | Inngest | BullMQ |
+|---|---|---|---|
+| Self-hosted | ✅ Postgres-only | ❌ SaaS | ⚠️ requer Redis |
+| Vendor lock-in | Nenhum | Alto | Nenhum (Redis ubíquo) |
+| Já temos infra | ✅ Supabase | ❌ | ❌ +Redis |
+| Idempotência built-in | ✅ singletonKey | ✅ | ⚠️ manual |
+| Maturidade | 5+ anos, 1.5k+ stars | Jovem | Maduro mas Redis-bound |
+| Soberania de dados | Total | Cloud SaaS | Total |
+| **Decisão** | ✅ | ❌ | ⚠️ futuro se latência ruim |
+
+### 20.6 Implementation Checklist
+
+- [ ] Migration `agent_form_state` + UNIQUE resume_token
+- [ ] Setup pg-boss em Supabase (schema `pgboss`)
+- [ ] Form loader (YAML → in-memory definitions)
+- [ ] Slot-filling DM: `processFormStep(state, userInput) → nextStep`
+- [ ] Tool `request_human_approval(action, payload)` no orchestrator
+- [ ] Webhook `/api/approvals/:token` (admin clica link → resume)
+- [ ] Worker pg-boss `approval-resume` (idempotente, com replay test)
+- [ ] Migration G Peças `wa_customers` flow para `agent_form_state` (gradual)
+- [ ] Golden case GP-GC-007: data collection with bad input recovery
+
+---
+
+## 21. Observability Foundation (Wave 0 — PROMOTED FROM Wave 3)
+
+> **Status:** PROPOSAL → Wave 0 (PRIMEIRO, antes de qualquer mudança comportamental)
+> **Decisão Codex 2026-05-21:** sem baseline = sem causal evidence. Promovida a Wave 0.
+
+### 21.1 Trace ID propagation
+
+Toda conversa recebe `trace_id` (UUID v7) gerado no webhook entry:
+
+```typescript
+// channels/whatsapp.ts entry
+const traceId = crypto.randomUUID();
+context.traceId = traceId;
+// Propagado em:
+//   - logs (structured)
+//   - tool calls
+//   - LLM calls (header X-Trace-Id quando possível)
+//   - Supabase writes
+//   - ATRiAN logs
+//   - Guard Brasil logs
+```
+
+### 21.2 Structured logging (substitui console.log)
+
+```typescript
+// packages/shared/src/logger.ts (new)
+log.info({ trace_id, tenant, event: 'tool_call', tool: name, duration_ms, status });
+log.error({ trace_id, tenant, event: 'tool_error', tool, error_class, error_message });
+log.info({ trace_id, tenant, event: 'llm_call', model, input_tokens, output_tokens, cost_usd });
+```
+
+**Output:** JSON em stdout (Docker captura) + persist em `egos_observability_events`.
+
+### 21.3 Prompt snapshots
+
+Tabela `agent_prompt_snapshots`:
+```sql
+CREATE TABLE agent_prompt_snapshots (
+  id uuid PRIMARY KEY,
+  trace_id uuid NOT NULL,
+  tenant_slug text NOT NULL,
+  turn_index int,
+  system_prompt text,
+  context_messages jsonb,
+  tools_offered text[],
+  model_used text,
+  response_text text,
+  tool_calls jsonb,
+  created_at timestamptz DEFAULT now()
+);
+```
+
+Permite reproduzir bug exato: dado `trace_id`, sabemos o prompt completo enviado ao LLM.
+
+### 21.4 Tool-call metrics
+
+Tabela `agent_tool_metrics`:
+```sql
+CREATE TABLE agent_tool_metrics (
+  id uuid PRIMARY KEY,
+  trace_id uuid NOT NULL,
+  tenant_slug text NOT NULL,
+  tool_name text NOT NULL,
+  duration_ms int,
+  status text,                          -- 'success' | 'error' | 'timeout'
+  error_class text,
+  retry_count int DEFAULT 0,
+  created_at timestamptz DEFAULT now()
+);
+```
+
+Permite SLO: "tool X p95 latency", "tool Y error rate", "retry budget consumido".
+
+### 21.5 Eval dashboard
+
+Página `/admin/observability/evals` no central-egos-template:
+- Golden cases status (passing/failing) por tenant
+- ATRiAN score distribution (heatmap)
+- Memory write rate (vs target 70%)
+- Tool error rate (vs SLO)
+- Trace search por `trace_id` ou `tenant + date range`
+
+### 21.6 Implementation Checklist (Wave 0 — 1 semana, isolada)
+
+- [ ] Migration `egos_observability_events`, `agent_prompt_snapshots`, `agent_tool_metrics`
+- [ ] `packages/shared/src/logger.ts` (structured logging)
+- [ ] Trace ID propagation em `channels/whatsapp.ts`, `channels/telegram.ts`, `orchestrator.ts`
+- [ ] Prompt snapshot middleware (após cada `runModel`)
+- [ ] Tool metrics middleware (wrap `dispatchTool`)
+- [ ] Dashboard `/admin/observability/evals` (read-only, basic)
+- [ ] Retention policy (snapshots = 30d, metrics = 90d, events = 14d)
+
+---
+
+## 22. Decisões locked (2026-05-21 — pós-premortem + Codex)
+
+| # | Decisão | Razão | Fonte |
+|---|---|---|---|
+| D1 | **NÃO** adotar Mastra/LangGraph wholesale | Lock-in + 40-50% rewrite + API churn | Audit 2026-05-21 |
+| D2 | **NÃO** usar Inngest | SaaS vendor lock-in conflita com soberania EGOS | Codex 2026-05-21 |
+| D3 | **NÃO** confiar em LLM agent-driven memory writes | Gemini Flash reliability <70%; cross-user contamination risk | Codex 2026-05-21 |
+| D4 | **SIM** pg-boss para durable HITL | Postgres-native; já temos infra; battle-tested | Codex 2026-05-21 |
+| D5 | **SIM** pipeline determinístico pós-turn para memory writes | Append-only + ATRiAN + Guard Brasil antes de persistir | Codex 2026-05-21 |
+| D6 | **SIM** Observability FIRST (Wave 0) | Sem baseline = sem causal evidence | Codex 2026-05-21 |
+| D7 | **SIM** Additive-only com `memory_level` feature flag | 852/forja/intelink default 0 (current); G Peças sandbox | Premortem F5 |
+| D8 | **SIM** Shadow mode até Constitution v1.0 (2026-06-12) | Evitar regressão pré-lock | Premortem F1+F10 |
+| D9 | **SIM** ATRiAN aplicado em summaries também | Categoria nova `compliance_critical_omission` | Premortem F8 |
+| D10 | **SIM** WIP=1 por wave, hard cap 2 semanas | Anti scope-creep | Premortem F7 |
+
+---
+
+*Last updated: 2026-05-21 (§19 Memory Tiers + §20 Slot-Filling + §21 Observability + §22 Decisões locked — premortem + Codex review)*

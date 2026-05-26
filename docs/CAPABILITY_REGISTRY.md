@@ -1,5 +1,48 @@
 # EGOS Capability Registry
 
+> **FORMATOS ATIVOS (2026-05-13):**
+> - **`## §N`** neste arquivo (legacy index, entries §1-§80+) — não remover, migração orgânica
+> - **`CBC-*.md`** em `docs/capabilities/` (formato v1 canonical com frontmatter YAML) — **USE ESTE para novas capabilities**
+> - Template: `docs/capabilities/_TEMPLATE.md`
+>
+> **🔴 SCHEMA OBRIGATÓRIO** (TASK-DETOX-002, 2026-05-13):
+> Toda NOVA entrada (`## §N+1` OU `CBC-*.md`) DEVE incluir 3 campos: **Status** + **Evidence** + **Owner**.
+> SSOT: [`docs/governance/CAPABILITY_SCHEMA.md`](governance/CAPABILITY_SCHEMA.md)
+> Entries pré-2026-05-13 são legacy (migração orgânica quando tocadas — DETOX-001-LITE).
+>
+> Para novas capabilities: criar `docs/capabilities/CBC-<PROJETO>-<SLUG>-001.md` + adicionar entrada `## §N+1` aqui como ponte.
+
+---
+
+## CAP-INT-003: Multi-LLM Orchestration (Claude + Codex pipeline)
+
+- **Status:** ✅ ATIVO (v1.0.0 — 2026-05-12)
+- **Localização:** `docs/governance/MULTI_LLM_ORCHESTRATION.md` (SSOT) + `scripts/codex-usage.ts` + `.claude/commands/duo.md`
+- **Descrição:** Pipeline de orquestração entre Claude Code e Codex CLI para segunda opinião adversarial, scaffolding eficiente e monitoramento de quota.
+- **Modelos:** `gpt-5.3-codex` (corriqueiro) + `gpt-5.5` (adversarial raro) + Claude Haiku/Sonnet/Opus
+- **Gatilhos:** `/duo <task>` | `EGOS_CODEX_REVIEW=1` (pre-commit opt-in) | `/start` Layer 4.8 | `/end` Phase 13
+- **Constraint:** ChatGPT Plus $20 — quota 5x/5h. Alarme em 🟡 50% | fallback Claude-only 🔴 30%
+- **Plugin:** `codex@openai-codex` (openai/codex-plugin-cc) instalado — 6 slash-commands `/codex:*`
+- **VPS:** DEFERRED — Codex local-only por 2 semanas, decidir após dados reais (CODEX-VPS-001 P2)
+- **Anti-patterns:** sem auto-merge Codex, sem 5.5 default, sem blocking pre-commit
+
+---
+
+## CAP-INT-002: @egos/whatsapp-kernel (SSOT WhatsApp/Evolution API)
+
+- **Status:** ✅ EM PRODUÇÃO (v0.1.0)
+- **Localização:** `packages/whatsapp-kernel/`
+- **Cliente origem:** G Peças MVP (necessidade de QR + dashboard sessions + telemetria)
+- **Reuso esperado:** TODO app EGOS que toca WhatsApp (egos-gateway, egos-hq, central-egos-template, forja, carteira-livre)
+- **Módulos:** `client` (sendText/sendMedia/sendTyping/downloadMedia), `instances` (CRUD+sync), `qr-connect` (QR generator+poll), `telemetry` (events log+heartbeat)
+- **Schema Supabase:** `whatsapp_instances` + `whatsapp_telemetry_events` + view `whatsapp_instances_status`
+- **Dependências:** `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`
+- **SSOT docs:** `docs/guides/WHATSAPP_SSOT.md` (mapa de nomes + arquitetura)
+- **Migração apps existentes:** P1 (gateway+hq) | P2 (forja, carteira-livre)
+- **Princípios:** A66 (validar stack externa), K5 CAP-MODULAR, Karpathy mobile-first
+
+---
+
 <!-- llmrefs:start -->
 ## LLM Reference Signature
 
@@ -7,11 +50,11 @@
 - **Summary:** Canonical registry of capabilities by domain, with SSOT source, quality, adoption, and rollout targets.
 - **Read next:**
   - `TASKS.md` — execution priorities and gaps
-  - `docs/SSOT_REGISTRY.md` — ownership/freshness contracts
+  - `docs/modules/SSOT_REGISTRY.md` — ownership/freshness contracts
   - `docs/SYSTEM_MAP.md` — architecture placement of capabilities
 <!-- llmrefs:end -->
 
-> **VERSION:** 1.11.0 | **UPDATED:** 2026-05-01
+> **VERSION:** 1.12.0 | **UPDATED:** 2026-05-14
 > **PURPOSE:** Master index of all capabilities across the EGOS ecosystem
 > **SSOT STATUS:** This file IS the canonical capability map
 > **LATEST:** Timeline Publishing Pipeline, Rich Article Rendering, AI Discovery Layer, Timeline KB Sync (§23)
@@ -56,9 +99,9 @@ Each capability has:
 | **PRODUCTION: egos-gateway** | Hono REST API, x402 micropayments, OAS 3.1, Health monitor | §6, §15 |
 | **PLATFORM: egos (kernel)** | Agent Runtime, Governance Pipeline, SSOT system, MCP servers, Evidence Gate | §4, §5, §5b |
 | **PLATFORM: egos-hq** | Mission Control UI, Claude Code tooling, Dashboards | §14 |
-| **ACTIVE-DEV: egos-inteligencia** | Entity extraction, Neo4j 83.7M nodes, NER PT-BR, Cross-reference engine | §12b |
+| **ACTIVE-DEV: br-acc / egos_inteligencia namespace** | Entity extraction, public graph backend, NER PT-BR, Cross-reference engine | §12b |
 | **ABSORBING: policia** | Groq transcription, Investigation templates, Intelink integration | §12b |
-| **ABSORBING: br-acc** | Neo4j graph source, FastAPI OSINT, 18 routers | §12b |
+| **ABSORBING: br-acc** | Neo4j graph source, FastAPI OSINT, public-data intelligence stack | §12b |
 
 ---
 
@@ -76,7 +119,7 @@ Each capability has:
 | Chat Streaming (Vercel AI SDK) | `852/src/app/api/chat/route.ts` | A | 852, intelink | forja | `chatbot`, `streaming`, `api` |
 | Export (PDF/DOCX/MD/WhatsApp) | `852/src/components/chat/ExportMenu.tsx` | A | 852 | forja, intelink | `chatbot`, `export`, `pdf` |
 | Hot Topics / Trending | `852/src/app/api/hot-topics/route.ts` | A | 852 | — | `chatbot`, `community`, `engagement` |
-| Tool-Calling Chat (27 tools) | `br-acc/api/src/bracc/routers/chat.py` | A | br-acc | forja (adapted) | `chatbot`, `tools`, `python` |
+| Tool-Calling Chat (Python stack) | `br-acc/api/src/bracc/routers/chat.py` | A | br-acc | forja (adapted) | `chatbot`, `tools`, `python` |
 | Public Guard / LGPD Masking (Python) | `br-acc/api/src/bracc/services/public_guard.py` | A | br-acc | forja | `privacy`, `lgpd`, `masking` |
 | **Public Guard BR (TypeScript)** | `egos/packages/shared/src/public-guard.ts` | A | egos | carteira-livre, forja, egos-web | `privacy`, `lgpd`, `masking`, `guard-brasil` |
 | **Guard Brasil Python SDK** | `br-acc/etl/src/bracc_etl/guard.py` | B | br-acc | — | `privacy`, `lgpd`, `pii`, `python`, `etl`, `guard-brasil` |
@@ -144,7 +187,7 @@ Each capability has:
 |-----------|------|---------|------------|-------------|------|
 | Governance Symlink Converter (legacy) | `~/.egos/governance-symlink.sh` | C | Manual cleanup only | — | `governance`, `symlink`, `legacy` |
 | Governance Sync Plane | `egos/scripts/governance-sync.sh` + `~/.egos/sync.sh` | A | Kernel + synced leaves | — | `governance`, `sync`, `ssot` |
-| SSOT Registry | `egos/docs/SSOT_REGISTRY.md` | A | egos (canonical) | ALL | `governance`, `ssot`, `registry` |
+| SSOT Registry | `egos/docs/modules/SSOT_REGISTRY.md` | A | egos (canonical) | ALL | `governance`, `ssot`, `registry` |
 | Pre-commit Drift Detection | `.husky/pre-commit` | A | carteira-livre, forja | — | `governance`, `drift`, `hooks` |
 | CRCDM Universal Hook | `scripts/hooks/crcdm-pre-commit.sh` → `~/.egos/hooks/pre-commit` | A | ALL (symlink) | — | `governance`, `security`, `crcdm`, `hooks` |
 | Cross-Repo Health Dashboard | `egos/scripts/egos-repo-health.sh` | A | egos (run before installers) | — | `observability`, `governance`, `git` |
@@ -169,7 +212,7 @@ Each capability has:
 | ~~QA Loop Contract~~ | ~~`.guarani/orchestration/QA_LOOP_CONTRACT.md`~~ | ARCHIVED | egos | — | `governance`, `qa`, `contract` |
 | **Operator Map** | `docs/OPERATOR_MAP.md` | A | egos | — | `governance`, `control-plane`, `founder` |
 | **Kernel Consolidation Plan** | `docs/KERNEL_CONSOLIDATION_PLAN.md` | A | egos | — | `governance`, `consolidation`, `migration` |
-| **SSOT Registry v2** | `docs/SSOT_REGISTRY.md` | A | egos | ALL | `governance`, `ssot`, `30-domains` |
+| **SSOT Registry v2** | `docs/modules/SSOT_REGISTRY.md` | A | egos | ALL | `governance`, `ssot`, `cross-repo` |
 | **Injection Hardening Contract** | `.guarani/security/INJECTION_HARDENING.md` | B | egos | ALL | `security`, `injection`, `hardening` |
 | **File Intelligence** | `scripts/file-intelligence.sh` | B | egos | ALL | `governance`, `compliance`, `pre-commit`, `classification` |
 | **Rules Index** | `.guarani/RULES_INDEX.md` | A | egos | ALL | `governance`, `rules`, `discovery`, `ssot` |
@@ -305,9 +348,10 @@ Each capability has:
 
 ## 12b. INTELLIGENCE & INVESTIGATION (Intelink Harvest 2026-04-14)
 
-> **Origem:** Audit completo do `/home/enio/egos-inteligencia/` — 27 routers, 90+ endpoints, 138 componentes, 48 queries Cypher.
-> **Status:** capabilities funcionais em intelink; registry para adoção em outros repos e extração como packages.
-> **Priorização:** P0 = disseminar como regra | P1 = extrair como package | P2 = manter no intelink e documentar.
+> **Origem:** Harvest legado iniciado em `/home/enio/egos-inteligencia/`; a verificação viva hoje precisa acontecer contra `intelink` e `br-acc`.
+> **Status:** candidate capabilities harvested from the `egos-inteligencia` lineage; promotion to kernel/shared use requires path-by-path re-verification in current repos.
+> **Priorização:** P0 = re-verify live source | P1 = disseminar como regra validada | P2 = extrair como package ou manter leaf-local.
+> **Nota:** as rows below preserve harvested pointers for continuity, but they are not a promotion shortcut.
 
 | Capability | SSOT | Quality | Adopted By | Should Adopt | Tags |
 |-----------|------|---------|------------|-------------|------|
@@ -612,11 +656,11 @@ L5: Agent Registry + Skills    — Auto-discovery, hot-reload, marketplace patte
 |------|----------|--------|-------|
 | egos | ✅ | 8 | Baseline, verified |
 | carteira-livre | ✅ | 6 | readme-syncer annotations live |
-| br-acc | ✅ | 5 | 83.7M nodes verified |
+| br-acc | ✅ | 5 | public-graph manifest verified |
 | 852 | ✅ | 5 | New this session |
 | forja | ✅ | 2 | Baseline |
 | egos-lab | ✅ | 4 | Baseline |
-| egos-inteligencia | ✅ | 5 | Not a git repo — manifest on filesystem |
+| egos-inteligencia | ✅ | 5 | legacy harvest surface on filesystem; re-verify against current repos before citing |
 
 ## 19. HERMES AGENT — ALWAYS-ON EXECUTOR (2026-04-07)
 
@@ -666,6 +710,10 @@ Scoring: exact substring (high) > token overlap (medium) > atom confidence (base
 
 ## §19 — Partial Masking Mode (Guard Brasil) (2026-04-07)
 
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md
+- **Owner:** unassigned
+
 **Module:** `packages/guard-brasil/src/pii-patterns.ts` + `lib/public-guard.ts` + `apps/api/src/server.ts`
 
 **Capability:** Banking-style partial PII reveal for confirmation UIs.
@@ -678,6 +726,10 @@ Scoring: exact substring (high) > token overlap (medium) > atom confidence (base
 ---
 
 ## §20 — Schema-Driven Prompt Assembler (2026-04-07)
+
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md
+- **Owner:** unassigned
 
 **Module:** `packages/shared/src/prompt-assembler.ts` (+ `852/src/lib/prompt-assembler.ts` local copy)
 
@@ -692,6 +744,10 @@ Scoring: exact substring (high) > token overlap (medium) > atom confidence (base
 
 ## §21 — MemoryStore Adapter (2026-04-07)
 
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md
+- **Owner:** unassigned
+
 **Module:** `packages/shared/src/memory-store.ts`
 
 **Capability:** Backend-agnostic conversational memory persistence.
@@ -704,6 +760,10 @@ Scoring: exact substring (high) > token overlap (medium) > atom confidence (base
 ---
 
 ## §22 — Eval Harness (2026-04-07)
+
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md
+- **Owner:** unassigned
 
 **Module:** `packages/shared/src/eval/runner.ts` + `852/src/eval/golden/852.ts`
 
@@ -760,6 +820,10 @@ or HARVEST.md are missing, it skips silently. This prevents hook failures from b
 
 ## §23 — Timeline + AI Publishing System (2026-04-08)
 
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md
+- **Owner:** unassigned
+
 **What it does:** Converts every git commit into a published article. HITL flow ensures human approval before anything goes public.
 
 **Key components:**
@@ -797,6 +861,10 @@ or HARVEST.md are missing, it skips silently. This prevents hook failures from b
 
 ## §24 — X.com Post HITL Approval + LLM Learning (2026-04-08)
 
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md
+- **Owner:** unassigned
+
 **What:** 3-option Telegram approval flow for X.com posts. LLM generates bold/conversational/technical alternatives personalized by accumulated user choice history.
 
 **Components:**
@@ -828,6 +896,10 @@ or HARVEST.md are missing, it skips silently. This prevents hook failures from b
 
 ## §25 — Auto-Disseminate Pipeline (2026-04-08)
 
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md
+- **Owner:** unassigned
+
 **What:** 3-agent pipeline that propagates kernel rule changes across all EGOS repos automatically.
 **Trigger:** Post-commit on kernel files (CLAUDE.md, .windsurfrules, CAPABILITY_REGISTRY.md, RULES_INDEX.md)
 **Status:** Architecture defined → implementation pending (DISS-001..006)
@@ -843,6 +915,10 @@ or HARVEST.md are missing, it skips silently. This prevents hook failures from b
 **Manual fallback:** `bash scripts/governance-propagate.sh --exec` (existing, idempotent)
 
 ## §26 — Kernel Change Scanner + Heartbeat Loop (2026-04-08)
+
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md
+- **Owner:** unassigned
 
 **What:** Two infrastructure primitives added to EGOS kernel.
 
@@ -873,6 +949,10 @@ handle.status();   // { cycleCount, lastRunAt, nextRunAt, lastResult }
 **Events:** emits `agent.heartbeat.complete` on Mycelium bus after each cycle
 
 ## §27 — KBS — Knowledge Base as a Service (2026-04-08)
+
+- **Status:** phantom
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md (SSOT path `packages/knowledge-mcp/templates/sectors/` não existe)
+- **Owner:** unassigned
 
 **What:** Notion-based knowledge management SaaS for 10 professional profiles in small Brazilian cities. Uses Claude Code + Notion MCP as the zero-infra engine.
 
@@ -912,6 +992,10 @@ Differentiator: LGPD compliance (Guard Brasil), audit trail, frozen zones, spec-
 
 ## §29 — Platform Monitor (2026-04-09)
 
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md
+- **Owner:** unassigned
+
 **What:** Daily monitoring of EGOS stack platform versions — detects breaking changes before they break production.
 
 **Platforms tracked:** claude-code, anthropic-sdk, notion-client, mcp-sdk, bun
@@ -925,6 +1009,10 @@ Differentiator: LGPD compliance (Guard Brasil), audit trail, frozen zones, spec-
 **Baseline set:** claude-code 2.1.97, anthropic-sdk 0.86.1, notion-client 5.17.0, mcp-sdk 1.29.0, bun 1.3.11
 
 ## §28 — X.com Reply Bot — Quality Scoring v2 (2026-04-08)
+
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md
+- **Owner:** unassigned
 
 **What:** Scoring improvements to x-reply-bot.ts that prevent false positives (news overscored) and false negatives (real engineers underscored).
 
@@ -942,6 +1030,10 @@ Differentiator: LGPD compliance (Guard Brasil), audit trail, frozen zones, spec-
 
 ## §30 — Claude Code Cost Tracker (2026-04-09)
 
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md
+- **Owner:** unassigned
+
 **What:** Reads `~/.claude/projects/**/*.jsonl` to compute real token usage and estimated cost per project/session/model.
 
 **Files:** `scripts/claude-cost.ts`, `scripts/claude-cost-alert.sh`
@@ -952,6 +1044,10 @@ Differentiator: LGPD compliance (Guard Brasil), audit trail, frozen zones, spec-
 **Skill:** `/usage-report` at `~/.egos/.claude/commands/usage-report.md`
 
 ## §31 — LLM Test Suite Standard (2026-04-09)
+
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md
+- **Owner:** unassigned
 
 **What:** Standardized evaluation suite for LLMs discovered by platform-monitor or llm-model-monitor. 9 tests across 5 categories, scored 0-100 per test.
 
@@ -970,6 +1066,10 @@ Differentiator: LGPD compliance (Guard Brasil), audit trail, frozen zones, spec-
 
 ## §32 — Report Standard Package (2026-04-09)
 
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md
+- **Owner:** unassigned
+
 **What:** `@egos/report-standard` — canonical schema + validator for all EGOS intelligence reports. Unifies report structure across egos, 852, br-acc, egos-inteligencia.
 
 **Package:** `packages/report-standard/`
@@ -982,6 +1082,10 @@ Differentiator: LGPD compliance (Guard Brasil), audit trail, frozen zones, spec-
 **Next:** REPORT-002 CLI validator, REPORT-003 Supabase adapter, REPORT-004 npm publish
 
 ## §33 — OmniView v0.1 — Local Video Analysis (2026-04-14)
+
+- **Status:** phantom
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md (SSOT path `omniview/app/core/integrity.py` incorreto; real path é `omniview/engine/app/core/integrity.py`)
+- **Owner:** unassigned
 
 **What:** Sistema local-first para análise forense de vídeos de câmeras de segurança. Detecta movimentos, agrupa em eventos, gera thumbnails e clips, timeline clicável, revisão humana com chain-of-custody auditável.
 
@@ -1038,6 +1142,10 @@ Differentiator: LGPD compliance (Guard Brasil), audit trail, frozen zones, spec-
 
 ## §34 — Pochete2.0 v4.0 — Browser Video Toolkit (2026-04-15)
 
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md
+- **Owner:** unassigned
+
 **What:** Editor de vídeo 100% no navegador para perícia policial. Zero install, zero cloud, vídeo nunca sai da máquina.
 
 **Repo:** `/home/enio/video-editor` | **GitHub:** `enioxt/Pochete2.0` (v4.0 — 2026-04-15)
@@ -1061,6 +1169,10 @@ Differentiator: LGPD compliance (Guard Brasil), audit trail, frozen zones, spec-
 ---
 
 ## §35 — Consulting Framework — KB-as-a-Service + Debrief Pipeline (2026-04-15)
+
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md
+- **Owner:** unassigned
 
 **What:** End-to-end consulting system for Brazilian sector professionals (advocacia, contabilidade, agronomia, saúde, polícia). Includes client onboarding, 5-layer debrief pipeline, trust page, and LGPD compliance API.
 
@@ -1108,6 +1220,10 @@ Differentiator: LGPD compliance (Guard Brasil), audit trail, frozen zones, spec-
 
 ## §36 — CRC-PATTERN-v1 — Cross-Repo Coordination Protocol (2026-04-26)
 
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md (duplicata sem quality grade; ver §36b abaixo para entrada verified)
+- **Owner:** unassigned
+
 **Trigger:** N parallel agent sessions in different EGOS repos (kernel + leaf-apps) need to coordinate without falling into wrong "merge/absorb" frames or phantom claims about each other.
 
 **Canonical doc:** `docs/COORDINATION_PATTERN.md` (kernel SSOT, written by Janela A intelink, 2026-04-26).
@@ -1141,6 +1257,10 @@ Differentiator: LGPD compliance (Guard Brasil), audit trail, frozen zones, spec-
 ---
 
 ## §36 — Cross-Repo Coordination Pattern v1 (CRC-PATTERN-v1) (2026-04-26)
+
+- **Status:** verified
+- **Evidence:** Quality A — validated end-to-end with two real SHAs in two public remotes (enioxt/egos@542af99, enioxt/intelink@7a12fa7); docs/COORDINATION_PATTERN.md canonical
+- **Owner:** Enio (egos kernel)
 
 **Quality:** A (validated end-to-end with two real SHAs in two public remotes)
 **Owner:** egos kernel
@@ -1181,6 +1301,10 @@ Reusable protocol for parallel agent windows operating on related-but-separate r
 
 ## §37 — HQ Live Dashboard — Agent Events + Hermes Panel (2026-04-30)
 
+- **Status:** verified
+- **Evidence:** Quality A declared; commits 07d7a9e, 5cd8fdb, f73229f in egos repo
+- **Owner:** Enio
+
 **Quality:** A | **Repo:** egos (`apps/egos-hq/`) | **Commits:** `07d7a9e`, `5cd8fdb`, `f73229f`
 
 Real-time observability dashboard for the EGOS kernel. Wires 4 cron agents to `egos_agent_events` Supabase table and displays them live.
@@ -1201,6 +1325,10 @@ Real-time observability dashboard for the EGOS kernel. Wires 4 cron agents to `e
 
 ## §38 — Full-System Health-Check + Periodic Monitor (2026-04-30)
 
+- **Status:** phantom
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md (SSOT path `scripts/health-check.ts` não existe; nearest: `scripts/health-check-full.ts`)
+- **Owner:** unassigned
+
 **Quality:** A | **Repo:** egos (`scripts/health-check.ts`) | **Commit:** `de12c70`
 
 Periodic health-check that runs across all VPS services and reports to `egos_agent_events`.
@@ -1216,6 +1344,10 @@ Periodic health-check that runs across all VPS services and reports to `egos_age
 ---
 
 ## §39 — Intelink Agente — Local Police LLM (2026-04-29)
+
+- **Status:** verified
+- **Evidence:** Quality B declared; commits 5018e54, cea1e60, f55bd5d; LoRA adapters in intelink-agente/models/v1/
+- **Owner:** Enio
 
 **Quality:** B | **Repo:** intelink + egos | **Commits:** `5018e54`, `cea1e60`, `f55bd5d`
 
@@ -1236,6 +1368,10 @@ Fine-tuned local LLM for police investigation queries. QLoRA Qwen2.5-7B, 76 trai
 
 ## §40 — Instagram Caption Generator + Lead Capture (2026-05-01)
 
+- **Status:** verified
+- **Evidence:** Quality A declared; commit 388431d; scripts/instagram-caption-generator.ts confirmed
+- **Owner:** Enio
+
 **Quality:** A | **Repo:** egos (`scripts/instagram-caption-generator.ts`) | **Commit:** `388431d`
 
 Automated caption generation for 4 content types (educacao/caso/demo/social) + Supabase lead capture for Instagram-driven prospects.
@@ -1254,6 +1390,10 @@ Automated caption generation for 4 content types (educacao/caso/demo/social) + S
 
 ## §41 — EGOS Practitioner Certification (2026-04-30)
 
+- **Status:** verified
+- **Evidence:** Quality A declared; commit 1e5071c; apps/api/src/routes/lab-certification.ts confirmed
+- **Owner:** Enio
+
 **Quality:** A | **Repo:** egos (`apps/egos-hq/`) | **Commit:** `1e5071c`
 
 Automatic lightweight certification issued after 90 days of active EGOS Lab membership. Verifiable via Supabase + public badge endpoint.
@@ -1269,6 +1409,10 @@ Automatic lightweight certification issued after 90 days of active EGOS Lab memb
 ---
 
 ## §42 — Intelink Intelligence Modules (2026-04-12 → 2026-05-01)
+
+- **Status:** verified
+- **Evidence:** Quality A declared; multiple commits in intelink repo confirmed (b3f29b7, ad2b560, 021e814, 0e8d8d6, etc.)
+- **Owner:** Enio
 
 **Quality:** A | **Repo:** intelink | **Multiple commits**
 
@@ -1295,6 +1439,10 @@ Advanced investigation capabilities built into the Intelink platform for PCMG.
 
 ## §43 — Capability Registry Scanner (2026-05-01)
 
+- **Status:** verified
+- **Evidence:** Quality A declared; scripts/update-capability-registry.ts confirmed in egos repo
+- **Owner:** Enio
+
 **Quality:** A | **Repo:** egos (`scripts/update-capability-registry.ts`)
 
 Automated scanner that reads git log `--since` last registry update across all ecosystem repos and identifies feat commits not yet registered. Non-destructive — outputs candidates for human review.
@@ -1311,6 +1459,10 @@ bun scripts/update-capability-registry.ts --repo intelink
 ---
 
 ## §44 — README Cross-Reference System (2026-05-01)
+
+- **Status:** verified
+- **Evidence:** Quality A declared; READMEs updated across 9 active repos
+- **Owner:** Enio
 
 **Quality:** A | **Repo:** all 9 active repos | **Commit:** this session
 
@@ -1329,6 +1481,10 @@ Standardized README format across all ecosystem repos with versioning, real stat
 
 ## §45 — Chatbot Portal Multi-Agente (2026-05-03)
 
+- **Status:** verified
+- **Evidence:** Quality A declared; commits a4b3597, 255bf1e; chatbot.egos.ia.br live (Phase 0)
+- **Owner:** Enio
+
 **Quality:** A (Phase 0 live) | **Repo:** egos | **Commit:** a4b3597, 255bf1e
 
 Portal `chatbot.egos.ia.br` com 5 agentes (Labs/Pixel/Tira-Voz/Forja/Arch) + lead capture com funil `agent_clicked`.
@@ -1346,6 +1502,10 @@ Portal `chatbot.egos.ia.br` com 5 agentes (Labs/Pixel/Tira-Voz/Forja/Arch) + lea
 
 ## §46 — BISP/REDS Ingestion Pipeline (2026-05-04)
 
+- **Status:** verified
+- **Evidence:** Quality A declared; commit b815c0c; tested with 121REGIAO1 (8.803 ocorrências, 4.682 pessoas)
+- **Owner:** Enio
+
 **Quality:** A | **Repo:** intelink | **Commit:** b815c0c
 
 Pipeline ETL para ingestão de planilhas XLSX exportadas do BISP (sistema policial) no Neo4j, com dedup inteligente por número REDS normalizado.
@@ -1360,6 +1520,10 @@ Pipeline ETL para ingestão de planilhas XLSX exportadas do BISP (sistema polici
 ---
 
 ## §47 — Cross-Ref Nightly v2 (7 steps) (2026-05-04)
+
+- **Status:** verified
+- **Evidence:** Quality A declared; commit b815c0c; cron output tested (elapsed 79.9s, 166 created, 62 fuzzy)
+- **Owner:** Enio
 
 **Quality:** A | **Repo:** intelink | **Commit:** b815c0c
 
@@ -1381,6 +1545,10 @@ Cron diário expandido de 5 para 7 etapas automáticas.
 
 ## §48 — Tool Registry de Investigação (2026-05-03)
 
+- **Status:** verified
+- **Evidence:** Quality B declared; commit b52f722; lib/config/tool-registry.ts confirmed
+- **Owner:** Enio
+
 **Quality:** B | **Repo:** intelink | **Commit:** b52f722
 
 Catálogo de 8 ferramentas de investigação policial com `suggestTools(missingFields, crimeTypes)`.
@@ -1395,6 +1563,10 @@ Catálogo de 8 ferramentas de investigação policial com `suggestTools(missingF
 ---
 
 ## §49 — Chat Central Neo4j Conectado (2026-05-04)
+
+- **Status:** verified
+- **Evidence:** Quality A declared; commit dbb7ab8; Neo4j 16k+ pessoas confirmado
+- **Owner:** Enio
 
 **Quality:** A | **Repo:** intelink | **Commit:** dbb7ab8
 
@@ -1412,6 +1584,10 @@ Chatbot `/chat` agora conectado à base real de dados Neo4j (16k+ pessoas, REDS)
 
 ## §50 — EGOS Project Atlas (2026-05-04)
 
+- **Status:** verified
+- **Evidence:** Quality A declared; ATLAS-1.1/1.2/1.3 commits; 8 projetos seedados com embeddings
+- **Owner:** Enio
+
 **Quality:** A | **Repo:** egos | **Commits:** ATLAS-1.1/1.2/1.3
 
 Registry centralizado de todos os projetos EGOS no Supabase com busca híbrida FTS + semântica.
@@ -1428,6 +1604,10 @@ Registry centralizado de todos os projetos EGOS no Supabase com busca híbrida F
 
 ## §51 — Atlas Semantic Search + pgvector RPC (2026-05-04)
 
+- **Status:** verified
+- **Evidence:** Quality A declared; search_atlas_semantic() RPC tested ("vídeo commercial filmmaking" → PixelArt 54.6%)
+- **Owner:** Enio
+
 **Quality:** A | **Repo:** egos | **Supabase fn:** `search_atlas_semantic()`
 
 Busca semântica via cosine similarity no `embedding_purpose`. Fallback automático: semantic → FTS → ilike.
@@ -1441,6 +1621,10 @@ Busca semântica via cosine similarity no `embedding_purpose`. Fallback automát
 ---
 
 ## §52 — llm.egos.ia.br — Ollama Gateway (2026-05-04)
+
+- **Status:** verified
+- **Evidence:** Quality A declared; DNS llm.egos.ia.br propagado 2026-05-04; Bearer token auth via Caddy
+- **Owner:** Enio
 
 **Quality:** A | **Repo:** egos | **URL:** https://llm.egos.ia.br
 
@@ -1456,6 +1640,10 @@ Acesso externo autenticado ao Ollama local (VPS Hetzner). Bearer token protegido
 ---
 
 ## §53 — CBC-PATTERN-v1 — Capability Card System (2026-05-04)
+
+- **Status:** verified
+- **Evidence:** Quality A declared; 13 CBC cards created; template in docs/capabilities/_TEMPLATE.md
+- **Owner:** Enio
 
 **Quality:** A | **Repo:** egos | **Path:** docs/capabilities/
 
@@ -1473,6 +1661,10 @@ Sistema de registro de capabilities reutilizáveis com frontmatter YAML padroniz
 
 ## §54 — CRON_SECRET + Intelink Cross-Ref Nightly (2026-05-04)
 
+- **Status:** verified
+- **Evidence:** Quality A declared; cron tested: {"ok":true, "elapsed": 79.9s}
+- **Owner:** Enio
+
 **Quality:** A | **Repo:** intelink | **Endpoint:** /api/cron/cross-ref-nightly
 
 CRON_SECRET configurado no intelink .env (era vazio, bloqueando auth). Rebuild feito. Cron nightly testado com sucesso.
@@ -1486,6 +1678,10 @@ CRON_SECRET configurado no intelink .env (era vazio, bloqueando auth). Rebuild f
 ---
 
 ## §55 — EGOS Trading Dashboard (2026-05-04)
+
+- **Status:** verified
+- **Evidence:** Quality A declared; live at egos.ia.br/trading; 18 endpoints tested
+- **Owner:** Enio
 
 **Quality:** A | **Repo:** egos | **URL:** egos.ia.br/trading | **Module:** `apps/egos-site/src/trading.ts`
 
@@ -1534,6 +1730,10 @@ Dashboard de análise e automação de trading de criptomoedas integrado ao EGOS
 
 ## §56 — Trading AI Engine (OpenRouter/Gemini) (2026-05-04)
 
+- **Status:** verified
+- **Evidence:** Quality A declared; trading-ai.ts confirmed; OpenRouter Gemini 2.0 Flash integration live
+- **Owner:** Enio
+
 **Quality:** A | **Repo:** egos | **Module:** `apps/egos-site/src/trading-ai.ts`
 
 Motor de análise com LLM para o Trading Dashboard. Usa OpenRouter com Gemini 2.0 Flash.
@@ -1551,6 +1751,10 @@ Motor de análise com LLM para o Trading Dashboard. Usa OpenRouter com Gemini 2.
 ---
 
 ## §57 — Trading Notification System (2026-05-04)
+
+- **Status:** verified
+- **Evidence:** Quality A declared; trading-notify.ts confirmed; Telegram/Discord/WhatsApp channels live
+- **Owner:** Enio
 
 **Quality:** A | **Repo:** egos | **Module:** `apps/egos-site/src/trading-notify.ts`
 
@@ -1572,6 +1776,10 @@ Sistema de notificações multi-canal para eventos do Trading Dashboard.
 ---
 
 ## §58 — Trading Backtest Engine + Indicators (2026-05-04)
+
+- **Status:** verified
+- **Evidence:** Quality A declared; BTC EMA Trend Follow Multi-TF tested: 1h=+4.08%, 4h=+6.25%
+- **Owner:** Enio
 
 **Quality:** A | **Repo:** egos | **Modules:** `apps/egos-site/src/trading-backtest.ts` + `trading-indicators.ts`
 
@@ -1622,6 +1830,10 @@ Engine de backtest sobre klines reais do Bybit + biblioteca de indicadores técn
 
 ## §59 — Trading Risk Calculator (2026-05-04)
 
+- **Status:** verified
+- **Evidence:** Quality A declared; integrated in trading.ts; client-side real-time recalculation verified
+- **Owner:** Enio
+
 **Quality:** A | **Repo:** egos | **Module:** integrado em `trading.ts` (UI + JS)
 
 Calculadora de risco no client-side (sem chamadas server).
@@ -1644,6 +1856,10 @@ Recálculo automático em tempo real conforme o usuário edita.
 ---
 
 ## §60 — Trading Storage (Supabase Persistence) (2026-05-04)
+
+- **Status:** verified
+- **Evidence:** Quality A declared; 7 trading_* tables created; multi-tenant user_id pattern verified
+- **Owner:** Enio
 
 **Quality:** A | **Repo:** egos | **Module:** `apps/egos-site/src/trading-storage.ts`
 **Supabase Project:** `lhscgsqhiooyatkebose` (egos-lab) | **Tables:** 7 com prefixo `trading_`
@@ -1678,6 +1894,10 @@ Camada de persistência completa para o Trading Dashboard. Substitui localStorag
 ---
 
 ## §61 — Trading Bot Creator (DCA + Grid via Bybit API) (2026-05-04)
+
+- **Status:** verified
+- **Evidence:** Quality A declared; trading-bots.ts confirmed; DCA+Grid types implemented with Supabase audit trail
+- **Owner:** Enio
 
 **Quality:** A | **Repo:** egos | **Module:** `apps/egos-site/src/trading-bots.ts`
 
@@ -1721,6 +1941,10 @@ Endpoint adicional em `trading-backtest.ts`:
 
 ## §62 — Trading Evolution (WhatsApp QR inline) (2026-05-04)
 
+- **Status:** verified
+- **Evidence:** Quality A declared; trading-evolution.ts confirmed; QR modal + status polling live
+- **Owner:** Enio
+
 **Quality:** A | **Repo:** egos | **Module:** `apps/egos-site/src/trading-evolution.ts`
 
 Integração nativa com Evolution API (já no VPS) — segue mesmo padrão do SSOT
@@ -1743,6 +1967,10 @@ status polling, isolamento por usuário (instâncias prefixadas `trading-{userId
 
 ## §63 — Trading Centralized Credentials (2026-05-04)
 
+- **Status:** verified
+- **Evidence:** Quality A declared; localStorage egos_bybit_creds pattern implemented; auto-fill across 5 tabs verified
+- **Owner:** Enio
+
 **Quality:** A | **Repo:** egos | **Module:** `trading.ts` (settings modal + JS)
 
 Painel único de credenciais Bybit no header. Substitui inputs duplicados em 5 abas.
@@ -1760,6 +1988,10 @@ Painel único de credenciais Bybit no header. Substitui inputs duplicados em 5 a
 
 ## §64 — Trading RLS Hardening (2026-05-04)
 
+- **Status:** verified
+- **Evidence:** Quality A declared; RLS enabled on all 7 trading_* tables; migration trading_dashboard_rls applied
+- **Owner:** Enio
+
 **Quality:** A | **Repo:** egos-lab Supabase | **Migration:** `trading_dashboard_rls`
 
 Row Level Security habilitado em todas as 7 tabelas `trading_*`.
@@ -1772,6 +2004,10 @@ Row Level Security habilitado em todas as 7 tabelas `trading_*`.
 ---
 
 ## §65 — Trading Multi-Exchange Layer + Ticker Customization (2026-05-04)
+
+- **Status:** verified
+- **Evidence:** Quality A declared; Bybit+Binance adapters implemented; /fx-rate endpoint live
+- **Owner:** Enio
 
 **Quality:** A | **Repo:** egos | **Modules:** `trading-exchanges.ts` + ticker config in `trading.ts`
 
@@ -1807,6 +2043,10 @@ Camada de abstração para múltiplas exchanges + ticker totalmente customizáve
 ---
 
 ## §66 — Trading Sprint 1 Hardening (2026-05-04)
+
+- **Status:** verified
+- **Evidence:** Quality A declared; AES-256-GCM encryption + rate limiting + price alerts implemented
+- **Owner:** Enio
 
 **Quality:** A | **Repo:** egos | **Modules:** `trading-crypto.ts`, `trading-alerts.ts` + middleware in `trading.ts`
 
@@ -1850,6 +2090,10 @@ Sprint 1 — Operacionalização e segurança de bots/alertas.
 
 ## §67 — Trading News Aggregator (2026-05-04)
 
+- **Status:** verified
+- **Evidence:** Quality A declared; 12 default sources (RSS + Reddit); Fear & Greed Index integrated
+- **Owner:** Enio
+
 **Quality:** A | **Repo:** egos | **Module:** `trading-news.ts` + `trading_news_sources` table
 
 Agregador de notícias cripto via fontes gratuitas. Cache 10min server-side.
@@ -1878,6 +2122,10 @@ $0/mês — todas fontes gratuitas, cache evita rate limit, parsing puro TS sem 
 ---
 
 ## §68 — Trading Sprint 2 Strategy Deploy (2026-05-04)
+
+- **Status:** verified
+- **Evidence:** Quality A declared; Pine Script auto-generator + TP/SL webhook tested; trading-deploy.ts confirmed
+- **Owner:** Enio
 
 **Quality:** A | **Repo:** egos | **Module:** `trading-deploy.ts`
 
@@ -1919,3 +2167,755 @@ Mapeia 10 tipos de regras EGOS para Pine Script v5:
 - `bb_lower/upper_touch` → `low <= ta.bb().lower`
 
 **Tags:** `trading`, `strategy-deploy`, `pine-script`, `webhook`, `tp-sl`, `conditional-orders`
+
+## §69 — Central EGOS Template — Marketplace Storefront + Admin (2026-05-08/09)
+
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md (apps/central-egos-template/ não existe mais; app pode ter sido arquivado ou movido)
+- **Owner:** unassigned
+
+**Repo:** `apps/central-egos-template/` (monorepo egos)
+**Live:** `gpecas.egos.ia.br` — G Peças e Eletrodomésticos, Patos de Minas/MG
+**Commits:** 14 commits (2026-05-08 → 2026-05-09) | SHA range: `45ab3a6`→`31ad4a9`
+
+### O que é
+
+Template replicável (fork-por-cliente) de marketplace mobile-first construído sobre o kernel EGOS.
+Primeira instância: G Peças (piloto Central EGOS Solo). Clonável em 4h para qualquer comércio.
+
+### Storefront (cliente final)
+
+- `/` — Home: hero azul, geladeiras/freezers em destaque, busca full-text (RPC Supabase), TrustBar
+- `/catalogo` — Grid 2col, filtros chip por categoria, ordem por `display_order` (geladeiras primeiro)
+- `/catalogo/[id]` — Galeria multi-foto/vídeo (`ProductGallery`), specs table, AddToCart, WA
+- `/carrinho` — localStorage cart, qty +/−, resumo, checkout WA ou online
+- `/checkout` — Pix/Cartão (Mercado Pago Bricks) + WhatsApp
+- `/checkout/sucesso` — Confirmação pós-pagamento
+- `/contato`, `/privacidade` — LGPD completo
+
+### Admin (dono da loja — protegido por middleware)
+
+- `/admin` — Dashboard KPIs reais (Supabase), pedidos, estoque baixo, bar chart categorias
+- `/admin/produtos` — Tabela desktop + cards mobile com fotos reais
+- `/admin/produtos/novo` — Form: drag+drop 8 fotos+2 vídeos, IA gera descrição, toggles
+- `/admin/produtos/[id]/editar` — Mesmo form pré-preenchido
+- `/admin/pedidos`, `/admin/clientes`, `/admin/conversas`, `/admin/financeiro`, `/admin/configuracoes`
+- `/admin/login` — Auth cookie httpOnly 30d (sem admin sidebar)
+
+### APIs
+
+- `POST /api/admin/upload` — Sharp auto-otimização (resize 1200px, q88, MozJPEG) → Supabase Storage
+- `POST|PATCH /api/admin/produto` — CRUD via service role (não anon key)
+- `POST /api/admin/auth` — seta cookie admin
+- `POST /api/ia/cadastro-produto` — IA gera descrição do produto
+
+### Componentes `gpecas/`
+
+`Logo` · `SearchBar` · `CategoryChip` · `ProductCard` (AddToCart inline) · `ProductGallery`
+`CartBadge` · `BottomCTA` · `TrustBar` · `WhatsAppFloat` · `MultiMediaUpload` · `ProdutoForm`
+
+### Conexões ao kernel EGOS
+
+- **Supabase:** `g_pecas_products`, `g_pecas_orders`, `consulting_members`, storage `gpecas-products`
+- **egos-gateway:** rota `g-pecas` slug, RAG busca produtos, sendMedia com foto
+- **packages/whatsapp-kernel:** tipos, client, instances
+- **VPS EGOS:** PM2 `gpecas-app` porta 3071, Caddy HTTPS auto
+
+### Gaps (pré-produção)
+
+- Hermes plugins não conectados ao bot (anti-hallucination, dpio, espiral, kb-tools)
+- Guard Brasil não integrado nas APIs admin
+- egos-billing não monitora uso
+- Número WhatsApp próprio (hoje usa enio-personal)
+
+**Tags:** `central-egos`, `marketplace`, `mobile-first`, `whatsapp-bot`, `admin-panel`,
+          `supabase`, `sharp`, `next.js-15`, `g-pecas`, `solo-tier`
+
+---
+
+## §70 — VPS Dashboard (2026-05-11)
+
+- **Status:** verified
+- **Evidence:** Quality B declared; commit fab772f; scripts/vps-api.ts + egos-hq/app/vps/ confirmed
+- **Owner:** Enio
+
+**SSOT:** `scripts/vps-api.ts` (Bun mini-API) + `apps/egos-hq/app/vps/page.tsx`
+**Adicionado:** 2026-05-11 | **Commit:** fab772f | **Quality:** B (VPS deploy pendente)
+
+Visibilidade em tempo real do VPS Hetzner direto no HQ browser. Substitui SSH manual.
+
+### Arquitetura
+
+```
+hq.egos.ia.br/vps
+  → /api/hq/vps?endpoint=X (proxy Next.js — allowlist)
+  → http://127.0.0.1:3103/X (Bun mini-API, localhost only)
+  → docker daemon / /proc / /root/.hermes / crontab
+```
+
+### Endpoints (scripts/vps-api.ts)
+
+| Endpoint | Dados |
+|---|---|
+| `/health` | timestamp, ok |
+| `/containers` | 24 containers: nome, estado, uptime |
+| `/resources` | disk %, RAM %, CPU % |
+| `/hermes/dreamer` | último morning report (hoje ou mais recente) |
+| `/hermes/sessions` | últimas 20 sessões Hermes |
+| `/cron/jobs` | todos os crontab jobs |
+| `/logs/:service` | últimas 30 linhas (allowlist: hermes-autothink, dreamer, egos-health) |
+
+### Deploy pendente (VPS)
+
+```bash
+# No VPS após git pull:
+pm2 start /opt/egos-git/scripts/vps-api.ts --name vps-api --interpreter bun --env VPS_API_TOKEN=$(cat /root/.vps-api-token)
+pm2 save
+
+# Caddy (hq block):
+handle /api/vps/* { reverse_proxy 127.0.0.1:3103 }
+```
+
+**Env vars:** `VPS_API_TOKEN` (VPS + HQ .env), `VPS_API_URL=http://127.0.0.1:3103` (HQ)
+**Adopted by:** egos-hq | **Should adopt:** — | **Tags:** `infra`, `vps`, `monitoring`, `dashboard`
+
+---
+
+## §71 — Central EGOS WhatsApp Incoming Webhook (2026-05-11)
+
+- **Status:** phantom
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md (apps/central-egos-template/ não existe; app arquivado ou movido)
+- **Owner:** unassigned
+
+**SSOT:** `apps/central-egos-template/src/app/api/whatsapp/incoming/route.ts`
+**Adicionado:** 2026-05-11 | **Commit:** bd9046d | **Quality:** B
+
+Webhook receiver para Evolution API (`messages.upsert`) com persistência em Supabase.
+
+### Flow
+
+```
+Evolution API → POST /api/whatsapp/incoming?key=TOKEN
+  → valida X-Api-Key / ?key param
+  → filtra grupos/broadcast (skip)
+  → insert whatsapp_messages (tenant_slug, remote_jid, message_text, raw_payload)
+  → ACK 200
+```
+
+### Supabase table: `whatsapp_messages`
+
+`id` · `tenant_slug` · `instance_name` · `remote_jid` · `sender_phone` (generated) ·
+`direction` (generated) · `message_text` · `push_name` · `status` · `handoff_at` · `raw_payload`
+
+### Admin conversas page
+
+`/admin/conversas` — lista por telefone, status badges (⏳/✅/🧑/🔒), [Hand Off] button →
+`POST /api/admin/handoff` → status='human'
+
+**Env vars:** `EVOLUTION_WEBHOOK_SECRET`, `TENANT_SLUG`, `SUPABASE_SERVICE_ROLE_KEY`
+**Adopted by:** central-egos-template (g-pecas) | **Tags:** `whatsapp`, `webhook`, `central-egos`
+
+---
+
+## §72 — Hermes Native Google Workspace (2026-05-11)
+
+- **Status:** verified
+- **Evidence:** Quality A declared (upstream NousResearch — production-grade); /root/.hermes/google_token.json present on VPS
+- **Owner:** Enio
+
+**SSOT:** `hermes-egos/skills/productivity/google-workspace/` (skill bundle upstream)
+**Adicionado:** 2026-05-11 | **Quality:** A (upstream NousResearch — production-grade)
+
+Hermes inclui Gmail, Drive, Calendar, Sheets, Docs, Contacts **nativamente**. Zero código novo.
+
+### Capabilities
+
+- **Gmail:** search, get, send, reply, labels, modify
+- **Calendar:** list, create, delete events
+- **Drive:** search, get, upload, download, create-folder, share, delete
+- **Sheets:** create, get, update, append
+- **Docs:** create, get, append
+- **Contacts:** list
+
+### OAuth setup (VPS)
+
+```bash
+# 1. Google Cloud Console → OAuth 2.0 Credentials → Download
+cp ~/Downloads/client_secret_*.json /root/.hermes/google_client_secret.json
+
+# 2. Run wizard
+hermes  # → "set up Google Workspace" → browser redirect → autorizar
+
+# 3. Tokens salvos automaticamente
+ls /root/.hermes/google_token.json  # ✅ present = funcionando
+```
+
+### Decisão arquitetural
+
+Não criar `packages/mcp-gmail/` ou `packages/mcp-drive/`. Usar skill nativo.
+Hermes upstream cuida de auth refresh + upstream compatibility.
+
+**Adopted by:** Hermes runtime on VPS (`/opt/hermes-agent`) | **Fork status:** `hermes-egos` target architecture, promotion to VPS pending | **Should adopt:** central-egos-template (via Hermes RPC)
+**Tags:** `hermes`, `gmail`, `google-drive`, `calendar`, `oauth`, `native-skill`
+
+---
+
+## §73 — Hermes Multi-Tenant Pattern (2026-05-11)
+
+- **Status:** verified
+- **Evidence:** Quality A declared (pattern oficial NousResearch); docs/governance/HERMES_EGOS_FORK_DECISION.md confirmed
+- **Owner:** Enio
+
+**SSOT:** `docs/governance/HERMES_EGOS_FORK_DECISION.md` (seção Multi-tenant)
+**Adicionado:** 2026-05-11 | **Quality:** A (pattern oficial NousResearch)
+
+### Pattern
+
+```
+/opt/egos-git/hermes-egos/            ← skel/master
+  skills/                             ← git submodule compartilhado
+    egos-billing/ egos-guard-brasil/ egos-anti-hallucination/
+    egos-dpio/ egos-espiral/ egos-kb-tools/
+  config/SOUL.md                      ← template
+
+/opt/egos-clients/gpecas/             ← fork por cliente
+  SOUL.md                             ← customizado
+  skills/ → ../shared-skills/         ← submodule
+  .env                                ← API keys próprias
+
+/opt/egos-clients/bernardo/           ← próximo cliente
+  SOUL.md · skills/ → submodule · .env
+```
+
+### Regras
+
+- 1 Hermes instance por cliente (isolation completo)
+- Skills compartilhadas via git submodule (DRY)
+- SOUL.md diferente por cliente (identidade, tom, escopo)
+- API keys diferentes por cliente (.env isolado)
+- Central EGOS Template chama via `HERMES_RPC_URL` (RPC centralizado no MVP)
+
+**Adopted by:** target pattern only; VPS runtime still single-profile (`/root/.hermes/profiles/egos-kernel`) on `/opt/hermes-agent` | **Tags:** `hermes`, `multi-tenant`, `architecture`, `central-egos`
+
+---
+
+## §74 — AI Commit Security Gate (2026-05-11)
+
+- **Status:** verified
+- **Evidence:** Quality B declared; commit 892f701; scripts/ai-commit-security.ts + hermes-commit-review.ts confirmed
+- **Owner:** Enio
+
+**SSOT:** `scripts/ai-commit-security.ts` + `scripts/hermes-commit-review.ts`
+**Adicionado:** 2026-05-11 | **Commit:** 892f701 | **Quality:** B
+
+Camadas de IA para revisar commits antes e depois de fazer push.
+
+### Arquitetura (3 camadas)
+
+| Camada | Script | Momento | Modelo | Latência |
+|---|---|---|---|---|
+| **Inline** | `ai-commit-security.ts` | pre-commit §1.6 | qwen-turbo | <500ms |
+| **Async** | `hermes-commit-review.ts` | VPS cron 15min | qwen3-max | <30s |
+| **Gate** | pre-commit §0.6 | cada commit | — (lê fila) | <100ms |
+
+### Inline check (§1.6)
+- Staged diff only (max 4000 chars)
+- Detecta: SQL injection, auth bypass, LGPD/PII sem guard, IDOR, secrets hardcoded
+- Warn-only por padrão; `AI_SECURITY_STRICT=1` bloqueia em CRITICAL
+- Fail-open: timeout 8s, erro LLM → commit prossegue
+
+### Async review (VPS cron)
+- Revisa últimas 2h de commits (via `--since=2h`)
+- Escreve findings em `~/.egos/review-queue.jsonl` (severity: CRITICAL/HIGH/MEDIUM/LOW/OK)
+- Gate §0.6 sincroniza queue VPS→local (`sync-review-queue.sh`) antes de checar
+- CRITICAL bloqueia; override com `[REVIEW-OVERRIDE: motivo]` na msg commit
+
+### /start Layer 6.6 + /end Phase 1.5 LLM
+- `/start` Layer 6.6: qwen-turbo sintetiza P0+handoff+commits → briefing 80 palavras
+- `/end` Phase 1.5: detecta sinais de nova capability → draft §N automático
+
+**Adopted by:** egos kernel | **Tags:** `ai`, `pre-commit`, `security`, `governance`, `llm`
+
+---
+
+## §75 — Meta-Prompts Discovery Layer (2026-05-13)
+
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md (SSOT path docs/agents/META_PROMPTS_INDEX.md incorreto; real path é docs/META_PROMPTS_INDEX.md)
+- **Owner:** unassigned
+
+> **Origem:** análise conversa Grok + GPT-5.5 adversarial review — HARVEST P119
+> **Status:** ✅ ATIVO (v1.0.0)
+
+Camada de discoverabilidade para LLMs externos acessarem o kernel via conector GitHub MCP autenticado.
+
+### Componentes
+- `docs/agents/` — symlinks visíveis para meta-prompts em `.claude/commands/` (dotdir oculto para MCP tools)
+- `docs/META_PROMPTS_INDEX.md` — SSOT canonical 15 meta-prompts locais + 21 globais
+- `llms.txt` — atualizado com paths absolutos + seção Discovery for AI Agents
+- `.well-known/egos-agent.json` — manifesto JSON v1.0 (canonical_paths + LLM routing + API)
+- README.md seção "🤖 Discovery Map" — tabela path→propósito com nota conector MCP
+
+### Problema resolvido
+Grok/ChatGPT/Gemini com conector GitHub autenticado falhavam ao buscar `/start` porque:
+(a) `.claude/commands/` é dotdir oculto, (b) `llms.txt` desatualizado, (c) README sem Discovery Map.
+
+**Adopted by:** egos kernel | **Tags:** `discovery`, `llm`, `meta-prompts`, `grok`, `mcp`
+
+---
+
+## §76 — Trace-to-Skill Codification (CONCEITO — 2026-05-13)
+
+- **Status:** phantom
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md (CONCEITO explícito, não implementado)
+- **Owner:** unassigned
+
+> **Origem:** Hivemind (activeloopai/hivemind) análise na conversa Grok — HARVEST P120
+> **Status:** 🔵 CONCEITO (não implementado)
+
+Auto-codificação de traces de agentes em skills compartilhadas. Agent debug traces → patterns → skills reutilizáveis por todos os agentes da org.
+
+### Gap atual
+- `skill-discovery` + `atrian-observability` têm as peças, mas sem pipeline automático trace→skill
+- `hermes-egos/trajectory_compressor.py` é análogo parcial no fork
+- Seria necessário: trace collector → pattern detector → skill generator → skill registry push
+
+### Referências
+- Hivemind: https://github.com/activeloopai/hivemind (npm install -g @deeplake/hivemind)
+- EGOS parcial: `packages/skill-discovery/`, `packages/atrian-observability/`
+
+**Tags:** `skill-discovery`, `traces`, `automation`, `compounding-intelligence`
+
+---
+
+## §77 — ISO 42001 AIMS Module (PARCIAL — 2026-05-13)
+
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md (status PARCIAL; peças em packages/mcp-governance/ + packages/audit/ mas módulo formal ausente)
+- **Owner:** unassigned
+
+> **Origem:** análise ISO/IEC 42001 + PL 2338/2023 na conversa Grok — HARVEST P121
+> **Status:** 🟡 PARCIAL (peças existem, módulo formal ausente)
+
+AI Management System alinhado com ISO/IEC 42001 e PL 2338 (Marco Legal IA Brasil).
+
+### O que já existe
+- `packages/mcp-governance/` + `packages/audit/` — logs de auditoria
+- `packages/atrian-observability/` — observabilidade de decisões
+- `packages/guard-brasil-*` — compliance Brasil (LGPD, PII)
+
+### O que falta
+- Módulo formal de risk-assessment (cláusula 6 ISO)
+- Relatório PDCA exportável (JSON/XML) para RFPs
+- Rastreabilidade de decisões IA ciclo de vida completo
+- `guard-brasil-python` extendido com regras PL 2338 específicas
+
+**Task:** ISO42001-001 [P3] em TASKS.md | **Tags:** `governance`, `compliance`, `iso42001`, `lgpd`
+
+---
+
+## §78 — Desktop/Browser/Mobile Passive Capture (CONCEITO — 2026-05-13)
+
+- **Status:** phantom
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md (CONCEITO explícito, não implementado)
+- **Owner:** unassigned
+
+> **Origem:** análise Scribe ($1.3B startup) + alternativas open source na conversa Grok — HARVEST P122
+> **Status:** 🔵 CONCEITO (não implementado)
+
+Captura passiva de workflows para treinar IA e extrair contexto pessoal acumulado.
+
+### Alternativas open source identificadas
+| Ferramenta | Licença | Plataforma | Equivalente Scribe |
+|---|---|---|---|
+| screenpipe | MIT | Desktop (Mac/Win/Linux) | Captura 24/7 OCR local, AI-searchable |
+| ActivityWatch | MPL-2.0 | Desktop + Android | Tracking apps/sites/tempo |
+| UI.Vision RPA | Open core | Browser + Desktop | Macro recording + OCR |
+
+### Integração potencial
+- OCR/JSON output → `packages/knowledge-mcp/` (ingestão)
+- Traces → `hermes-egos/trajectory_compressor.py` (skill creation)
+- Context discipline (pruning) filtra noise antes de ingestão
+
+**Tags:** `capture`, `screenpipe`, `context-accumulation`, `personal-os`
+
+---
+
+## §79 — Token Spend Profiling per-Tool-Call (PARCIAL — 2026-05-13)
+
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md (status PARCIAL; packages/atrian-observability/ tem skeleton mas sem profiling por tool call)
+- **Owner:** unassigned
+
+> **Origem:** análise Karpathy "90% of AI bill is wasted context" na conversa Grok — HARVEST P123
+> **Status:** 🟡 PARCIAL (atrian-observability tem skeleton)
+
+Profiling granular de gasto de tokens por tool call para otimizar pipelines agentic.
+
+### O que existe
+- `packages/atrian-observability/` — base de observabilidade
+- Context discipline lockado (skill pruning on-demand, memory budget, single-job dispatch)
+- Layer 4.8 `/start` — quota monitoring Codex (🟢/🟡/🔴)
+
+### O que falta
+- Profiling automático por tool call (não por sessão)
+- Dashboard de token spend por tipo de operação
+- Alert quando tool call específico consome > threshold
+
+**Task:** TOKEN-PROFILE-001 [P3] | **Tags:** `observability`, `token-economy`, `cost`, `karpathy`
+
+---
+
+## §80 — VPS Control Station Folder Pattern (CONCEITO — 2026-05-13)
+
+- **Status:** phantom
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md (CONCEITO explícito, não implementado)
+- **Owner:** unassigned
+
+> **Origem:** @shannholmberg tweet na conversa Grok — HARVEST P124
+> **Status:** 🔵 CONCEITO (não implementado)
+
+Estrutura canônica de pasta única para gerenciar agentes isolados via SSH + CMUX + Docker.
+
+### Pattern externo
+```
+vps-agents/
+├── README.md              (overview + how to use)
+├── CLAUDE.md              (auto-loaded project context)
+├── agents/hermes-main/
+│   ├── inventory.md       (IP, hostname, ownership)
+│   ├── docker.md          (docker-compose + checklist)
+│   ├── runbook.md         (7 cenários troubleshooting)
+│   ├── env-map.md         (tabela keys sem valores)
+│   └── backup.md          (GitHub backup + restore)
+└── shared/
+    ├── security.md        (VPS hardening)
+    └── commands.md        (Docker/Hermes/UFW cheat sheet)
+```
+
+### Estado atual EGOS
+- `hermes-egos/agent/`, `hermes-egos/docker/` — estrutura parcialmente análoga
+- `.claude/commands/vps.md` — skill de acesso VPS existe
+- Falta: `vps-agents/` SSOT com inventory.md + runbook.md + env-map.md
+
+**Tags:** `vps`, `hermes`, `infra`, `docker`, `control-station`
+
+---
+
+## §81 — EGOS MCP Layer — 9 Servers LIVE no VPS + 144 Behavioral Evals (2026-05-14)
+
+- **Status:** verified
+- **Evidence:** 144 golden cases in tests/eval/capabilities/CBC-EGOS-MCP-*.eval.ts; 9 CBCs canonical; CI in .github/workflows/capability-eval.yml; curl https://mcp.egos.ia.br/governance/healthz → {"ok":true}
+- **Owner:** Enio
+
+> **Status:** ✅ ATIVO em produção — VPS 24/7 + local stdio
+> **Deploy:** 2026-05-14 | **Commits:** `df1c7ed7`, `e2e730f7`, `0c705063`, `76bb06fa`
+> **Endpoint:** `https://mcp.egos.ia.br` (TLS ativo, Caddy auto-cert)
+
+Camada completa de transporte de capabilities via Model Context Protocol. 9 servers cobrindo governance, memory, knowledge, security, eval, ops, skills, browser automation e observability. 144 golden cases (sprint 1-4 completos), CI workflow, 9 CBCs canonical.
+
+### Servidores (portas 7001-7009)
+
+| Server | Porta | Status | CBC |
+|---|---|---|---|
+| mcp-governance | 7001 | ✅ online | CBC-EGOS-MCP-GOVERNANCE-001 |
+| mcp-memory | 7002 | ✅ online | CBC-EGOS-MCP-MEMORY-001 |
+| knowledge-mcp | 7003 | ✅ online | CBC-EGOS-MCP-KNOWLEDGE-001 |
+| guard-brasil-mcp | 7004 | ✅ online | CBC-EGOS-MCP-SECURITY-001 |
+| mcp-eval-runner | 7005 | ✅ online | CBC-EGOS-MCP-EVAL-001 |
+| mcp-ops | 7006 | ✅ online | CBC-EGOS-MCP-OPS-001 |
+| mcp-skills-registry | 7007 | ✅ online | CBC-EGOS-MCP-SKILLS-REGISTRY-001 |
+| mcp-browser-automation | 7008 | ✅ online | CBC-EGOS-MCP-BROWSER-AUTOMATION-001 |
+| mcp-observability | 7009 | ✅ online | CBC-EGOS-MCP-OBSERVABILITY-001 |
+
+### Infra
+- `packages/mcp-bridge/` — Streamable HTTP wrapper (MCP spec 2025-03-26)
+- `scripts/mcp-ecosystem.config.js` — PM2 config (MCP_HOST=0.0.0.0)
+- `scripts/deploy-mcp.sh` — deploy com backup + smoke test + rollback
+- `/opt/egos-watchdog-mcp.sh` — watchdog cron */5 min no VPS
+- `tests/eval/capabilities/CBC-EGOS-MCP-*.eval.ts` — 144 golden cases
+- `.github/workflows/capability-eval.yml` — CI enforcement
+- `.mcp.json` — 9 servers configurados (stdio local)
+
+### Como usar
+```bash
+# Local via .mcp.json (já configurado)
+# Todos os 9 MCPs disponíveis automaticamente no Claude Code
+
+# VPS via HTTPS
+curl https://mcp.egos.ia.br/governance/healthz
+# → {"ok":true,"mcp":"governance","sessions":0}
+```
+
+**Adopted by:** egos kernel, Claude Code (local + VPS), agentes externos via .mcp.json
+**Tags:** `mcp`, `behavioral-eval`, `capabilities`, `transport`, `cross-environment`, `vps`
+
+---
+
+## §82 — WhatsApp @lid JID + WAHA GOWS Adapter (2026-05-14)
+
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md (fix ativo commit c86dfdf9 mas sem quality grade nem eval)
+- **Owner:** unassigned
+
+> **Status:** ✅ ATIVO — fix em produção no gateway G Peças
+> **Commit:** `c86dfdf9`
+
+Suporte a JIDs `@lid` (WhatsApp multi-device privacy) via quoted reply em Evolution API. WAHA GOWS adapter como alternativa ao Evolution para casos onde checkWhatsapp falha. Número 5534997934688 em quarentena — aguardar 24h para reconectar.
+
+### Componentes
+- `apps/egos-gateway/src/channels/whatsapp.ts` — `sendText()` suporta `@lid` + `quotedKey`
+- Webhook `/channels/whatsapp/webhook-gowa` para WAHA format
+- `packages/whatsapp-kernel/src/index.ts` — dual provider Evolution+WAHA
+
+**Tags:** `whatsapp`, `lid-jid`, `waha`, `evolution-api`, `gateway`
+
+---
+
+## §83 — MCP G Peças Admin Layer — ChatGPT Actions + Write Tools (2026-05-19)
+
+- **Status:** verified
+- **Evidence:** commits 61a0054c, f9161a22, 42133cea; ChatGPT smoke 3/3 confirmado 2026-05-20; CBC-EGOS-MCP-G-PECAS.eval.ts (120 golden cases)
+- **Owner:** Enio Rocha
+
+- **Status:** ATIVO — 10 tools live, ChatGPT GPT Builder conectado
+- **Owner:** Enio Rocha + Claude Sonnet 4.6
+- **Evidence:** commits `61a0054c` (openapi + REST), `f9161a22` (+3 admin), `42133cea` (product_create_draft), ChatGPT smoke 3/3 confirmado 2026-05-20
+
+MCP administrativo para G Peças exposto via REST e MCP nativo. 10 tools: 6 read-only, 3 admin-read (kpi, orders_get, inventory), 1 write (product_create_draft — cria ativo=false, retorna admin_url para aprovar). Conectado ao ChatGPT via GPT Builder Actions (`GET /openapi.json`). Auth: Bearer token + tenant isolation. Audit em mcp_audit_events.
+
+### Componentes
+- `packages/mcp-g-pecas/src/index.ts` — 10 tools + openapi schema + REST /tools/*
+- `https://mcp.egos.ia.br/g-pecas/openapi.json` — schema para importar no GPT Builder
+- `.claude/commands/ativar.md` — skill painel operacional Claude Code
+- `docs/mcp/GPECAS_ADMIN_GUIDE.md` — guia para GPT Knowledge section
+
+### Como usar
+```bash
+# ChatGPT: importar URL https://mcp.egos.ia.br/g-pecas/openapi.json no GPT Builder
+# Claude Code: /ativar após restart (settings.json com egos-g-pecas)
+# API direta: POST /tools/kpi_summary -H "Authorization: Bearer <TOKEN>"
+```
+
+**Tags:** `mcp`, `chatgpt-actions`, `write-tools`, `admin`, `multi-tenant`, `g-pecas`
+
+---
+
+## §84 — MCP-FULL-ADMIN Sprint — Service Layer + 40 Write Tools (2026-05-20)
+
+- **Status:** verified
+- **Evidence:** 120 golden cases (288 assertions) in CBC-EGOS-MCP-G-PECAS.eval.ts; typecheck clean; 33 tools deployed v0.7.0
+- **Owner:** Enio Rocha
+
+- **Status:** COMPLETO Fases 1-7 — 33 tools, v0.7.0, deploy prod pendente
+- **Owner:** Enio Rocha (PO) + Claude Opus 4.7 (orquestração) + Claude Sonnet 4.6 (execução)
+- **Evidence:** 120 golden cases (288 assertions) em CBC-EGOS-MCP-G-PECAS.eval.ts. 33 tools: 10 read + 23 write. Typecheck ✅.
+- **Plano:** [docs/planning/MCP_WRITE_EXPAND_PLAN.md](docs/planning/MCP_WRITE_EXPAND_PLAN.md)
+- **Objetivo:** ChatGPT GPT personalizado faz 100% do admin G Peças
+
+Expansão do MCP G Peças de 10 tools (1 write) para 40+ tools (30+ write) cobrindo admin completo: produtos, estoque, pedidos, chatbot, FAQ, IA, workflow, usuários. Princípio de design: tools INTELIGENTES (confirmação 2-step para destrutivas, `needs[]` em cada resposta indicando o que falta para próximo estado, `next_actions[]` clicáveis apontando dashboard). Audit com `origin_channel` (mcp vs dashboard).
+
+### Fase 1 — Foundation ✅ (commit 246ef139)
+- `packages/shared/src/store/` — service layer compartilhado (1240 LOC)
+  - products/{queries, mutations, state-machine, validation, types}
+  - orders/{queries, types}
+  - inventory/queries, kpi/queries, chatbot/queries
+  - audit.ts, tenant-table.ts
+- `packages/mcp-g-pecas/` modularizado:
+  - src/index.ts: 1002 → 232 LOC (só orquestração)
+  - src/openapi.ts: 535 LOC (OpenAPI 3.1 schema extraído)
+  - src/config.ts: 29 LOC
+  - src/tools/{catalog, faq, inventory, kpi, orders, policies}.ts
+  - src/tools/admin/product-draft.ts
+
+### Fases 2-7 (em execução / planejado)
+- **Fase 2** (Sonnet em curso): MCP-WRITE-PRODUCTS-001..006 — product_update, activate (com needs[]), deactivate, archive, set_photo_pending, set_warranty | 6h
+- **Fase 3**: inventory_adjust, set_minimum + order_status_update, add_note | 4h
+- **Fase 4**: bot_toggle, handoff, rule_add + faq_create_draft, update, publish | 5h
+- **Fase 5**: ai_insight_request, suggest_pricing, describe_product | 5h
+- **Fase 6**: task_create, notification_send + user_invite_token, role_change | 4h
+- **Fase 7**: ≥120 golden cases (3/tool × 40 tools) + smoke E2E | 6h
+
+### Princípios de design (não-negociáveis)
+1. Tools inteligentes — agente IA não aceita tudo de primeira (2-step confirm em destrutivas)
+2. Estados explícitos: draft → pending_photos → pending_review → active → paused → archived
+3. `needs[]` sempre presente (photos≥1, description≥30chars, warranty_set, etc)
+4. `next_actions[]` com URL clicável do dashboard onde falta completar
+5. Audit com `origin_channel: "mcp"` em toda chamada
+6. RBAC enforcement (viewer/attendant/manager/owner)
+
+### Critério "MCP Admin Completo"
+- ≥40 tools (atual: 10)
+- ≥120 golden cases ✅
+- ChatGPT cria, ativa, ajusta, refunda — sem precisar abrir dashboard
+- Produto só vai ao catálogo público com `needs[]` vazio
+- Owner controla via ChatGPT: convites, roles, refunds
+
+**Modelo execution:** Sonnet 4.6 (~30h cumulativo), Opus 4.7 revisa entre fases + integra (MODEL_DELEGATION_POLICY).
+
+**Tags:** `mcp`, `sprint`, `write-tools`, `service-layer`, `multi-tenant`, `g-pecas`, `chatgpt-actions`
+
+---
+
+## §85 — Espiral de Escuta como Método-Mãe do EGOS (2026-05-20)
+
+- **Status:** unverified
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md (método documentado em IDENTITY_AND_METHOD.md mas sem quality grade nem eval formal)
+- **Owner:** Enio Rocha
+
+- **Status:** CANONICAL — método consolidado como identidade do EGOS (não é só feature)
+- **Owner:** Enio Rocha (criador do método) + Claude Opus 4.7 (formalização)
+- **Evidence:** [docs/governance/IDENTITY_AND_METHOD.md](governance/IDENTITY_AND_METHOD.md) v1.0 | §12c (implementação existente em egos-lab-chat) | EGOS_BOOTSTRAP.md §0
+
+A **Espiral de Escuta** é o método operacional que materializa a habilidade central do Enio (transformar caos informacional em clareza estratégica aplicável) em qualquer contexto. Não é só capability — é arquitetura mental do EGOS.
+
+### Fluxo genérico
+1. Acolhimento + escopo
+2. Escuta ativa
+3. Perguntas dialéticas/maiêuticas
+4. Identificação de tensão central
+5. Síntese parcial reflexiva
+6. Exploração de possibilidades
+7. Próximo passo concreto (`needs[]` + `next_actions[]`)
+8. Registro auditável (consentido)
+9. Acompanhamento longitudinal
+
+### Aplicações no EGOS
+- **Comércio:** MCP G Peças (§83/§84) — escuta admin → clareza ChatGPT
+- **Investigação:** Intelink Timeline (Frente A) — escuta caos REDS → clareza relatório
+- **Interpessoal:** egos-lab-chat (§12c) — escuta humana → mapa de clareza
+- **Futuro:** GPT Espiral + MCP Enio (§86) — escuta longitudinal com vault pessoal
+
+### NÃO é
+- Terapia / psicoterapia / diagnóstico clínico
+- Coaching genérico / guru / mentor amplo
+- Substituto de profissional habilitado
+- Produto único isolado — é método transversal
+
+**Tags:** `método`, `identidade`, `espiral-de-escuta`, `socratic`, `maieutic`, `governance`, `egos-core`
+
+---
+
+## §86 — GPT Espiral + MCP Enio Personal (2026-05-20)
+
+- **Status:** phantom
+- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md (status ROADMAP P1 — não implementado; aguarda conclusão MCP G Peças Fases 4-7)
+- **Owner:** unassigned
+
+- **Status:** ROADMAP P1 — após sprint MCP G Peças (Fases 4-7) completar e validar arquitetura
+- **Owner:** Enio Rocha (PO) + Claude Opus 4.7 (arquitetura)
+- **Evidence:** clarificação 2026-05-20 (sessão anti-pivot) | base existente egos-lab-chat §12c | tasks ESPIRAL-GPT-001 + MCP-ENIO-001 + ESPIRAL-CHATBOT-EVOLVE-001
+
+Dois produtos complementares planejados para materializar Espiral de Escuta como serviço escalável + vault pessoal do Enio:
+
+### MCP Enio Personal (MCP-ENIO-001)
+MCP customizado pessoal contendo:
+- Vault de conversas Enio (Gmail, Telegram, WhatsApp, ChatGPT exports)
+- Métodos Enio (regras, padrões de raciocínio, frames de decisão)
+- Knowledge base pessoal (HARVEST, atoms EPOS, livros, anotações)
+- Regras Espiral aplicadas (perguntas socráticas, fluxos dialéticos)
+- Integração Supabase (sessões, conversas, relatórios)
+- Integração Telegram (notificações de insights importantes)
+- Dashboard hq.egos.ia.br (visualização de Espirais ativas)
+
+Arquitetura: extensão do template MCP G Peças (§84) com customizações Enio-specific. Reaproveita `packages/shared/store/` + `packages/mcp-g-pecas/src/tools/` patterns.
+
+### GPT "Espiral de Escuta" (ESPIRAL-GPT-001)
+GPT customizado ChatGPT Builder que consome MCP Enio Personal:
+- Conduz Espiral de Escuta com método formal
+- Faz perguntas em rodadas progressivas
+- Gera relatórios estruturados (síntese + needs[] + next_actions[])
+- Persiste em Supabase via MCP
+- Notifica Enio via Telegram quando insight importante
+- Human-in-the-loop: Enio analisa + adiciona perguntas/encaminhamentos
+- Continuidade longitudinal (memória entre sessões)
+
+### Por que P1 (não P0)
+
+O sprint MCP G Peças atual (§84) está validando a **mesma arquitetura** (MCP + ChatGPT + Supabase + RBAC + audit + write tools com needs[]). Quando Fases 4-7 terminarem, a infraestrutura para MCP Enio + GPT Espiral estará pronta para reuso direto. Construir agora seria construir em paralelo sem validação. **Princípio:** validar arquitetura com cliente pagante (G Peças) antes de aplicar em produto pessoal.
+
+### Evolução do egos-lab-chat existente (ESPIRAL-CHATBOT-EVOLVE-001)
+
+A implementação atual da Espiral em egos-lab-chat (§12c) — com SSE, monitor humano, pause IA, inject mensagens — será evoluída para alinhar com método formal documentado em IDENTITY_AND_METHOD.md. P2, após GPT Espiral validar.
+
+**Tags:** `mcp`, `gpt-custom`, `espiral-de-escuta`, `chatgpt-actions`, `personal-product`, `roadmap-p1`
+
+## §87 — Tenant Lifecycle Ops API — Phases 2-3-5 (2026-05-25)
+
+- **Status:** DEPLOYED
+- **Evidence:** commit `502e3880` + `bun run typecheck` clean + `/api/ops/tenant-smoke` 6-check pipeline
+- **Owner:** claude+sonnet (INV-MON-003/004/006)
+
+### Endpoints
+
+| Endpoint | Method | Phase | Status |
+|----------|--------|-------|--------|
+| `/api/ops/tenant-provision` | POST | 1 | ✅ done (INV-MON-002) |
+| `/api/ops/tenant-seed` | POST | 2 | ✅ done (INV-MON-003) |
+| `/api/ops/tenant-config` | POST | 3 | ✅ done (INV-MON-004) |
+| `/api/ops/tenant-deploy` | POST | 4 | ⏳ pending (INV-MON-005) |
+| `/api/ops/tenant-smoke` | GET | 5 | ✅ done (INV-MON-006) |
+
+### tenant-seed (Phase 2)
+Seeds all runtime dependencies for a new tenant:
+- `consulting_clients` — gateway whitelist entry (required for `/chat-web`)
+- `tenant_bot_config` — welcome_message + extra_rules for chatbot
+- `tenant_settings.sector` — business sector
+- Optional sample products (idempotent via upsert)
+
+### tenant-config (Phase 3)
+Applies branding/configuration without redeploy:
+- `branding_advanced` — colors, logo, tagline
+- `seo` — title, description, keywords
+- `hours` — weekdays/saturday/sunday schedules
+- `feature_flags` — chatbot, catalog, order form, alerts
+- `system_prompt` — overrides bot personality
+
+### tenant-smoke (Phase 5)
+6-check health pipeline:
+1. `db.tenants` — record exists
+2. `db.consulting_clients` — gateway whitelist present
+3. `db.tenant_bot_config` — bot configured
+4. `db.tenant_settings.sector` — sector set
+5. `http.storefront` — Caddy domain responds
+6. `gateway.chat-web` — chatbot answers with tenant isolation
+
+**Tags:** `ops-api`, `tenant-lifecycle`, `multi-tenant`, `idempotent`, `audit-log`
+
+## §88 — EGOS API Mestra v0.1 — /v1/* Unified Control Plane (2026-05-25)
+
+- **Status:** DEPLOYED
+- **Evidence:** commit `27b1b5b7` + VPS smoke `GET /v1/storefront/products?tenant_slug=ferro-velho-patense → 3 real products` + `GET /v1/health → HTTP 207`
+- **Owner:** claude+sonnet (INV-MON-API-001)
+
+Option A from `docs/strategy/EGOS_MASTER_API_PRD.md`: thin gateway layer on existing Hono server (`apps/egos-gateway`).
+
+### Routes
+
+| Route | Description |
+|-------|-------------|
+| `GET /v1/health` | Aggregate health: gateway + supabase + configured services |
+| `GET /v1/tenants` | List all provisioned tenants |
+| `GET /v1/tenants/:slug` | Tenant detail + gateway access + bot config enrichment |
+| `GET /v1/storefront/products` | Product search by tenant (neutral-tables) |
+| `GET /v1/storefront/faq` | FAQ search by tenant |
+| `POST /v1/ops/tenant-seed` | Proxy to Next.js ops API |
+| `POST /v1/ops/tenant-config` | Proxy to Next.js ops API |
+| `GET /v1/ops/tenant-smoke` | Proxy to Next.js ops API |
+
+### Auth
+`X-Egos-Api-Key: <EGOS_MASTER_API_KEY>` — generated server-side on VPS.
+
+### Validated in production
+```
+GET /v1/tenants → 200 {"tenants":[],"count":0}
+GET /v1/storefront/products?tenant_slug=ferro-velho-patense&q=motor → 3 real products
+GET /v1/health → 207 (gateway+supabase ok)
+```
+
+### Pending (Sprints remaining)
+- `EGOS_OPS_URL` not set → ops proxy returns 503 until configured
+- RBAC roles (provisioner/deployer/auditor) → INV-MON-007
+- TENANT_WHITELIST dynamic → MCP-AGNOSTIC-001 (deferred)
+
+**Tags:** `api-mestra`, `hono`, `unified-control-plane`, `multi-tenant`, `production`

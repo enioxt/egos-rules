@@ -8,10 +8,10 @@
 - **Read next:**
   - `TASKS.md` — open resolution tasks
   - `docs/CAPABILITY_REGISTRY.md` — capability adoption matrix
-  - `docs/DOCUMENTATION_ARCHITECTURE_MAP.md` — documentation navigation and permanence rules
+  - `docs/modules/DOCUMENTATION_ARCHITECTURE_MAP.md` — documentation navigation and permanence rules
 <!-- llmrefs:end -->
 
-> **VERSION:** 2.2.0 | **UPDATED:** 2026-05-01
+> **VERSION:** 2.3.0 | **UPDATED:** 2026-05-14
 > **PURPOSE:** canonical registry for all SSOT surfaces across the EGOS workspace.
 > **TASK:** EGOS-083 (created), EGOS-085 (expanded)
 
@@ -29,7 +29,7 @@
 
 | Domain | SSOT Location | Owner | Freshness Rule | Last Verified |
 |--------|--------------|-------|----------------|---------------|
-| Agent definitions (kernel) | `egos/agents/registry/agents.json` v2.1.0 (18 agents) | enioxt | Update when agent added/changed; `bun run agent:lint` on commit | 2026-04-02 |
+| Agent definitions (kernel) | `egos/agents/registry/agents.json` (live kernel registry; verify count from file before citing it) | enioxt | Update when agent added/changed; `bun run agent:lint` on commit | 2026-05-14 |
 | Agent definitions (lab) | `egos-lab/agents/registry/agents.json` v1.0.0 | enioxt | Lab-local; NOT canonical for kernel — parallel registry | 2026-03-30 |
 | Agent runtime (kernel) | `egos/agents/runtime/runner.ts` + `event-bus.ts` | enioxt | FROZEN — no change without explicit approval | 2026-03-30 |
 | Agent runtime (lab) | `egos-lab/agents/runtime/runner.ts` | enioxt | Lab-local; must not diverge from kernel contract | 2026-03-30 |
@@ -58,7 +58,7 @@
 | Intelink (SSOT canônico) | `/home/enio/intelink/` (github.com/enioxt/intelink) | enioxt | leaf_local; repo privado, Next.js 15 + Neo4j 5 + Supabase. **DECISÃO 2026-04-18**: canônico é `/home/enio/intelink`. `egos-inteligencia` = LEGACY/ARCHIVED. | 2026-05-01 |
 | Capability registry | `egos/docs/CAPABILITY_REGISTRY.md` | enioxt | kernel_canonical; update when capability added or removed | 2026-03-30 |
 | System map (kernel) | `egos/docs/SYSTEM_MAP.md` | enioxt | kernel_canonical; update when architecture changes; LLM activation map | 2026-03-30 |
-| SSOT Registry | `egos/docs/SSOT_REGISTRY.md` (this file) | enioxt | kernel_canonical; update when SSOT added/changed/resolved | 2026-03-30 |
+| SSOT Registry | `egos/docs/modules/SSOT_REGISTRY.md` (this file) | enioxt | kernel_canonical; update when SSOT added/changed/resolved | 2026-05-14 |
 | ATRiAN ethics engine | `egos/packages/shared/src/atrian.ts` | enioxt | kernel_canonical; 7 axioms locked; update only for axiom expansion | 2026-03-30 |
 | PII scanner | `egos/packages/shared/src/pii-scanner.ts` | enioxt | kernel_canonical; update when new PII patterns added (CPF, CNPJ, etc.) | 2026-03-30 |
 | MCP governance | `egos/packages/mcp-governance/src/` | enioxt | kernel_canonical; governs MCP server contracts | 2026-03-30 |
@@ -89,7 +89,7 @@
 
 ## Per-Repo SSOT Adoption Status
 
-> Verificado 2026-05-01 — 9 repos ativos com READMEs cross-reference atualizados.
+> Verificado 2026-05-14 — adoption status maintained here; treat repo counts as live data, not permanent prose.
 
 | Repo | AGENTS.md | TASKS.md | README v+status | Status |
 |------|-----------|----------|-----------------|--------|
@@ -125,7 +125,7 @@
 ### Next Wave
 
 - [ ] Adicionar seção `## Upstream SSOT` em AGENTS.md de cada leaf repo apontando para este arquivo
-- [ ] `DOC-CLEAN-007`: resolver 112 broken refs detectados pelo cross-ref checker
+- [ ] `DOC-CLEAN-007`: resolver broken refs detectados pelo cross-ref checker atual
 
 ---
 
