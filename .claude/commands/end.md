@@ -1,8 +1,8 @@
 ---
-description: Session Finalization v6.2 — Force-Verify All Phases + Structured Handoff/Memory + Capability Auto-Propose
+description: Session Finalization v6.5 — Force-Verify All Phases + Structured Handoff/Memory + Capability Auto-Propose + L0/Template Drift + Cross-Session Merge Handoff
 ---
 
-# /end — Session Finalization v6.2 (EGOS)
+# /end — Session Finalization v6.5 (EGOS)
 
 > Sacred Code: 000.111.369.963.1618
 > **Princípio:** /end é prova de trabalho. Sem checkpoint estruturado, encerrar sessão = perder estado.
@@ -252,6 +252,62 @@ SESSION REVIEW
 
 ---
 
+## PHASE 3.5 — Rule Change Interview (END-EXPAND-002)
+
+> **Origem:** 2026-05-29 — sessões mudavam regras/overrides sem capturar a intenção. Memory e HARVEST ficavam sem contexto sobre o porquê da mudança.
+
+```bash
+EGOS_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$HOME/egos")
+# Detectar mudanças em arquivos de regras desta sessão
+RULE_FILES=$(git diff --name-only origin/main..HEAD 2>/dev/null | grep -E \
+  "(CLAUDE\.md|AGENTS\.md|OVERRIDES\.md|INHERITS\.md|\.guarani/|LAYER_0_SSOT|TEMPLATE_INHERITANCE|DOMAIN_TEMPLATE|egos-rules/)" || true)
+if [ -z "$RULE_FILES" ]; then
+  echo "✅ Phase 3.5: sem mudanças em arquivos de regras — skip"
+else
+  echo "⚠️  Phase 3.5: mudanças detectadas em arquivos de regras:"
+  echo "$RULE_FILES" | sed 's/^/  - /'
+  echo ""
+  echo "Responda cada pergunta (sim/não/N-A) antes de prosseguir:"
+fi
+```
+
+**Perguntas obrigatórias quando `RULE_FILES` não é vazio:**
+
+```
+RULE CHANGE INTERVIEW
+=====================
+
+[responder apenas as que forem "sim" — marcar as outras N-A]
+
+R1. NOVA REGRA adicionada (T0/T1/T2/L0/REGRA)?
+    → Se sim: qual regra, em qual arquivo, qual o motivo/incidente que gerou?
+
+R2. REGRA EXISTENTE alterada (scope, default, comportamento)?
+    → Se sim: qual era antes, o que mudou, por quê (incidente? feedback? nova evidência)?
+
+R3. OVERRIDE criado/alterado em OVERRIDES.md?
+    → Se sim: OVR-NNN, para qual produto/cliente, base legal/razão, quem aprovou?
+
+R4. HERANÇA alterada (INHERITS.md, inherits: campo)?
+    → Se sim: template afetado, o que mudou na cadeia de herança?
+
+R5. ARQUIVO CRÍTICO editado (.guarani/, .husky/pre-commit, agents/runtime/)?
+    → Se sim: o que mudou exatamente — VERIFICAR que não quebra pipeline
+
+R6. MUDANÇA EM POSTURA/COMPORTAMENTO do agente (CLAUDE.md T0/T1)?
+    → Se sim: contexto que levou à mudança — candidato a memory write (Phase 8)
+```
+
+**Ação pós-entrevista:**
+- Respostas R1/R2 com motivo claro → candidato a `HARVEST.md` (comportamento novo) ou `docs/knowledge/`
+- Respostas R3/R4 → verificar que INHERITS.md e OVERRIDES.md estão sincronizados
+- R5 → rodar `bun run governance:check` antes de prosseguir
+- R6 → garantir que Phase 8 (memory) vai capturar o contexto
+
+**Skip:** todos N-A → "Phase 3.5: sem mudanças de regras nesta sessão"
+
+---
+
 ## PHASE 4 — Generate Handoff (TEMPLATE LITERAL)
 
 Crie `docs/_current_handoffs/handoff_YYYY-MM-DD.md` usando este formato EXATO:
@@ -351,6 +407,77 @@ fi
 - Se detectado → **bloquear `/end`** até consolidação no kernel + `UPSTREAM_KERNEL.md` apontar
 - Override: `EGOS_SKIP_LEAF_CANONICAL=1 /end` (apenas migração)
 
+### Phase 7.2 — Template/L0 Drift Check (NOVO 2026-05-29 — END-EXPAND-001)
+
+> Se a sessão mudou regras Layer 0 OU arquivo de template de domínio, agente DEVE perguntar se inheritance/overrides precisam de update.
+> **SSOT:** `docs/governance/LAYER_0_SSOT.md` + `TEMPLATE_INHERITANCE_PROTOCOL.md`
+
+```bash
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo $PWD)
+SESSION_FILES=$(git log --since='8 hours ago' --name-only --pretty=format: 2>/dev/null | sort -u | grep -v '^$')
+
+# Detectar mudança em fontes Layer 0
+L0_CHANGED=$(echo "$SESSION_FILES" | grep -E "^(AGENTS\.md|\.guarani/RULES_INDEX\.md|docs/governance/LAYER_0_SSOT\.md|docs/governance/TEMPLATE_INHERITANCE_PROTOCOL\.md|docs/governance/DOMAIN_TEMPLATE_SPEC\.md)$")
+
+# Detectar mudança em template de domínio
+TEMPLATE_CHANGED=$(echo "$SESSION_FILES" | grep -E "^central-egos/products/[^_][^/]+/")
+
+if [ -n "$L0_CHANGED" ]; then
+  echo "🟡 Phase 7.2: Layer 0 source files mudados:"
+  echo "$L0_CHANGED" | sed 's/^/   - /'
+  echo ""
+  echo "Verificar templates que herdam (cada um precisa re-validação):"
+  ls -d central-egos/products/[^_]*/ 2>/dev/null | sed 's/^/   - /'
+  echo ""
+  echo "❓ Para cada template ativo: a mudança em L0 muda comportamento herdado?"
+  echo "   Se sim: atualizar INHERITS.md do template + nota em handoff."
+fi
+
+if [ -n "$TEMPLATE_CHANGED" ]; then
+  TEMPLATES=$(echo "$TEMPLATE_CHANGED" | cut -d/ -f3 | sort -u)
+  echo "🟡 Phase 7.2: Templates de domínio mudados: $TEMPLATES"
+  echo ""
+  echo "Verificar para cada template mudado:"
+  echo "   1. INHERITS.md ainda consistente com mudanças no CLAUDE.md?"
+  echo "   2. Algum override novo deveria virar entry em OVERRIDES.md?"
+  echo "   3. Score do template (DOMAIN_TEMPLATE_SPEC §4) mudou?"
+fi
+
+if [ -z "$L0_CHANGED" ] && [ -z "$TEMPLATE_CHANGED" ]; then
+  echo "✅ Phase 7.2: skip — nenhuma mudança em L0 ou templates"
+fi
+```
+
+**Skip conditions:** session zero commits OR somente `docs/jobs/` `docs/audits/` mudaram → "Phase 7.2: skip — sem impacto em L0/templates"
+
+### Phase 7.3 — NotebookLM Sync Check (NOVO 2026-05-30)
+
+> Se a sessão mudou um doc canônico (README/arquitetura/regras) de um repo com notebook mapeado,
+> a fonte correspondente no NotebookLM ficou desatualizada. SSOT: `docs/notebooklm/NOTEBOOKS_INDEX.md`.
+> Limitação: NotebookLM não substitui fonte. Sync = **ADD-only**: `source_add(nova)` → verificar →
+> enfileirar deleção da antiga para HITL batch. **Nunca deletar antes de confirmar o add** (evita órfão).
+
+```bash
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo $PWD)
+SESSION_FILES=$(git log --since='8 hours ago' --name-only --pretty=format: 2>/dev/null | sort -u | grep -v '^$')
+# Docs canônicos que são fonte obrigatória de notebook
+NLM_SOURCE_CHANGED=$(echo "$SESSION_FILES" | grep -iE "(^|/)README\.md$|SYSTEM_MAP|ARCHITECTURE|INHERITS\.md$|CLAUDE\.md$|AGENTS\.md$")
+if [ -n "$NLM_SOURCE_CHANGED" ]; then
+  echo "🟡 Phase 7.3: docs-fonte de notebook mudaram nesta sessão:"
+  echo "$NLM_SOURCE_CHANGED" | sed 's/^/   - /'
+  echo "   → Verificar NOTEBOOKS_INDEX.md: este repo tem notebook? a fonte precisa re-sync?"
+  echo "   → Se sim (ADD-only): source_add(nova) → notebook_get verifica → enfileirar deleção da antiga p/ HITL"
+  echo "   → Registrar em docs/notebooklm/sync-log.md. Boundary LGPD §5.5 antes de source_add."
+  echo "   → NUNCA source_delete autônomo (nem da MESMA fonte) — deleção só em HITL batch."
+else
+  echo "✅ Phase 7.3: skip — nenhum doc-fonte de notebook mudou"
+fi
+```
+
+**Ação (ADD-only):** se houver re-sync pendente e o `notebooklm-mcp` estiver autenticado **na máquina local** → `source_add(nova)`, verificar via `notebook_get`, e **enfileirar** a deleção da fonte antiga para aprovação HITL (nunca deletar inline). Registrar no op-ledger + sync-log. A VPS Hermes só detecta/notifica (sem credencial NotebookLM) — ver §9.3 da integração.
+
+**Skip conditions:** zero commits OR nenhum doc-fonte mudou → "Phase 7.3: skip".
+
 ---
 
 ## PHASE 8 — Record Learnings + Memory Write (TEMPLATE LITERAL)
@@ -365,11 +492,12 @@ curl -s -X POST "https://gateway.egos.ia.br/knowledge/learnings" \
   -d '{"domain":"<dom>","outcome":"<out>","description":"<learning>","session_id":"'$(date +%Y%m%d)'"}'
 ```
 
-### 8.2 — Wiki compile
-```bash
-cd /home/enio/egos && bun agents/agents/wiki-compiler.ts --compile 2>/dev/null || echo "skip"
-bun obsidian:sync 2>/dev/null || echo "skip"
-```
+### 8.2 — (REMOVIDO 2026-05-29) Obsidian/wiki-compile retirado
+
+> Camada Obsidian vault aposentada (Opção B — 2026-05-29). Vault local estava morto
+> (0 edições em 7d, cron `daily-knowledge-sync` falhando há semanas com `bun: command not found`).
+> Conhecimento vive em: Supabase `kb_pages` (via Phase 8.1 `record_learning`) + NotebookLM (síntese sob demanda).
+> `wiki-compiler.ts` permanece como ferramenta manual do Supabase (`bun run wiki:compile`), apenas não é mais auto-invocado.
 
 ### 8.3 — Memory write OBRIGATÓRIO
 
@@ -483,6 +611,12 @@ Phase 6 — Doc Drift
 Phase 7 — Auto-Disseminate
   ✓ Feat commits unpropagated: [N]
   ✓ /disseminate: ran ✅ / skipped (reason)
+
+Phase 7.2 — Template/L0 Drift
+  ✓ L0 sources changed: [lista ou nenhum]
+  ✓ Templates changed: [lista ou nenhum]
+  ✓ Inheritance reconciled: ✅ / ⚠️ (templates X, Y precisam update INHERITS.md)
+  ✓ Action items added to handoff: [N]
 
 Phase 8 — Memory Write
   ✓ session_YYYY-MM-DD_topic.md: written
@@ -629,6 +763,105 @@ fi
 
 ---
 
+## PHASE 14 — Cross-Session Merge Handoff (NOVO v6.5 — multi-window merge)
+
+> **Quando roda:** APENAS quando esta sessão faz parte de um merge de N janelas Claude Code numa
+> sessão-mestre única. Gatilho: usuário pede "merge das janelas" / `/end merge` / `EGOS_MERGE=1`.
+> **Princípio:** a sessão-mestre que sobrevive precisa reconstruir o CONTEXTO COMPLETO de cada janela
+> encerrada sem ter visto a conversa dela. Handoff normal (Phase 4) é resumo de status; o MERGE BLOCK
+> é auto-suficiente: estado git + trabalho in-flight + contexto EGOS necessário p/ continuar.
+> **Por que é separado:** as janelas compartilham o mesmo `.git/index` por repo (INC-002). Merge mal-feito
+> = colisão de index, trabalho não-commitado perdido, ou TASKS.md sobrescrito.
+
+### 14.1 — Garantir que NADA fica não-commitado e invisível
+
+```bash
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")
+cd "$ROOT"
+echo "=== Uncommitted nesta janela (DEVE virar commit path-scoped OU constar no MERGE BLOCK) ==="
+git status --short
+echo "=== Commits locais ainda não no remoto ==="
+git log --oneline origin/$(git branch --show-current)..HEAD 2>/dev/null
+```
+
+- Trabalho commitável → **commit path-scoped + push AGORA** (`git add <arquivos-desta-janela>`, nunca `-A`).
+- Trabalho que NÃO dá pra commitar (rascunho, decisão pendente) → listar literalmente no MERGE BLOCK §Uncommitted.
+- A sessão-mestre vai `git pull` antes de ler os blocks — então tudo que está no remoto ela enxerga.
+
+### 14.2 — Escrever o MERGE BLOCK (formato literal, auto-suficiente)
+
+Cada janela escreve **seu próprio arquivo** (sem colisão) em:
+`docs/_current_handoffs/_merge_YYYY-MM-DD/<repo>__<branch>__<short-head>.md`
+
+```bash
+MERGE_DIR="docs/_current_handoffs/_merge_$(date +%Y-%m-%d)"
+mkdir -p "$MERGE_DIR"
+REPO=$(basename "$ROOT"); BR=$(git branch --show-current); SH=$(git rev-parse --short HEAD)
+echo "MERGE BLOCK alvo: $MERGE_DIR/${REPO}__${BR}__${SH}.md"
+```
+
+Conteúdo OBRIGATÓRIO (preencher cada seção — a sessão-mestre depende disto):
+
+```markdown
+# MERGE BLOCK — <repo> / <branch> — YYYY-MM-DD HH:MM
+
+## 🪟 Identidade da janela
+- Repo / cwd: <path>
+- Branch: <branch> | HEAD: <SHA> | pushed: sim/não
+- Modelo: <claude-opus-4-X / sonnet>
+- Foco desta janela (1 linha): <o que esta janela estava resolvendo>
+
+## ✅ Entregue (com SHAs — só o que tem hash)
+- <SHA> <arquivo> — <o que mudou e por quê>
+
+## 🧠 Contexto EGOS que a sessão-mestre precisa herdar
+> Não assuma que a mestre sabe. Escreva o que é load-bearing:
+- Decisões arquiteturais tomadas + porquê
+- SSOTs tocados (qual doc é a verdade agora)
+- Repos/sistemas afetados (egos kernel? leaf? produto? VPS?)
+- Convenções/regras descobertas ou alteradas nesta janela
+
+## 🔗 In-flight / Uncommitted (CRÍTICO p/ não perder)
+- Arquivos não-commitados: <lista ou "nenhum">
+- Trabalho parcial: <descrição + onde parou>
+- Índice .git compartilhado: <esta janela mexeu nos mesmos arquivos de outra? quais?>
+
+## ⏳ Blockers + decisões pendentes Enio
+- <blocker> — <quem decide / o que falta>
+
+## 🎯 Next (priorizado) — o que a sessão-mestre deve fazer com isto
+1. <ação concreta com task ID>
+
+## ⚠️ Conflitos potenciais no merge
+- TASKS.md: <esta janela editou? quais linhas/seções?>
+- Mesmos arquivos de outra janela: <lista>
+- Migrations/deploy/VPS em voo: <sim/não + detalhe>
+```
+
+### 14.3 — Commit + push do MERGE BLOCK
+
+```bash
+git add "$MERGE_DIR/"
+git commit -m "chore(merge): MERGE BLOCK $(basename $ROOT) $(git rev-parse --short HEAD) — handoff p/ sessão-mestre"
+bash scripts/safe-push.sh "$(git branch --show-current)"
+```
+
+> Se safe-push falhar por não-FF (outra janela pushou antes) → `git fetch && git rebase origin/<branch>`,
+> nunca `--no-verify`, nunca force. O MERGE BLOCK é aditivo (arquivo próprio) → rebase é trivial.
+
+### 14.4 — Sinalizar pronto
+
+Ao final, imprimir para o usuário (copiável para a janela-mestre):
+
+```
+✅ MERGE BLOCK pronto: <path> (pushed @ <SHA>)
+   Janela-mestre: rode `git pull` e leia docs/_current_handoffs/_merge_YYYY-MM-DD/*.md
+```
+
+**Skip conditions:** sessão NÃO faz parte de merge multi-janela → "Phase 14: skip — sessão única".
+
+---
+
 ## REGRAS DE PARADA (skip allowed)
 
 | Phase | Pode pular se | Reportar como |
@@ -641,12 +874,15 @@ fi
 | 5 | TASKS.md não mudou | "Phase 5: TASKS.md já atualizado" |
 | 6 | NUNCA — drift check obrigatório | — |
 | 7 | Feat commits = 0 | "Phase 7: nada a propagar" |
+| 3.5 | Nenhum arquivo de regra mudado | "Phase 3.5: sem mudanças de regras nesta sessão" |
+| 7.2 | Zero commits OU só mudanças em docs/jobs+audits | "Phase 7.2: skip — sem impacto L0/templates" |
 | 8 | NUNCA — memory write obrigatório | — |
 | 9 | Sessão zero commits OU só infra/chore | "Phase 9: skip — [reason]" |
 | 10 | NUNCA — checkpoint é a prova | — |
 | 11.5 | NUNCA — Understanding Verification é Karpathy gate | — |
 | 12 | Nada uncommitted | "Phase 12: nothing to commit" |
 | 13 | Quota 🔴 OU commits < 3 sem paths críticos OU codex ausente | "Phase 13: skipped — [reason]" |
+| 14 | Sessão NÃO faz parte de merge multi-janela | "Phase 14: skip — sessão única" |
 
 ---
 
@@ -664,5 +900,9 @@ fi
 
 ---
 
+*v6.5 — 2026-05-30 | Adiciona Phase 14 Cross-Session Merge Handoff — MERGE BLOCK auto-suficiente por janela quando N sessões Claude Code são fundidas numa sessão-mestre única (index .git compartilhado, INC-002).*
+*v6.4 — 2026-05-29 | Adiciona Phase 3.5 Rule Change Interview (END-EXPAND-002) — 6 perguntas estruturadas quando CLAUDE.md/AGENTS.md/OVERRIDES.md/INHERITS.md/.guarani mudaram.*
+*v6.3 — 2026-05-29 | Adiciona Phase 7.2 Template/L0 Drift Check (END-EXPAND-001) — detecta mudanças em Layer 0 ou templates de domínio e força reconciliação de inheritance/overrides.*
+*v6.2 — Capability Auto-Propose (Phase 1.5) + Codex Adversarial Gate (Phase 13).*
 *v6.1 — 2026-05-07 | Force-verify all phases + structured templates | Substitui v5.5 (.egos), v5.7 (egos), SKILLS-007 (~/.claude)*
 *Bug fix: v5.7 era descritivo demais → handoffs e memory writes inconsistentes. v6.1 força templates literais.*
