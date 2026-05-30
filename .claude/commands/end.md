@@ -790,15 +790,31 @@ git log --oneline origin/$(git branch --show-current)..HEAD 2>/dev/null
 
 ### 14.2 — Escrever o MERGE BLOCK (formato literal, auto-suficiente)
 
-Cada janela escreve **seu próprio arquivo** (sem colisão) em:
-`docs/_current_handoffs/_merge_YYYY-MM-DD/<repo>__<branch>__<short-head>.md`
+> **INBOX DE MERGE = SEMPRE O KERNEL `egos`** (determinístico — INC-MERGE-001 2026-05-30).
+> A janela-mestre dá `git pull` no kernel `egos`. Portanto **toda** janela — esteja ela no kernel
+> OU num leaf-repo (intelink-platform, etc.) — escreve seu MERGE BLOCK dentro do kernel `egos`.
+> O TRABALHO REAL (commits) continua no repo da janela; o BLOCK só **referencia os SHAs**.
+> Sem isto, uma janela em leaf escreveria o block onde a mestre nunca olha (gap descoberto no
+> merge de 3 janelas 2026-05-30: a janela intelink teve que improvisar o destino — não pode depender de improviso).
+
+Cada janela escreve **seu próprio arquivo** (sem colisão), no kernel:
+`<kernel>/docs/_current_handoffs/_merge_YYYY-MM-DD/<repo>__<branch>__<short-head>.md`
 
 ```bash
-MERGE_DIR="docs/_current_handoffs/_merge_$(date +%Y-%m-%d)"
+# Resolve o kernel egos de forma fixa (a mestre SEMPRE pulla aqui).
+KERNEL=$(cd /home/enio/egos 2>/dev/null && git rev-parse --show-toplevel 2>/dev/null || echo "/home/enio/egos")
+MERGE_REL="docs/_current_handoffs/_merge_$(date +%Y-%m-%d)"
+MERGE_DIR="$KERNEL/$MERGE_REL"
 mkdir -p "$MERGE_DIR"
 REPO=$(basename "$ROOT"); BR=$(git branch --show-current); SH=$(git rev-parse --short HEAD)
-echo "MERGE BLOCK alvo: $MERGE_DIR/${REPO}__${BR}__${SH}.md"
+CROSS=$([ "$ROOT" = "$KERNEL" ] && echo "nao" || echo "SIM (trabalho real está em $ROOT, NÃO no kernel)")
+echo "MERGE BLOCK alvo: $MERGE_DIR/${REPO}__${BR}__${SH}.md | cross-repo=$CROSS"
 ```
+
+> **Se cross-repo=SIM:** o cabeçalho do MERGE BLOCK DEVE abrir com um aviso explícito de que os
+> commits vivem no repo leaf (`git@github.com:enioxt/<repo>.git`) e a mestre **NÃO deve tentar
+> fundir esses commits no egos** — o block é registro/herança, não código a fundir.
+> O vocab-guard do kernel roda sobre o block (é markdown no egos) → evite termos phantom.
 
 Conteúdo OBRIGATÓRIO (preencher cada seção — a sessão-mestre depende disto):
 
@@ -838,16 +854,22 @@ Conteúdo OBRIGATÓRIO (preencher cada seção — a sessão-mestre depende dist
 - Migrations/deploy/VPS em voo: <sim/não + detalhe>
 ```
 
-### 14.3 — Commit + push do MERGE BLOCK
+### 14.3 — Commit + push do MERGE BLOCK (SEMPRE no kernel egos)
+
+> ORDEM OBRIGATÓRIA: (1) primeiro commit+push do TRABALHO REAL no repo da janela (`$ROOT`, 14.1);
+> (2) só então commit+push do BLOCK no kernel. Assim os SHAs citados no block já existem no remoto.
 
 ```bash
-git add "$MERGE_DIR/"
-git commit -m "chore(merge): MERGE BLOCK $(basename $ROOT) $(git rev-parse --short HEAD) — handoff p/ sessão-mestre"
-bash scripts/safe-push.sh "$(git branch --show-current)"
+# O block vive no kernel — commitar/pushar SEMPRE a partir do kernel, nunca do leaf.
+( cd "$KERNEL" \
+  && git add "$MERGE_REL/" \
+  && git commit -m "chore(merge): MERGE BLOCK ${REPO} ${SH} — handoff p/ sessão-mestre" \
+  && bash scripts/safe-push.sh "$(git -C "$KERNEL" branch --show-current)" )
 ```
 
-> Se safe-push falhar por não-FF (outra janela pushou antes) → `git fetch && git rebase origin/<branch>`,
-> nunca `--no-verify`, nunca force. O MERGE BLOCK é aditivo (arquivo próprio) → rebase é trivial.
+> Se safe-push falhar por não-FF (outra janela pushou antes) → `git -C "$KERNEL" fetch && git -C "$KERNEL" rebase origin/<branch>`,
+> nunca `--no-verify`, nunca force. O MERGE BLOCK é aditivo (arquivo próprio, nome único) → rebase é trivial.
+> O pre-commit do kernel (vocab-guard etc.) roda sobre o block — se bloquear por termo phantom, reescreva o block.
 
 ### 14.4 — Sinalizar pronto
 
@@ -900,6 +922,7 @@ Ao final, imprimir para o usuário (copiável para a janela-mestre):
 
 ---
 
+*v6.5.1 — 2026-05-30 | Phase 14 cross-repo fix (INC-MERGE-001): inbox de merge SEMPRE no kernel egos (a mestre só pulla lá). Janela em leaf-repo escreve o block no kernel referenciando os SHAs do leaf; commit/push do block a partir do kernel. Descoberto no merge de 3 janelas onde a janela intelink-platform teve que improvisar o destino.*
 *v6.5 — 2026-05-30 | Adiciona Phase 14 Cross-Session Merge Handoff — MERGE BLOCK auto-suficiente por janela quando N sessões Claude Code são fundidas numa sessão-mestre única (index .git compartilhado, INC-002).*
 *v6.4 — 2026-05-29 | Adiciona Phase 3.5 Rule Change Interview (END-EXPAND-002) — 6 perguntas estruturadas quando CLAUDE.md/AGENTS.md/OVERRIDES.md/INHERITS.md/.guarani mudaram.*
 *v6.3 — 2026-05-29 | Adiciona Phase 7.2 Template/L0 Drift Check (END-EXPAND-001) — detecta mudanças em Layer 0 ou templates de domínio e força reconciliação de inheritance/overrides.*
