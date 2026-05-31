@@ -270,7 +270,8 @@ for repo in "${REPOS[@]}"; do
   # ── D. Granular Core .guarani Symlinks (SSOT Enforcement) ──
   # We delete duplicated centralized governance directories/files and replace them with symlinks.
   # We intentionally DO NOT touch IDENTITY.md, PREFERENCES.md, or any unknown files.
-  if [ -d "$repo/.guarani" ]; then
+  # INC-SYMLINK-001 (2026-05-31): NEVER symlink the kernel's .guarani/ — it is the REAL source.
+  if [ -d "$repo/.guarani" ] && [ "$repo" != "$HOME/egos" ]; then
     SHARED_NODES=(
       "orchestration"
       "philosophy"
