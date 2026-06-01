@@ -33,83 +33,56 @@ if ! command -v codex >/dev/null 2>&1; then
   exit 1
 fi
 
-# Build context from recent commits
+# Repo metadata for the review record (Codex auto-loads governance context from AGENTS.md)
 REPO_NAME=$(basename "${REPO_PATH}")
 BRANCH=$(git -C "${REPO_PATH}" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
-RECENT_COMMITS=$(git -C "${REPO_PATH}" log --oneline -"${COMMITS}" 2>/dev/null || echo "no commits")
-CHANGED_FILES=$(git -C "${REPO_PATH}" diff HEAD~"${COMMITS}" --name-only 2>/dev/null | head -20 || echo "none")
 
-PROMPT="Review the last ${COMMITS} commits in the ${REPO_NAME} repository (branch: ${BRANCH}).
+# 2026-05-31: codex-cli 0.130.0 removed `cloud exec --repo` (now requires cloud --env <ID>,
+# not discoverable from CLI). Switched to LOCAL synchronous review (`codex exec review`),
+# which needs no cloud env id and works offline. Output written to a dated review file.
+DATESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+SHORT_SHA=$(git -C "${REPO_PATH}" rev-parse --short HEAD 2>/dev/null || echo "nohead")
+REVIEW_FILE="${REVIEWS_DIR}/$(date -u +%Y-%m-%d)-local-review-${SHORT_SHA}.md"
+BASE_REF="HEAD~${COMMITS}"
 
-Recent commits:
-${RECENT_COMMITS}
+log "Running local Codex review (codex exec review --base ${BASE_REF})..."
 
-Changed files:
-${CHANGED_FILES}
-
-EGOS governance context:
-- Governance rules: .windsurfrules + CLAUDE.md
-- Frozen zones (DO NOT modify): agents/runtime/runner.ts, agents/runtime/event-bus.ts, .husky/, .guarani/orchestration/PIPELINE.md
-- Coding standards: .guarani/PREFERENCES.md
-- Replace-not-Add rule: before creating new files, name what they replace
-- Evidence-First: every capability claim must have a test or metric
-- Karpathy Simplicity: minimum code that solves the problem
-
-Review for:
-1. TypeScript type safety issues (any implicit, missing return types)
-2. Test coverage gaps (new functions without tests)
-3. SSOT violations (duplicate logic, new files that should update existing ones)
-4. Dead code or unused imports
-5. Security issues (hardcoded values, missing validation)
-6. Performance issues (N+1, missing indexes, large payloads)
-7. Documentation drift (CAPABILITY_REGISTRY.md not updated)
-
-Output format: for each suggestion, include:
-- Severity: CRITICAL | HIGH | MODERATE | LOW
-- File: path/to/file.ts:line
-- Problem: what is wrong
-- Fix: minimal change needed"
-
-log "Submitting Codex Cloud task..."
-log "Prompt: ${PROMPT:0:200}..."
-
-# Submit the task
-TASK_OUTPUT=$(codex cloud exec --repo "${REPO_NAME}" "${PROMPT}" 2>&1) || {
-  log "ERROR: codex cloud exec failed: ${TASK_OUTPUT}"
-  exit 1
+# NOTE: codex-cli 0.131+ makes scope flags (--base/--commit) mutually exclusive
+# with the [PROMPT] positional. EGOS governance context is auto-loaded by Codex
+# from the repo's AGENTS.md, so the custom PROMPT is no longer passed; scope flags win.
+REVIEW_OUTPUT=$( (cd "${REPO_PATH}" && timeout 600 codex exec review --base "${BASE_REF}") 2>&1 ) || {
+  log "WARN: --base review failed, retrying single-commit (HEAD)..."
+  REVIEW_OUTPUT=$( (cd "${REPO_PATH}" && timeout 600 codex exec review --commit HEAD) 2>&1 ) || {
+    log "ERROR: codex exec review failed: ${REVIEW_OUTPUT}"
+    exit 1
+  }
 }
 
-# Extract task ID from output
-TASK_ID=$(echo "${TASK_OUTPUT}" | grep -oE 'task_e_[a-f0-9]+' | head -1 || echo "")
-TASK_URL=$(echo "${TASK_OUTPUT}" | grep -oE 'https://[^ ]+' | head -1 || echo "")
+{
+  echo "# Codex Local Review — ${DATESTAMP}"
+  echo
+  echo "- Repo: ${REPO_NAME} | Branch: ${BRANCH} | Base: ${BASE_REF} | Commits: ${COMMITS}"
+  echo
+  echo '```'
+  echo "${REVIEW_OUTPUT}"
+  echo '```'
+} > "${REVIEW_FILE}"
 
-if [ -z "${TASK_ID}" ]; then
-  log "WARN: Could not extract task ID from output: ${TASK_OUTPUT}"
-  TASK_ID="unknown-$(date +%s)"
-fi
-
-log "Submitted: ${TASK_ID}"
-
-# Record submission
-DATESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Record run (JSONL)
 SUBMISSION=$(cat << JSONEOF
 {
-  "task_id": "${TASK_ID}",
-  "task_url": "${TASK_URL}",
+  "review_file": "${REVIEW_FILE}",
   "repo": "${REPO_NAME}",
   "branch": "${BRANCH}",
+  "head": "${SHORT_SHA}",
   "submitted": "${DATESTAMP}",
   "commits": "${COMMITS}",
-  "status": "PENDING",
-  "prompt": "${PROMPT:0:200}..."
+  "mode": "local-exec-review",
+  "status": "DONE"
 }
 JSONEOF
 )
-
-# Append to submitted.json (as JSONL)
 echo "${SUBMISSION}" >> "${SUBMITTED_FILE}"
 
-log "=== DONE: ${TASK_ID} submitted ==="
-echo "✅ Codex review submitted: ${TASK_ID}"
-echo "   Check status: codex cloud list"
-echo "   Fetch when ready: ~/.egos/scripts/codex-fetch-reviews.sh"
+log "=== DONE: local review written to ${REVIEW_FILE} ==="
+echo "✅ Codex local review done: ${REVIEW_FILE}"
