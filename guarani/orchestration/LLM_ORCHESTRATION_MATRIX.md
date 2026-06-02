@@ -1,61 +1,63 @@
 # LLM Orchestration Matrix — EGOS-080
 
-> **Version:** 1.0.0 | **Created:** 2026-03-30
-> **SSOT:** `packages/shared/src/llm-router.ts` (routing formula)
+> **Version:** 1.1.0 | **Updated:** 2026-05-30
+> **SSOT:** `packages/shared/src/llm-providers/llm-router.ts` (routing formula) | [agent_scopes_and_governance.md](file:///home/enio/egos/docs/governance/agent_scopes_and_governance.md) (scopes)
 > **Applies to:** All AI calls within the EGOS ecosystem
 
 ---
 
 ## Lane Definitions
 
-| Lane | Authority | Owns | Approval Mode | Cost Tier |
-|------|-----------|------|---------------|-----------|
-| `planner` | Architect | Multi-step reasoning, architecture decisions, complex analysis | confirm | $$$  (gpt-5.4, ~$0.0025/1k) |
-| `executor` | Implementer | Code generation, structured JSON output, high-precision tasks | auto | $$  (claude-sonnet, ~$0.003/1k) |
-| `cheap` | Bulk runner | Classification, PII detection, summarization, high-volume calls | auto | $  (qwen-turbo, gemini-flash, ~$0.0001/1k) |
-| `sovereign` | BR-compliance | Any task requiring data sovereignty or offline-capable routing | confirm | $  (qwen-plus via DashScope, ~$0.0004/1k) |
+| Lane | Authority / Agent | Owns | Approval Mode | Cost Tier |
+|------|-------------------|------|---------------|-----------|
+| `planner` | **EGOS Prime** | Multi-step reasoning, architecture decisions, complex analysis | confirm | $$$  (gpt-5.4 / Opus, ~$0.0025/1k) |
+| `executor` | **EGOS Operator** | Code generation, structured JSON output, high-precision tasks | auto | $$  (claude-sonnet, ~$0.003/1k) |
+| `cheap` | **EGOS Gemini** | Classification, PII detection, summarization, high-volume calls | auto | $  (gemini-flash, ~$0.0001/1k) |
+| `sovereign` | **Sovereign Lane** | Any task requiring data sovereignty or offline-capable routing | confirm | $  (qwen-plus via DashScope, ~$0.0004/1k) |
 
 ---
 
 ## Orchestrator Ownership
 
-### Claude Code (this session — terminal)
+### EGOS Prime (this session — terminal)
 - **Authority:** Executor + Planner for kernel tasks
 - **Allowed:** Architecture decisions, new files, governance changes, agent wiring, SSOT edits
 - **Approval mode:** auto for code writes; confirm for frozen zone edits
-- **Model used:** claude-sonnet-4-6 (hardcoded — this IS the orchestrator, not a routed call)
-- **Do NOT route through llm-router.ts** — Claude Code is the router consumer, not a consumer target
+- **Model used:** claude-opus-4-7 / claude-sonnet-4-6 (default CLI context)
+- **Do NOT route through llm-router.ts** — EGOS Prime is the orchestrator consumer
 
-### Codex (background, async)
+### EGOS Operator (background, async)
 - **Authority:** Executor
 - **Allowed:** Code generation from specs, test writing, refactoring scoped tasks
-- **Approval mode:** confirm (never runs autonomously on kernel files without human ACK)
+- **Approval mode:** auto (unless editing frozen files)
 - **Model used:** routeTask('code_generation', { preferLane: 'executor' })
-- **Conflict rule:** If Claude Code session is active on same task → Codex defers
+- **Conflict rule:** If EGOS Prime is active on same task → EGOS Operator defers
 
-### Windsurf / Cascade
-- **Authority:** Executor (IDE-bound)
-- **Allowed:** UI/component work, file edits within one repo, local test runs
-- **Approval mode:** auto for leaf repos; confirm for kernel (egos/)
-- **Model used:** Cascade internal (not routed through llm-router.ts)
-- **Conflict rule:** NEVER run Cascade and Claude Code on the same task simultaneously
-  - Active session → check `.guarani/worktrees.json` for lock before starting
+### Guarani (Antigravity Agent — this runtime context)
+- **Authority:** Evaluator & Coordinator
+- **Allowed:** Repository analysis, verification checkpoints, rules comparison, duplicate detection
+- **Approval mode:** confirm (requires HITL validation before execution)
+- **Model used:** Gemini (Antigravity internal runtime — NOT routed via llm-router.ts)
+- **Identity SSOT:** `.guarani/GUARANI.md`
 
-### Alibaba DashScope (sovereign lane)
-- **Authority:** Cheap + Sovereign
-- **Allowed:** PII classification, bias analysis, high-volume Guard Brasil API calls
-- **Models:** qwen-plus (sovereign), qwen-turbo (cheap)
-- **Approval mode:** auto
-- **Route via:** `routeTask(taskType, { preferLane: 'sovereign' })` or `routeGuardBrasil()`
-- **Use when:** Data cannot leave BR jurisdiction, or cost > R$0.50 per 1k calls
+### ?!? (EGOS Codex Agent — background / CLI commands)
+- **Authority:** Deep review and adversarial audit — procura gaps, faz perguntas difíceis
+- **Allowed:** Code reviews, generation of unit tests, AST parsing, and code lint checks
+- **Approval mode:** confirm (never runs autonomously on kernel files without human ACK)
+- **Trigger:** acionado pelo EGOS Prime (orquestrador) ou outro agente dentro do Claude Code
+- **Model used:** gpt-5.5 (low→xhigh) / gpt-5.4 / gpt-5.3-codex — reasoning tier por tarefa
+- **Conflict rule:** Active session check before executing heavy reviews
 
-### OpenRouter (aggregator)
-- **Authority:** Planner + Executor
-- **Allowed:** Any task not requiring sovereignty; fallback when DashScope is down
-- **Models:** claude-sonnet (executor), gpt-5.4 (planner), gemini-flash (cheap)
-- **Approval mode:** auto
-- **Route via:** `routeTask(taskType)` — default path when no lane preference given
-- **Cost guard:** never use planner lane for bulk/classification tasks
+### EGOS Gemini Agent
+- **Authority:** Visual / Multi-modal verification
+- **Allowed:** UI/UX checks, visual proof analysis
+- **Model used:** google/gemini-2.0-flash-001 (cheap lane via OpenRouter)
+
+### Hermes Agent (messaging / notifications)
+- **Authority:** Event-Bus handler
+- **Allowed:** Post webhooks to Evolution API/Telegram, read lockfiles, alert system
+- **Model used:** NÃO é um modelo — sistema de automação event-driven (`scripts/hermes-trigger.sh` + `hermes-*.ts`). Para LLM, roteia via llm-router.ts (tier free/minimax).
+
 
 ---
 

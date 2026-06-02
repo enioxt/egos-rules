@@ -1,0 +1,228 @@
+2026-06-01 08:02:31: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 08:03:43: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 08:04:09: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 08:04:35: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 08:06:02: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 09:21:27: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 09:22:31: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 09:22:57: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 09:23:25: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 09:24:25: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 09:27:10: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 09:27:36: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 09:28:05: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 09:28:36: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 09:29:04: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 09:29:47: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 09:30:14: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 09:42:47: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 09:46:18: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 09:48:09: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 09:50:03: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 09:51:48: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 09:53:19: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 09:56:21: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 09:58:37: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:01:08: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:06:44: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:07:59: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:15:19: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:16:20: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:18:06: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:18:37: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:18:53: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:19:08: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:19:24: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:19:40: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:19:56: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:21:12: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:21:43: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:23:29: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:24:44: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:27:00: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:29:02: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:29:17: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:29:33: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:30:34: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:31:35: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:31:50: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:32:06: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:33:52: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:39:27: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:39:58: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:40:14: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:41:30: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:42:00: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:42:31: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:43:02: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:44:18: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:44:48: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:46:00: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:46:16: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:46:31: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:46:47: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:48:18: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:48:49: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:49:05: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:49:21: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:49:37: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:49:52: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:50:08: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:51:09: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:52:10: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:52:41: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:52:56: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:53:12: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:53:58: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:54:59: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:55:46: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:56:16: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:56:32: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:57:18: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 10:57:34: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 11:00:35: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 11:01:51: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 11:02:07: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 11:02:22: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 11:03:23: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 11:04:09: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 11:04:25: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 11:04:41: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 11:04:57: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 11:06:28: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 11:15:30: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 11:16:01: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 11:17:47: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 11:18:03: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 11:18:19: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 11:18:34: [COORDINATION] Failed to analyze changes: AUTH_ERROR: alibaba/qwen3.5-flash (HTTP 401): {"error":{"message":"Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error","type":"invalid_request_error","param":null,"code":"invali
+2026-06-01 11:19:41: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 11:20:24: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 11:20:52: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 11:26:51: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 11:28:04: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 11:28:33: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 11:29:00: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 11:29:26: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 11:29:51: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 11:30:17: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 11:30:58: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 11:31:25: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 11:32:06: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 11:32:33: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 11:33:29: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 11:33:56: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 11:34:23: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 11:36:05: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:11:21: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:12:20: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:13:36: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:14:07: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:15:25: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:16:25: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:17:49: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:19:15: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:20:15: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:21:07: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:21:54: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:27:53: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:29:05: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:29:33: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:30:19: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:30:57: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:32:13: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:33:26: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:34:54: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:35:22: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:36:50: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:37:33: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:38:00: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:38:57: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:39:51: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:40:27: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:41:07: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:43:36: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:44:23: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:45:29: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:46:24: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:46:55: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:47:24: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:48:54: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:49:22: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:50:05: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:50:38: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:51:06: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:52:05: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:52:34: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:53:05: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:54:17: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:54:45: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 13:55:14: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 16:50:54: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 16:56:24: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 16:56:49: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 16:57:17: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 16:58:00: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 16:59:11: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 16:59:39: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:00:10: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:00:38: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:04:57: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:05:28: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:05:54: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:07:09: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:07:53: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:08:21: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:09:50: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:10:17: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:10:45: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:11:27: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:11:53: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:14:06: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:14:36: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:15:02: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:15:31: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:16:45: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:17:13: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:18:28: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:18:55: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:20:43: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:21:56: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:22:40: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:23:09: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:23:39: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:25:06: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:25:36: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:26:05: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:26:33: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:26:57: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:30:38: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:31:04: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:31:28: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:34:10: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:34:51: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:37:17: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:37:43: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:38:09: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:39:03: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:39:29: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:39:55: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:40:18: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:43:58: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:45:10: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 17:45:35: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 23:12:15: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 23:12:47: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 23:13:25: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 23:15:09: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 23:18:51: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 23:22:34: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 23:24:23: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 23:25:12: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 23:25:57: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 23:26:35: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 23:27:13: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 23:27:43: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 23:38:20: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 23:40:01: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)
+2026-06-01 23:40:42: [llm-provider] Used alibaba/qwen3-coder-plus after fallback. Prior error: RATE_LIMIT: alibaba/qwen-turbo (HTTP 403)

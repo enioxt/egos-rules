@@ -1,5 +1,7 @@
 # EGOS Capability Registry
 
+> **📖 Narrativa canônica (no que EGOS é melhor — 6 pilares + status de prova):** [`docs/strategy/CAPABILITY_NARRATIVE.md`](strategy/CAPABILITY_NARRATIVE.md) · **Campanha de prova:** [`NAME_AND_PROVE_PLAN.md`](strategy/NAME_AND_PROVE_PLAN.md) (cobertura de eval hoje **14%** — meta R7).
+>
 > **FORMATOS ATIVOS (2026-05-13):**
 > - **`## §N`** neste arquivo (legacy index, entries §1-§80+) — não remover, migração orgânica
 > - **`CBC-*.md`** em `docs/capabilities/` (formato v1 canonical com frontmatter YAML) — **USE ESTE para novas capabilities**
@@ -10,7 +12,25 @@
 > SSOT: [`docs/governance/CAPABILITY_SCHEMA.md`](governance/CAPABILITY_SCHEMA.md)
 > Entries pré-2026-05-13 são legacy (migração orgânica quando tocadas — DETOX-001-LITE).
 >
+> **SSOTs irmãos:** [`governance/MCP_REGISTRY.md`](governance/MCP_REGISTRY.md) (servidores MCP) · [`governance/INTEGRATION_REGISTRY.md`](governance/INTEGRATION_REGISTRY.md) (vendors externos) · [`governance/SKILLS_REGISTRY.md`](governance/SKILLS_REGISTRY.md) (slash commands + skill bundles)
+>
 > Para novas capabilities: criar `docs/capabilities/CBC-<PROJETO>-<SLUG>-001.md` + adicionar entrada `## §N+1` aqui como ponte.
+
+---
+
+<!-- AUTO-GEN-BEGIN: registry-parity -->
+<!-- Gerado por: bun scripts/gen-registry-parity-counts.ts -->
+<!-- Última atualização: 2026-05-30 -->
+
+## Cobertura do Registry (auto-gerada)
+
+| Tipo | Total no código | No registry | Em grace | Drift líquido |
+|------|-----------------|-------------|----------|---------------|
+| packages | 31 | 30 | 0 | 1 |
+| apps | 12 | 11 | 1 | 0 |
+| agents.ts | 20 | 20 | 0 | 0 |
+
+<!-- AUTO-GEN-END: registry-parity -->
 
 ---
 
@@ -195,7 +215,7 @@ Each capability has:
 | Context Persistence (Fibonacci) | `scripts/context-manager.ts` + `/snapshot` command | A | ALL (9 repos) | — | `context`, `session`, `persistence` |
 | Secret Leak Detection | `.gitleaks.toml` + CRCDM hook regex | A | ALL | — | `security`, `secrets`, `compliance` |
 | Context Tracker | `egos/agents/agents/context-tracker.ts` | A | egos | ALL | `governance`, `context`, `observability` |
-| SSOT Drift Check | `egos-lab/scripts/ssot-drift-check.ts` | A | egos-lab | — | `governance`, `drift`, `api` |
+| SSOT Drift Check | `.claude/commands/ssot-drift-check.md` [stale — impl não localizada 2026-05-30; cmd existe em `.claude/commands/`] | A | egos | — | `governance`, `drift`, `api` |
 | API Registry Check | `egos-lab/scripts/ssot-api-registry-check.ts` | A | egos-lab | — | `governance`, `api`, `drift` |
 | Orchestration Pipeline (7-phase) | `.guarani/orchestration/PIPELINE.md` | A | ALL | — | `governance`, `pipeline`, `frozen` |
 | Frozen Zones | `egos/.windsurfrules` | A | ALL | — | `governance`, `frozen`, `security` |
@@ -618,9 +638,10 @@ L5: Agent Registry + Skills    — Auto-discovery, hot-reload, marketplace patte
 3. OpenRouter `qwen/qwen3-coder:free` — optional 3rd slot
 
 **Hermes gateway (VPS):**
-- Service: `systemctl status hermes-gateway` → port 18800, 142MB RAM
-- Config: `/root/.hermes/config.yaml` (provider: alibaba_dashscope, model: qwen-plus)
-- .env: `/root/.hermes/.env` (DashScope key + OpenRouter key)
+- Service: `systemctl restart hermes-gateway.service hermes-worker.service` (systemd; worker is Type=oneshot)
+- Config: `/root/.hermes/config.yaml` → **`provider: alibaba`** (NOT `alibaba_dashscope` — that id is unknown to hermes' models.dev catalog and silently falls back to OpenRouter), `model: qwen-plus`
+- .env: `/root/.hermes/.env` → hermes' `alibaba` provider reads **`DASHSCOPE_API_KEY`** (register the pooled cred with `hermes auth add alibaba --type api-key --api-key env:DASHSCOPE_API_KEY`). TS scripts read `ALIBABA_DASHSCOPE_API_KEY` — keep both in sync.
+- Health: `bun scripts/doctor.ts` now does an **authenticated** probe (401 = dead key, fails loud) — added after 2026-06-01 silent-fallback incident.
 
 ## 17. DOC-DRIFT SHIELD — 4-LAYER DOCUMENTATION INTEGRITY (2026-04-07)
 
@@ -1208,7 +1229,7 @@ Differentiator: LGPD compliance (Guard Brasil), audit trail, frozen zones, spec-
 - **WhatsApp Onboarding Bot** — chip dedicado + bot qualificação mini-DPIO (5-7 perguntas, score ≥25 gate) + `notify_human` tool + whitelist por tenant. Spec: `docs/strategy/appendix/WHATSAPP_ONBOARDING_GUIDE.md`
 - **Retention Cron** (`scripts/consulting/retention-cron.ts`): LGPD art.16 — deleta dados >6 meses de clientes inativos
 - **PJe Demo** (`scripts/demos/pje-demo.ts`): Demo seed 8 KB pages + 2 queries IA (<10s)
-- **Contrato Template** (`docs/strategy/CONTRATO_SERVICO_TEMPLATE.md`): 9 cláusulas + LGPD + subprocessadores
+- **Contrato Template** (`docs/legal/contratos/CONTRATO_SERVICO_TEMPLATE.md`): 9 cláusulas + LGPD + subprocessadores
 - **DataFlow SVG** (`apps/trust-page/app/components/DataFlowSVG.tsx`): Pipeline visual interativo 5 nós
 - **Kit instalação** (planned): VS Code + Claude Code ($20/mês embutido) + Obsidian + Notion
 - **Ratio patterns absorbed** (planned): Hybrid Search RRF, Citation Verification, Anti-Sycophancy Guard, Token Accounting per-query
@@ -1337,7 +1358,7 @@ Periodic health-check that runs across all VPS services and reports to `egos_age
 |-----------|------|-------------|
 | Health check script | `scripts/health-check.ts` | Checks Guard Brasil API, HQ, Hermes, Neo4j |
 | Hermes free models fix | `packages/shared/src/llm-providers/hermes.ts` | Updated free model list (Qwen3 free tier) |
-| Snapshot KB | `scripts/snapshot-kb.ts` | KB state snapshot on each health run |
+| Snapshot KB | `scripts/snapshot-kb.ts` [stale — file does not exist 2026-05-30] | KB state snapshot on each health run |
 
 **Adopted by:** egos (origin), VPS cron | **Tags:** `infra`, `health`, `monitoring`, `hermes`
 
@@ -2171,10 +2192,10 @@ Mapeia 10 tipos de regras EGOS para Pine Script v5:
 ## §69 — Central EGOS Template — Marketplace Storefront + Admin (2026-05-08/09)
 
 - **Status:** unverified
-- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md (apps/central-egos-template/ não existe mais; app pode ter sido arquivado ou movido)
+- **Evidence:** `central-egos/template/` EXISTS on disk (verified 2026-05-30); path `apps/central-egos-template/` is STALE — correct path is `central-egos/template/`. Previous audit note was incorrect.
 - **Owner:** unassigned
 
-**Repo:** `apps/central-egos-template/` (monorepo egos)
+**Repo:** `central-egos/template/` (monorepo egos)
 **Live:** `gpecas.egos.ia.br` — G Peças e Eletrodomésticos, Patos de Minas/MG
 **Commits:** 14 commits (2026-05-08 → 2026-05-09) | SHA range: `45ab3a6`→`31ad4a9`
 
@@ -2284,10 +2305,10 @@ handle /api/vps/* { reverse_proxy 127.0.0.1:3103 }
 ## §71 — Central EGOS WhatsApp Incoming Webhook (2026-05-11)
 
 - **Status:** phantom
-- **Evidence:** none — see docs/audits/capability-unverified-2026-05-21.md (apps/central-egos-template/ não existe; app arquivado ou movido)
+- **Evidence:** `central-egos/template/src/app/api/whatsapp/incoming/route.ts` — path `apps/central-egos-template/` is STALE; correct path is `central-egos/template/` (verified 2026-05-30).
 - **Owner:** unassigned
 
-**SSOT:** `apps/central-egos-template/src/app/api/whatsapp/incoming/route.ts`
+**SSOT:** `central-egos/template/src/app/api/whatsapp/incoming/route.ts`
 **Adicionado:** 2026-05-11 | **Commit:** bd9046d | **Quality:** B
 
 Webhook receiver para Evolution API (`messages.upsert`) com persistência em Supabase.
@@ -2602,17 +2623,17 @@ vps-agents/
 
 ---
 
-## §81 — EGOS MCP Layer — 9 Servers LIVE no VPS + 144 Behavioral Evals (2026-05-14)
+## §81 — EGOS MCP Layer — 9 Servers LIVE no VPS + 93 Behavioral Evals (2026-05-14)
 
 - **Status:** verified
-- **Evidence:** 144 golden cases in tests/eval/capabilities/CBC-EGOS-MCP-*.eval.ts; 9 CBCs canonical; CI in .github/workflows/capability-eval.yml; curl https://mcp.egos.ia.br/governance/healthz → {"ok":true}
+- **Evidence:** 93 golden cases in tests/eval/capabilities/CBC-EGOS-MCP-*.eval.ts; 9 CBCs canonical; CI in .github/workflows/capability-eval.yml; curl https://mcp.egos.ia.br/governance/healthz → {"ok":true}
 - **Owner:** Enio
 
 > **Status:** ✅ ATIVO em produção — VPS 24/7 + local stdio
 > **Deploy:** 2026-05-14 | **Commits:** `df1c7ed7`, `e2e730f7`, `0c705063`, `76bb06fa`
 > **Endpoint:** `https://mcp.egos.ia.br` (TLS ativo, Caddy auto-cert)
 
-Camada completa de transporte de capabilities via Model Context Protocol. 9 servers cobrindo governance, memory, knowledge, security, eval, ops, skills, browser automation e observability. 144 golden cases (sprint 1-4 completos), CI workflow, 9 CBCs canonical.
+Camada completa de transporte de capabilities via Model Context Protocol. 9 servers cobrindo governance, memory, knowledge, security, eval, ops, skills, browser automation e observability. 93 golden cases (count verified 2026-05-28: browser=15, eval=18, governance=3, knowledge=9, memory=3, observability=3, ops=18, security=9, skills=15), CI workflow, 9 CBCs canonical.
 
 ### Servidores (portas 7001-7009)
 
@@ -2633,7 +2654,7 @@ Camada completa de transporte de capabilities via Model Context Protocol. 9 serv
 - `scripts/mcp-ecosystem.config.js` — PM2 config (MCP_HOST=0.0.0.0)
 - `scripts/deploy-mcp.sh` — deploy com backup + smoke test + rollback
 - `/opt/egos-watchdog-mcp.sh` — watchdog cron */5 min no VPS
-- `tests/eval/capabilities/CBC-EGOS-MCP-*.eval.ts` — 144 golden cases
+- `tests/eval/capabilities/CBC-EGOS-MCP-*.eval.ts` — 93 golden cases
 - `.github/workflows/capability-eval.yml` — CI enforcement
 - `.mcp.json` — 9 servers configurados (stdio local)
 
@@ -2919,3 +2940,429 @@ GET /v1/health → 207 (gateway+supabase ok)
 - TENANT_WHITELIST dynamic → MCP-AGNOSTIC-001 (deferred)
 
 **Tags:** `api-mestra`, `hono`, `unified-control-plane`, `multi-tenant`, `production`
+
+## §89 — NotebookLM MCP Integration — Artifact Generation via Claude Code (2026-05-27)
+
+**Status:** LIVE — `notebooklm-mcp-cli v0.6.12` instalado e autenticado  
+**Conta:** enioxt@gmail.com | **Profile:** default | **Cookies:** 43 (headless auth disponível)
+
+### Instalação
+```bash
+uv tool install notebooklm-mcp-cli  # v0.6.12
+nlm login                            # uma vez — salva Chrome profile
+nlm setup add claude-code            # adiciona ao ~/.claude.json como 'notebooklm-mcp'
+```
+
+### Notebooks registrados (aliases)
+| Alias | Notebook | Sources |
+|---|---|---|
+| `gow` | GoW AI: Building an Integrated Organizational Intelligence Layer | 1 |
+| `egos-main` | EGOS: Building Digital Trust and Ethical AI | 137 |
+| `egos-kb` | EGOS Knowledge Base: Implementation and Deployment Framework | 6 |
+| `egos-chatbot` | EGOS Intelligence: AI Chatbots, Compliance, and Business Automation | 6 |
+| `egos-ner` | EGOS Document Intelligence: Automated NER and Data Extraction | 3 |
+| `eagle-eye` | Eagle Eye: AI-Driven Government Procurement Monitor | 4 |
+
+### Capacidades disponíveis via `nlm`
+| Comando | Output | Exemplo |
+|---|---|---|
+| `nlm notebook query <alias> "pergunta"` | JSON com resposta + citações | Smoke testado ✅ |
+| `nlm audio create <alias> --language pt-BR` | MP3 podcast 2-vozes | Gerado: `HERMES_GOW_audio_overview.mp3` |
+| `nlm report create <alias> --format "Briefing Doc"` | Markdown estruturado | Gerado: `HERMES_GOW_briefing.md` |
+| `nlm download slide-deck <alias> --format pptx` | PPTX 13-15MB | Gerado: `HERMES_GOW_slides_v1/v2.pptx` |
+| `nlm source add <alias> --file <path> --wait` | Ingest local file | Testado HERMES_GOW_notebooklm.md ✅ |
+| `nlm quiz create <alias>` | Quiz interativo | Disponível |
+
+### Artefatos gerados (smoke test 2026-05-27)
+```
+docs/presentations/HERMES_GOW_slides_v1.pptx  (15MB) ✅
+docs/presentations/HERMES_GOW_slides_v2.pptx  (13MB) ✅
+docs/presentations/HERMES_GOW_briefing.md      (6.7KB) ✅
+docs/presentations/HERMES_GOW_audio_overview.mp3  (em progresso → NotebookLM web)
+```
+
+### Limites e fronteiras
+- **FREE tier:** 50 queries/dia por conta Google
+- **Não-oficial:** browser automation — pode quebrar se Google muda UI. Patch em 24-72h pelo mantenedor.
+- **INTELINK: PROIBIDO** — dados policiais, LGPD Art. 20 (CPP). NotebookLM = Google Cloud.
+- **Central EGOS / GoW / demos:** ✅ OK para uso
+
+### Fronteira de uso
+- **egos-knowledge MCP** = storage local + RAG (query docs internos via Supabase)
+- **NotebookLM** = output layer (audio, slides, briefing, quiz) + síntese Gemini 2.5 fundamentada
+
+**Tags:** `notebooklm`, `mcp`, `artifact-generation`, `slides`, `audio`, `briefing`, `gemini`
+
+## §90 — @egos/agent-runtime — Agent Execution Engine (2026-05-27 cataloged)
+
+> **Status:** verified
+> **Path:** `packages/agent-runtime/`
+> **Owner:** Enio
+> **Evidence:** `packages/agent-runtime/README.md` + `packages/agent-runtime/package.json` (v0.1.0) + `packages/agent-runtime/src/`
+> **VERIFIED_AT:** 2026-05-27 (REG-PARITY-BACKFILL-001 session)
+> **Method:** README.md content review + package.json description + FROZEN ZONE cross-ref em `AGENTS.md`
+
+### What
+Engine de execução de agents EGOS. Gerencia ciclo de vida, dispatch de jobs, middleware chain (auth → rate-limit → validation → execution) e persistência de estado via savers (filesystem ou Supabase). Vercel AI SDK + LangGraph-style checkpointing + Mastra resourceId/threadId isolation + VoltAgent dynamic config.
+
+### Where
+- Code: `packages/agent-runtime/src/`
+- Tests: not yet (FROZEN ZONE — runner.ts e event-bus.ts congelados)
+- Docs: `packages/agent-runtime/README.md`
+
+### Status notes
+**FROZEN ZONE** per `AGENTS.md` — `agents/runtime/runner.ts` e `agents/runtime/event-bus.ts` não podem ser modificados sem decisão arquitetural. Versão 0.1.0; LOC ~725. API factory `createAgent({ id, handler, middleware, saver })`.
+
+**Tags:** `agents`, `runtime`, `frozen-zone`, `vercel-ai-sdk`, `langgraph`
+
+## §91 — @egos/autores-schema — Zod Schema para AUTORES (2026-05-27 cataloged)
+
+> **Status:** unverified
+> **Path:** `packages/autores-schema/`
+> **Owner:** Enio
+> **Evidence:** `packages/autores-schema/package.json` (name `@egos/autores-schema`, v1.0.0) + `packages/autores-schema/src/`
+> **VERIFIED_AT:** 2026-05-27 (REG-PARITY-BACKFILL-001 session)
+> **Method:** package.json + src/ listing (README ausente)
+
+### What
+Pacote de schema Zod para a feature AUTORES (compartilhado entre apps/services que produzem/consomem dados de autores). v1.0.0 declarada — sem README ou descrição em package.json, conteúdo concreto não verificado nesta sessão.
+
+### Where
+- Code: `packages/autores-schema/src/`
+- Tests: not yet
+- Docs: ausente — README pendente (PEND-AUTORES-SCHEMA-README)
+
+### Status notes
+Status `unverified` porque sem README/description nem golden case. Próximo: criar README mínimo descrevendo schemas exportados + 1 unit test.
+
+**Tags:** `schema`, `zod`, `autores`, `needs-readme`
+
+## §92 — @egosbr/guard-brasil-langchain — LangChain Tool wrapper (2026-05-27 cataloged)
+
+> **Status:** partial
+> **Path:** `packages/guard-brasil-langchain/`
+> **Owner:** Enio
+> **Evidence:** `packages/guard-brasil-langchain/README.md` (Status 🟡 Parcial) + `packages/guard-brasil-langchain/package.json` (v0.1.0)
+> **VERIFIED_AT:** 2026-05-27 (REG-PARITY-BACKFILL-001 session)
+> **Method:** README content review + package.json description
+
+### What
+Wrapper do detector Guard Brasil PII (Brazilian PII masking — CPF/CNPJ/RG/CEP/telefone) como `Tool` LangChain. Permite plugar mascaramento LGPD como step em `AgentExecutor` ou chains LangChain. Endpoint configurável (default `https://guard.egos.ia.br`).
+
+### Where
+- Code: `packages/guard-brasil-langchain/src/`
+- Tests: not yet
+- Docs: `packages/guard-brasil-langchain/README.md`
+
+### Status notes
+README declara 🟡 Parcial — wrapper existe, falta validação de smoke contra endpoint real + golden cases. Relacionado a §35 (Guard Brasil) e CAP-INT-001.
+
+**Tags:** `lgpd`, `pii`, `langchain`, `guard-brasil`, `partial`
+
+## §93 — @egos/hermes-schema — Zod Schema para eventos Hermes (2026-05-27 cataloged)
+
+> **Status:** unverified
+> **Path:** `packages/hermes-schema/`
+> **Owner:** Enio
+> **Evidence:** `packages/hermes-schema/package.json` (name `@egos/hermes-schema`, v1.0.0) + `packages/hermes-schema/src/`
+> **VERIFIED_AT:** 2026-05-27 (REG-PARITY-BACKFILL-001 session)
+> **Method:** package.json + src/ listing (README ausente)
+
+### What
+Pacote de schemas Zod para eventos e payloads do Hermes (audit log, skill triggers, event-driven jobs). Usado por `hermes-egos/` fork e potenciais consumidores via `bun add @egos/hermes-schema`. v1.0.0 declarada — conteúdo concreto não verificado nesta sessão.
+
+### Where
+- Code: `packages/hermes-schema/src/`
+- Tests: not yet
+- Docs: ausente — README pendente (PEND-HERMES-SCHEMA-README)
+
+### Status notes
+Status `unverified` porque sem README/description. Relacionado a §72/§73 (Hermes Native Workspace + Multi-Tenant) e decisão `docs/governance/HERMES_DECISION.md`. Próximo: documentar schemas exportados e provar consumo em hermes-egos.
+
+**Tags:** `schema`, `zod`, `hermes`, `events`, `needs-readme`
+
+## §94 — @egos/llm-fallback — Fallback Chain Orchestrator (2026-05-27 cataloged)
+
+> **Status:** unverified
+> **Path:** `packages/llm-fallback/`
+> **Owner:** Enio
+> **Evidence:** `packages/llm-fallback/package.json` description ("Fallback chain orchestrator — free models primeiro, paid backup", v1.0.0) + `packages/llm-fallback/src/`
+> **VERIFIED_AT:** 2026-05-27 (REG-PARITY-BACKFILL-001 session)
+> **Method:** package.json description (README ausente)
+
+### What
+Orquestrador de cadeia de fallback para LLM calls — tenta modelos free (OpenRouter free tier, Gemini Flash gratuito) primeiro, escala para modelos pagos (Claude/OpenAI) apenas se free falhar ou ficar abaixo de threshold de qualidade. Tema relacionado: `llm-router` (T3 lazy `llm-routing.md`).
+
+### Where
+- Code: `packages/llm-fallback/src/`
+- Tests: not yet
+- Docs: ausente — README pendente (PEND-LLM-FALLBACK-README)
+
+### Status notes
+Status `unverified` porque sem README, sem golden cases e sem prova de uso em runtime real. Próximo: documentar API exports + golden case com 1 modelo free + 1 paid backup.
+
+**Tags:** `llm`, `fallback`, `cost-control`, `routing`, `needs-readme`
+
+## §95 — auth-server — Centralized Auth Server (2026-05-27 cataloged)
+
+> **Status:** verified
+> **Path:** `apps/auth-server/`
+> **Owner:** Enio
+> **Evidence:** `apps/auth-server/README.md` + `apps/auth-server/package.json` (`@egos/auth-server` v0.1.0) + `apps/auth-server/Dockerfile`
+> **VERIFIED_AT:** 2026-05-27 (REG-PARITY-BACKFILL-001 session)
+> **Method:** README + package.json + Dockerfile + src/ listing
+
+### What
+Servidor de autenticação centralizado multi-produto EGOS. Suporta password, OTP e (futuro) passkeys + OAuth2. Login pages dedicadas: `/login` (genérico), `/login-852` (852 Police Bot), `/login-intelink` (Intelink). Cookies `httpOnly` + JWT tokens isolados por produto.
+
+### Where
+- Code: `apps/auth-server/src/`
+- Tests: not yet
+- Docs: `apps/auth-server/README.md`
+
+### Status notes
+Stack Bun + Hono, Dockerizado (`docker-compose.yml` presente). README declara "✅ Ativo" mas faltam golden cases e smoke automatizado para subir status para `TESTED`/`DEPLOYED`.
+
+**Tags:** `auth`, `multi-produto`, `bun`, `hono`, `jwt`, `passkeys`
+
+## §96 — catalogo-ia — Olist ↔ Mercado Livre Catalog Automation (2026-05-27 cataloged)
+
+> **Status:** partial
+> **Path:** `apps/catalogo-ia/`
+> **Owner:** Enio
+> **Evidence:** `apps/catalogo-ia/README.md` (Versão 0.1.0, Status "Em Desenvolvimento") + `apps/catalogo-ia/docs/PROPOSTA_COMERCIAL.md`
+> **VERIFIED_AT:** 2026-05-27 (REG-PARITY-BACKFILL-001 session)
+> **Method:** README + docs/ listing
+
+### What
+Sistema de automação de catálogo que conecta **Olist ERP** ao **Mercado Livre** com enriquecimento por IA. Pipeline: estoque bruto (45 min/produto) → IA enriquece → revisão humana 2-3 min → publicado. Target: lojas de peças técnicas com 100+ SKUs em Olist (R$ 279-349/mês).
+
+### Where
+- Code: `apps/catalogo-ia/` (atualmente só docs + assets, sem `src/` ativo)
+- Tests: not yet
+- Docs: `apps/catalogo-ia/README.md` + `apps/catalogo-ia/docs/PROPOSTA_COMERCIAL.md`
+
+### Status notes
+Status `partial` — projeto em fase de proposta comercial, sem código de produção ainda. README + 3 docs auxiliares (PROMPTS_VIDEO, PROMPTS_IMAGENS_UI, PROMPT_DIAGRAMA_FLUXO) descrevem stack alvo: Bun + Hono + Supabase + RLS.
+
+**Tags:** `mercado-livre`, `olist`, `catalog`, `automation`, `proposal-stage`
+
+## §97 — egos-council — Council Multi-LLM Web UI (2026-05-27 cataloged)
+
+> **Status:** partial
+> **Path:** `apps/egos-council/`
+> **Owner:** Enio
+> **Evidence:** `apps/egos-council/README.md` (Status 🟡 Parcial) + `apps/egos-council/package.json` (v0.1.0) + `apps/egos-council/Dockerfile`
+> **VERIFIED_AT:** 2026-05-27 (REG-PARITY-BACKFILL-001 session)
+> **Method:** README + package.json + app/ Next.js listing
+
+### What
+Interface web (Next.js) para o Council multi-LLM — orquestração de múltiplos modelos (Claude, GPT, Gemini, Grok, Llama) para revisão de decisões arquiteturais irreversíveis. Hoje uso primário via CLI (`scripts/council.ts`); web UI ainda parcial.
+
+### Where
+- Code: `apps/egos-council/app/`
+- Tests: not yet
+- Docs: `apps/egos-council/README.md`
+
+### Status notes
+README marca 🟡 Parcial — recomendação é usar `scripts/council.ts` (5 modelos) ou skill `/banda`. Web UI existe como scaffold Next.js mas sem fluxo completo. Relacionado a `docs/governance/QUORUM_PROTOCOL.md`.
+
+**Tags:** `multi-llm`, `council`, `nextjs`, `decisions`, `partial`
+
+## §98 — egos-landing — Site Público egos.ia.br (2026-05-27 cataloged)
+
+> **Status:** verified
+> **Path:** `apps/egos-landing/`
+> **Owner:** Enio
+> **Evidence:** `apps/egos-landing/README.md` (Status ✅ Produção, URL egos.ia.br) + páginas HTML em `apps/egos-landing/src/`
+> **VERIFIED_AT:** 2026-05-27 (REG-PARITY-BACKFILL-001 session)
+> **Method:** README + listing das páginas (`01-homepage.html`..`05-sobre-o-lab.html`)
+
+### What
+Landing pages públicas do EGOS Lab — HTML puro + CSS inline + Google Fonts, sem build step. Páginas: homepage (`/`), privacidade (LGPD), termos, parcerias (programa Bernardo), sobre-o-lab. Deploy via Caddy file_server no VPS (`/opt/egos-landing`).
+
+### Where
+- Code: `apps/egos-landing/src/` (HTML files)
+- Tests: not yet (smoke via curl ao domínio)
+- Docs: `apps/egos-landing/README.md`
+
+### Status notes
+Site em produção há tempo (egos.ia.br). Estática — deploy instantâneo via rsync. Para subir para `TESTED`/`DEPLOYED` formal: adicionar smoke `curl egos.ia.br/ -o /dev/null -w "%{http_code}"` no CI.
+
+**Tags:** `landing`, `html`, `static`, `caddy`, `produção`
+
+## §99 — gem-hunter-landing — Landing gem.egos.ia.br (2026-05-27 cataloged)
+
+> **Status:** verified
+> **Path:** `apps/gem-hunter-landing/`
+> **Owner:** Enio
+> **Evidence:** `apps/gem-hunter-landing/README.md` (Status ✅ Ativo, URL gem.egos.ia.br) + `apps/gem-hunter-landing/package.json` (`@egos/gem-hunter-landing` v0.1.0) + `apps/gem-hunter-landing/Dockerfile`
+> **VERIFIED_AT:** 2026-05-27 (REG-PARITY-BACKFILL-001 session)
+> **Method:** README + package.json + Dockerfile
+
+### What
+Landing page do Gem Hunter — sistema de descoberta de ferramentas/repos relevantes para o EGOS. HTML estático servido por Bun. Deploy via Caddy. Complementa `packages/gem-hunter/` (engine) + `apps/egos-gateway/src/channels/gem-hunter.ts` (API) + `scripts/gem-hunter-digest.ts` (cron diário).
+
+### Where
+- Code: `apps/gem-hunter-landing/src/`
+- Tests: not yet
+- Docs: `apps/gem-hunter-landing/README.md`
+
+### Status notes
+README marca ✅ Ativo. Status `verified` em vez de `DEPLOYED` porque falta smoke curl automatizado contra gem.egos.ia.br no CI.
+
+**Tags:** `landing`, `gem-hunter`, `bun`, `caddy`, `discovery`
+
+## §100 — vendas-portal — Portal do Vendedor Externo (2026-05-27 cataloged)
+
+> **Status:** unverified
+> **Path:** `apps/vendas-portal/`
+> **Owner:** Enio
+> **Evidence:** `apps/vendas-portal/package.json` (`@egos/vendas-portal` v1.0.0, description "Portal do vendedor externo EGOS — vendas.egos.ia.br") + `apps/vendas-portal/src/` Next.js
+> **VERIFIED_AT:** 2026-05-27 (REG-PARITY-BACKFILL-001 session)
+> **Method:** package.json description + Next.js structure (README ausente)
+
+### What
+Portal externo para vendedores (parceiros externos como Bernardo) — Next.js. Permite parceiros consultarem estoque/leads e registrarem oportunidades para tenants Central EGOS. Alvo: `vendas.egos.ia.br`.
+
+### Where
+- Code: `apps/vendas-portal/src/`
+- Tests: not yet
+- Docs: ausente — README pendente (PEND-VENDAS-PORTAL-README)
+
+### Status notes
+Status `unverified` porque sem README e sem deploy validado em vendas.egos.ia.br. v1.0.0 declarada parece prematura — recomenda-se downgrade para 0.1.0 até smoke deploy passar.
+
+**Tags:** `vendas`, `parceiros`, `nextjs`, `needs-readme`
+
+---
+
+## §101 — EGOS Slash-Skill Bundles (.claude/skills/) (2026-05-30)
+
+> **Status:** active
+> **Path:** `.claude/skills/`
+> **Owner:** Enio
+> **Evidence:** `ls .claude/skills/` — 13 SKILL.md bundles verified 2026-05-30 (branch claude/egos-mobile-startup-9Z1Ab)
+> **VERIFIED_AT:** 2026-05-30 (CAPABILITY_COVERAGE audit)
+
+Reusable Claude Code skill bundles. Each bundle is a directory with a `SKILL.md` defining triggers, protocol, and usage examples. Invoked by the Claude Code agent when pattern-matched, or via explicit `/skill-name`.
+
+| Skill Bundle | Path | Trigger pattern | Status |
+|-------------|------|----------------|--------|
+| `/advocacia-onboard` | `.claude/skills/advocacia-onboard/SKILL.md` | "advogado", "OAB", "escritório" | ✅ active |
+| `/banda` | `.claude/skills/banda/SKILL.md` | "pensa bem", "critica", `/banda` | ✅ active |
+| `/consulting-onboarding` | `.claude/skills/consulting-onboarding/SKILL.md` | WhatsApp consulting onboard | ✅ active |
+| `/egos-governance` | `.claude/skills/egos-governance/SKILL.md` | governance validation, drift check | ✅ active |
+| `/guard-brasil` | `.claude/skills/guard-brasil/SKILL.md` | PII, LGPD, Guard Brasil invocations | ✅ active |
+| `/kbs-discovery` | `.claude/skills/kbs-discovery/SKILL.md` | KB discovery, data inventory | ✅ active |
+| `/opus` | `.claude/skills/opus/SKILL.md` | `/opus`, `/strat` activation | ✅ active |
+| `/process-inbox` | `.claude/skills/process-inbox/SKILL.md` | HARVEST.md, 00-Inbox processing | ✅ active |
+| `/site-reliability` | `.claude/skills/site-reliability/SKILL.md` | 502, VPS runbook, deploy | ✅ active |
+| `/timeline-article` | `.claude/skills/timeline-article/SKILL.md` | bilingual article, DA-001..014 pipeline | ✅ active |
+| `/tutor` | `.claude/skills/tutor/SKILL.md` | "me ensina", "explica", "não entendi" | ✅ active |
+| `/viral-positioning` | `.claude/skills/viral-positioning/SKILL.md` | article launch, viral copy | ✅ active |
+| `/weekly-connections` | `.claude/skills/weekly-connections/SKILL.md` | weekly knowledge connections, vault | ✅ active |
+
+**See also:** `docs/governance/SKILLS_REGISTRY.md` — complete triggers + auto-match rules.
+
+**Tags:** `skills`, `dx`, `claude-code`, `automation`, `slash-commands`
+
+---
+
+## §102 — New Slash Commands — Delta 2026-05-21→2026-05-30 (2026-05-30)
+
+> **Status:** active
+> **Path:** `.claude/commands/`
+> **Owner:** Enio
+> **Evidence:** `ls .claude/commands/*.md` — 23 total; SKILLS_REGISTRY listed 19 at 2026-05-21 inventory
+> **VERIFIED_AT:** 2026-05-30 (CAPABILITY_COVERAGE audit — commits c106e88e, d4c29f0e, f266c30e, 7d6c60ae)
+
+Four commands added to `.claude/commands/` after the SKILLS_REGISTRY inventory date (2026-05-21), not yet registered as dedicated §N entries.
+
+| Command | File | Purpose | Added (commit) |
+|---------|------|---------|---------------|
+| `/banda` | `.claude/commands/banda.md` | Cognitive Band review — 4-role deliberation before decisions | c106e88e |
+| `/keyword-temas` | `.claude/commands/keyword-temas.md` | SEO keyword discovery + GSC-CSV analysis | d4c29f0e |
+| `/novodemo` | `.claude/commands/novodemo.md` | New demo setup workflow | c106e88e |
+| `/premortem` | `.claude/commands/premortem.md` | Pre-mortem analysis before launches | c106e88e |
+
+**See also:** `docs/governance/PREMORTEM_BANDA_INTEGRATION.md` (banda + premortem integration protocol); `docs/governance/SKILLS_REGISTRY.md` §commands table.
+
+**Tags:** `dx`, `governance`, `seo`, `slash-commands`, `decision-quality`
+
+---
+
+## §103 — agents/skills/*.ts — Runtime Skill Implementations (2026-05-30)
+
+> **Status:** registered (known drift — auto-gen parity block shows 20 unregistered)
+> **Path:** `agents/skills/`
+> **Owner:** Enio
+> **Evidence:** `ls agents/skills/*.ts` — 20 files verified 2026-05-30
+> **VERIFIED_AT:** 2026-05-30 (CAPABILITY_COVERAGE audit)
+
+20 TypeScript runtime skill implementations in `agents/skills/`. Listed here as first-class entries to close auto-gen drift. Per-item capability cards (`CBC-*.md`) are incremental work (D1-REMAINING).
+
+| Skill | File | 1-line purpose |
+|-------|------|---------------|
+| AGI Meter | `agents/skills/agi-meter.ts` | Cognitive capability scoring/benchmarking |
+| Citation Verifier | `agents/skills/citation-verifier.ts` | Source citation validation + anti-hallucination |
+| Diarization Agent | `agents/skills/diarization-agent.ts` | Audio speaker diarization pipeline |
+| Entity Extractor | `agents/skills/entity-extractor.ts` | NER entity extraction (PT-BR + EN) |
+| GBrain ATRiAN Wrapper | `agents/skills/gbrain-atrian-wrapper.ts` | ATRiAN ethical gate wrapper for GBrain |
+| Global Knowledge | `agents/skills/global-knowledge.ts` | Cross-session global knowledge retrieval |
+| Karpathy Guidelines | `agents/skills/karpathy-guidelines.ts` | Karpathy behavioral rule enforcement |
+| Latent Deterministic | `agents/skills/latent-deterministic.ts` | Deterministic latent-space reasoning |
+| Memory Ingest | `agents/skills/memory-ingest.ts` | Ingests artifacts into agent memory store |
+| Observability Agent | `agents/skills/observability-agent.ts` | Runtime observability + tracing |
+| Pipelines Package | `agents/skills/pipelines-package.ts` | Reusable pipeline composition primitives |
+| Preflight Critique | `agents/skills/preflight-critique.ts` | Pre-execution adversarial critique pass |
+| Relationship Mapper | `agents/skills/relationship-mapper.ts` | Entity relationship graph construction |
+| Resolver v3 | `agents/skills/resolver-v3.ts` | Multi-step conflict/ambiguity resolver |
+| Self-Healing RL | `agents/skills/self-healing-rl.ts` | RL-based self-healing loop |
+| SMF Bridge | `agents/skills/smf-bridge.ts` | State-machine framework bridge |
+| Subconscious Agent | `agents/skills/subconscious-agent.ts` | Background inference + passive processing |
+| Trigger Evals | `agents/skills/trigger-evals.ts` | Behavioral eval trigger runner |
+| Vault Integration | `agents/skills/vault-integration.ts` | Obsidian/vault read-write integration |
+| Web Research | `agents/skills/web-research.ts` | Agentic web research + synthesis |
+
+**Note:** per-item CBC cards and full auto-gen parity update are D1-REMAINING incremental work. Run `bun scripts/gen-registry-parity-counts.ts --write` after all §N additions to refresh auto-gen block.
+
+**Tags:** `agents`, `skills`, `runtime`, `ts`, `dx`
+
+## §104 — Agent Scope Gate (2026-06-01)
+
+- **Status:** TESTED
+- **Evidence:** `scripts/security/agent-scope-check.ts`
+- **Owner:** claude+sonnet
+
+Pre-commit security gate that validates staged files against declared agent scope boundaries. Blocks commits when files outside the declared scope are staged without explicit override. Integrated into `.husky/pre-commit` §0.x. Reuse: `bun scripts/security/agent-scope-check.ts` or add `AGENT_SCOPE=<scope>` env var before committing.
+
+---
+
+## §105 — Open Access Literature Fetcher (2026-06-01)
+
+- **Status:** TESTED
+- **Evidence:** `scripts/open-access-fetch.ts`
+- **Owner:** claude+sonnet
+
+Legal open-access PDF resolver using Unpaywall → OpenAlex → arXiv → Crossref chain. Replaces Sci-Hub as primary source (R-OA-001). Integrated into `gem-hunter.ts` `downloadPaperPdf()` as step 1.5. CLI: `bun scripts/open-access-fetch.ts <doi|arxiv-id>`. Governance: `docs/governance/OPEN_ACCESS_SOURCING_RULE.md`.
+
+---
+
+## §106 — Literature API + MCP Server (2026-06-01)
+
+- **Status:** TESTED
+- **Evidence:** `apps/egos-hq/app/api/hq/literature/route.ts` + `packages/mcp-literature/src/index.ts`
+- **Owner:** claude+sonnet
+
+REST endpoint (`GET/POST /api/hq/literature`) and MCP server (`port 7010, FREE auth`) exposing the §105 OA pipeline. REST supports single resolve, PDF download redirect, and batch of 20. MCP tools: `resolve_paper`, `batch_resolve`, `search_papers`. Reuse: call the REST API from any agent or connect via MCP Streamable HTTP.
+
+---
+
+## §107 — EGOS Coordination Monitor (24/7 Watcher) (2026-06-01)
+
+- **Status:** TESTED
+- **Evidence:** `scripts/coordination-watcher.ts` + `apps/egos-hq/app/api/hq/coordination/route.ts`
+- **Owner:** claude+sonnet
+
+Background daemon that watches git status every 15s, invokes LLM summary on changes, writes structured blackboard to `~/.egos/coordination-blackboard.{md,json}` and `/tmp/egos-live-blackboard.{md,json}`. Mandatory: started on `/start`, `/end`, pre-commit, and VPS via PM2. Telemetry in `~/.egos/coordination-history.jsonl`. Schema: `docs/governance/COORDINATION_MONITOR_SPEC.md §2`.

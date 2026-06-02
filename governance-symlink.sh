@@ -39,6 +39,12 @@ CHANGES=0
 for repo in "${REPOS[@]}"; do
   repo_name=$(basename "$repo")
   [ ! -d "$repo" ] && continue
+  # INC-SYMLINK-001 GUARD (2026-05-31): NEVER symlink-convert the kernel's own .guarani —
+  # it is the REAL canonical source. Only leaf repos consume governance via symlink.
+  if [ "$(readlink -f "$repo" 2>/dev/null)" = "$(readlink -f "$HOME/egos" 2>/dev/null)" ]; then
+    echo -e "\n${YELLOW}⏭️  $repo_name — KERNEL (real source), skipping .guarani symlink${NC}"
+    continue
+  fi
   echo -e "\n${GREEN}📂 $repo_name${NC}"
 
   # ── .windsurfrules ──

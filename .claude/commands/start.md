@@ -23,6 +23,7 @@ Você está executando `/start`. Sua obrigação:
 7. **§4.8 OBRIGATÓRIO:** Layer 4.8 DEVE ser executada com Bash tool — rodar `scripts/codex-usage.ts --json` e reportar quota real. Citar sem rodar = checkpoint inválido (Bug v6.9).
 8. **MODELO PADRÃO SONNET 4.6:** Se você é Opus 4.7, avalie cada task via [MODEL_DELEGATION_POLICY](../../docs/governance/MODEL_DELEGATION_POLICY.md). Opus orquestra, Sonnet executa, Haiku faz mecânico. Reportar modelo atual + delegação no checkpoint.
 9. **SWARM COMMIT POLICY:** Quando 1+ `Agent` em background, **NÃO fazer git commit incremental** — race condition. Commit consolidado final. SSOT: [SWARM_COMMIT_POLICY](../../docs/governance/SWARM_COMMIT_POLICY.md).
+11. **RESOLVER DOCTRINE [T1]:** Você é EGOS Prime, a última camada — se algo para na sua porta, você resolve (não recua, não culpa subagente: erro de subagente = falha de orquestração sua). Todo achado da sessão passa por **triagem matemática** `R = L/C` antes de parar o trabalho atual: RESOLVE NOW (barato+alta alavancagem) ou TASK com prioridade derivada de L. Red Zone nunca auto-resolve. SSOT: [RESOLVER_DOCTRINE](../../docs/governance/RESOLVER_DOCTRINE.md).
 10. **MODE DETECTION:** Prompt com (`pesquisa`, `governança`, `leitura`, `revisão`, `auditoria`, `entender`, `só ler`) → `MODE=research` (executa só Layers `0.0+0+0.5+4.8+1+2+3+4+4.5+7`). Caso contrário → `MODE=write` (todas as layers). Declarar MODE como **primeiro campo** do checkpoint. Corte silencioso sem MODE = checkpoint inválido.
 
 ---
@@ -283,6 +284,32 @@ DONE=$(grep -c "^- \[x\]" TASKS.md 2>/dev/null || echo 0)
 PEND=$(grep -c "^- \[ \]" TASKS.md 2>/dev/null || echo 0)
 P0=$(grep -c "^- \[ \].*\[P0\]" TASKS.md 2>/dev/null || echo 0)
 echo "TASKS: ${DONE} done, ${PEND} pending, ${P0} P0 | $(wc -l < TASKS.md 2>/dev/null)L"
+
+# DRIFT-A1 (2026-05-27): cross-check pending tasks vs git history
+# Detects phantom-pending (task [ ] but already done in commit) → bloqueia sessão se >3
+# Patch v2 (Codex review): distingue script-failure (suspeito) de drift=0 (limpo)
+if [ -f "$EGOS_ROOT/scripts/task-reconciliation.ts" ] && command -v bun >/dev/null 2>&1; then
+  DRIFT=$(env -u EGOS_ROOT bun scripts/task-reconciliation.ts --summary 2>&1)
+  DRIFT_EXIT=$?
+  echo "=== Task Drift Check ==="
+  if [ $DRIFT_EXIT -ne 0 ]; then
+    echo "🔴 P0 BLOCKER: task-reconciliation.ts FALHOU (exit=$DRIFT_EXIT) — drift desconhecido (assumir suspeito)"
+    echo "   Output: $(echo "$DRIFT" | tail -3)"
+    echo "   Fix: bun scripts/task-reconciliation.ts (debug full report)"
+  else
+    SUMMARY_LINE=$(echo "$DRIFT" | tail -1)
+    echo "$SUMMARY_LINE"
+    DRIFT_COUNT=$(echo "$SUMMARY_LINE" | grep -oP '\b\d+(?= drift)' | head -1)
+    if [ -z "$DRIFT_COUNT" ]; then
+      echo "🟡 WARN: output do --summary não parseável — script pode estar quebrado"
+    elif [ "$DRIFT_COUNT" -gt 3 ]; then
+      echo "🔴 P0 BLOCKER: $DRIFT_COUNT phantom-pending tasks detected"
+      echo "   Risk: agentes podem re-executar trabalho já feito (vide incidente 2026-05-27)"
+      echo "   Fix: env -u EGOS_ROOT bun scripts/task-reconciliation.ts --fix"
+      echo "   SSOT: docs/_current_handoffs/handoff_2026-05-27-task-drift-architecture.md"
+    fi
+  fi
+fi
 EGOS_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")
 if [ -f "$EGOS_ROOT/scripts/runtime-smoke.ts" ] && command -v bun >/dev/null 2>&1; then
   SMOKE=$(cd "$EGOS_ROOT" && bun scripts/runtime-smoke.ts --quiet 2>&1)
@@ -358,6 +385,35 @@ Layer 6.6 — Session Briefing
   ✓ Foco: [tarefa + motivo]
   ✓ Risco: [1 linha]
   ✓ Primeira ação: [ação concreta]
+```
+
+---
+
+## LAYER 6.7 — NotebookLM Coverage (NOVO 2026-05-30)
+
+> Regra T1: todo repo/produto ATIVO tem notebook próprio. SSOT: `docs/notebooklm/NOTEBOOKS_INDEX.md`.
+> Verifica se o repo desta sessão tem notebook mapeado e se há fontes desatualizadas.
+
+```bash
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo $PWD)
+REPO=$(basename "$ROOT")
+INDEX=/home/enio/egos/docs/notebooklm/NOTEBOOKS_INDEX.md
+if [ -f "$INDEX" ]; then
+  if grep -qi "$REPO" "$INDEX" 2>/dev/null; then
+    echo "✅ Layer 6.7: '$REPO' tem notebook mapeado — ver NOTEBOOKS_INDEX.md"
+  else
+    echo "🟡 Layer 6.7: '$REPO' SEM notebook no índice — gap T1 (criar via NLM-* task)"
+  fi
+else
+  echo "Layer 6.7: índice ausente — skip"
+fi
+```
+
+**Reportar no Verification Checkpoint:**
+```
+Layer 6.7 — NotebookLM Coverage
+  ✓ Repo tem notebook: [sim/não — gap]
+  ✓ Fontes a re-sync nesta sessão: [lista ou "nenhuma"]
 ```
 
 ---

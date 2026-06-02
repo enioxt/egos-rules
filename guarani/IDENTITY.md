@@ -3,7 +3,11 @@ title: EGOS Identity
 version: 1.0.0
 updated: 2026-05-04
 canonical: true
+visibility: INTERNAL-ONLY
 ---
+
+<!-- INTERNAL-ONLY: este arquivo contém estratégia comercial, tiers, preços e posicionamento.
+     NUNCA incluir em EGOS-PUBLIC ou qualquer extração pública. Ver EGOS_PUBLIC_PLAN.md §7. -->
 
 # EGOS — Identity
 

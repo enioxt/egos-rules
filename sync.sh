@@ -270,8 +270,17 @@ for repo in "${REPOS[@]}"; do
   # ── D. Granular Core .guarani Symlinks (SSOT Enforcement) ──
   # We delete duplicated centralized governance directories/files and replace them with symlinks.
   # We intentionally DO NOT touch IDENTITY.md, PREFERENCES.md, or any unknown files.
-  # INC-SYMLINK-001 (2026-05-31): NEVER symlink the kernel's .guarani/ — it is the REAL source.
-  if [ -d "$repo/.guarani" ] && [ "$repo" != "$HOME/egos" ]; then
+  # INC-SYMLINK-001 GUARD (2026-05-31): NEVER symlink the kernel's own .guarani — it is the
+  # REAL canonical source (governance-sync.sh pushes kernel→home, not the reverse). Only leaf
+  # repos consume governance via symlink. Symlinking the kernel corrupts the source of truth.
+  if [ -L "$repo/.guarani" ]; then
+    echo -e "      ${RED}🗑️${NC}  Deleting legacy directory-level symlink: .guarani"
+    rm -f "$repo/.guarani"
+    mkdir -p "$repo/.guarani"
+  fi
+
+  if [ -d "$repo/.guarani" ] && \
+     [ "$(readlink -f "$repo" 2>/dev/null)" != "$(readlink -f "$HOME/egos" 2>/dev/null)" ]; then
     SHARED_NODES=(
       "orchestration"
       "philosophy"

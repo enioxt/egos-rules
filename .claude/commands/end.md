@@ -18,6 +18,7 @@ Você está executando `/end`. Sua obrigação:
 2. **CITAR SHAs** — toda claim de "feito" precisa hash de commit. Sem SHA = `[CONCEPT]`, não `[DONE]`.
 3. **TEMPLATE LITERAL** — handoff e memory writes seguem formato fixo. Não improvisar.
 4. **VERIFICATION CHECKPOINT** (Phase 10) é OBRIGATÓRIO. Sem ele, /end está incompleto.
+5. **RESOLVER DOCTRINE — captura de padrões:** registre as **decisões humanas do Enio** desta sessão (cortes de Red Zone, escolhas entre opções, mudanças de prioridade) como padrão em memória (`feedback`/`project`), para que triagens futuras pré-preencham a preferência dele. SSOT: [RESOLVER_DOCTRINE](../../docs/governance/RESOLVER_DOCTRINE.md) §3.
 5. **NEVER `git add -A`** — sempre `git add <specific-file>` (T0 rule, INC-002).
 
 ---
@@ -337,10 +338,31 @@ Crie `docs/_current_handoffs/handoff_YYYY-MM-DD.md` usando este formato EXATO:
 
 ## 📌 Decisions Made (architectural)
 - [decisão 1] — referência ADR ou commit
+- [opção rejeitada] — escolhi X em vez de Y porque Z (raciocínio que se perde se não escrito)
+
+## ✅ Todos da sessão (snapshot literal do TodoWrite)
+<!-- B: cole AQUI a lista TodoWrite atual. É o artefato 100% perdido no handoff se não persistir. -->
+- [x] [todo concluído]
+- [/] [todo em progresso — % + bloqueador]
+- [ ] [todo pendente]
 
 ## 🚫 Marked [CONCEPT] (não entrar em HARVEST)
 - [feature discutida mas não commitada]
 ```
+
+> **Cross-window (Prime↔Guarani)?** Use `docs/_current_handoffs/_TEMPLATE_sync.md` (tem ownership por janela + estado retido).
+
+---
+
+## PHASE 4.1 — Handoff Fidelity Gate (NOVO 2026-05-31 — context-transfer telemetry)
+
+> **Princípio:** mede quanto contexto sobrevive ao handoff. Read-only, não-bloqueante. KPI → `docs/jobs/` + Supabase.
+
+```bash
+bun scripts/handoff-fidelity.ts --quiet 2>/dev/null || echo "[handoff-fidelity] script indisponível — skip"
+```
+
+**Reportar no Verification Checkpoint:** `completeness_score` (alvo ≥80). Se <60 🟡 → reforçar: SHAs em claims-done, next-step em in-progress, snapshot dos todos (B), seção de decisões/rejeitadas (C).
 
 ---
 

@@ -1,6 +1,6 @@
 # EGOS Rules Index — Canonical Discovery Map
 
-> **Version:** 1.2.0 | **Updated:** 2026-04-06
+> **Version:** 1.2.1 | **Updated:** 2026-06-01
 > **Purpose:** Single entry point for ALL EGOS rules, standards, and governance surfaces.
 > Any AI session or human contributor starts here to find the relevant rule.
 
@@ -15,7 +15,7 @@
 | **Shared home mirror** | EGOS sync | `.egos/sync.sh` |
 | **Claude Code adapter** | CLAUDE.md | `CLAUDE.md` |
 | **Windsurf adapter** | .windsurfrules | `.windsurfrules` |
-| **Reports** | REPORT_SSOT.md | `docs/REPORT_SSOT.md` |
+| **Reports** | REPORT_SSOT.md | `docs/modules/REPORT_SSOT.md` |
 | **Code quality** | PREFERENCES.md | `.guarani/PREFERENCES.md` |
 | **Rollout / launch planning** | PREFERENCES.md + DOMAIN_RULES.md | `.guarani/PREFERENCES.md`, `.guarani/orchestration/DOMAIN_RULES.md` |
 | **Agent taxonomy/claims** | AGENTS.md §R2 | `AGENTS.md` (canonical) |
@@ -26,12 +26,18 @@
 | **PII masking API** | Guard Brasil API | `apps/api/src/server.ts` (POST /v1/inspect) |
 | **Meta-prompts** | Trigger system | `.guarani/prompts/triggers.json` |
 | **Prompt anatomy** | PROMPT_SYSTEM.md | `.guarani/prompts/PROMPT_SYSTEM.md` |
-| **SSOT registry** | SSOT_REGISTRY.md | `docs/SSOT_REGISTRY.md` |
-| **Branding** | BRAND_CANONICAL.md | `docs/BRAND_CANONICAL.md` |
+| **SSOT registry** | SSOT_REGISTRY.md | `docs/modules/SSOT_REGISTRY.md` |
+| **Branding** | BRAND_CANONICAL.md | `docs/governance/BRAND_CANONICAL.md` |
 | **Engineering** | ENGINEERING_STANDARDS_2026.md | `.guarani/ENGINEERING_STANDARDS_2026.md` |
 | **MCP quality** | MCP_TOOL_QUALITY_FRAMEWORK.md | `.guarani/standards/MCP_TOOL_QUALITY_FRAMEWORK.md` |
+| **MCP usage / registry** | MCP_REGISTRY.md (§Quando usar MCP) | `docs/governance/MCP_REGISTRY.md` |
 | **Domain rules** | DOMAIN_RULES.md | `.guarani/orchestration/DOMAIN_RULES.md` |
+| **Open access sourcing** | OPEN_ACCESS_SOURCING_RULE.md | `docs/governance/OPEN_ACCESS_SOURCING_RULE.md` |
+| **Agent scope gates** | agent-scope-check.ts ⚠️ PLANNED (não implementado — ver SEC-AGENT-SCOPE-REBUILD-001) | _path pendente_ |
+| **Literature API** | OA REST + MCP | `apps/egos-hq/api/hq/literature/` + `packages/mcp-literature/` |
+| **Coordination monitor** | COORDINATION_MONITOR_SPEC.md | `docs/governance/COORDINATION_MONITOR_SPEC.md` |
 | **Pre-commit hooks** | pre-commit | `.husky/pre-commit` |
+| **Presentations versioning** | GOV-PRES-001 | `CLAUDE.md §7 Presentations` + `scripts/check-doc-proliferation.sh` |
 | **File classification** | file-intelligence.sh | `scripts/file-intelligence.sh` |
 | **Doc proliferation** | check-doc-proliferation.sh | `scripts/check-doc-proliferation.sh` |
 | **Agent identity** | IDENTITY.md | `.guarani/IDENTITY.md` |
@@ -60,7 +66,6 @@
 | **Task ID sync** | **auto-disseminate.sh** | **post-commit (non-blocking)** |
 | **HARVEST.md injection** | **auto-disseminate.sh** | **post-commit (non-blocking)** |
 | **Daily handoff** | **session-aggregator.sh** | **cron 02:30 UTC (non-blocking)** |
-| **Knowledge compile** | **daily-knowledge-sync.sh** | **cron 13:00 UTC (non-blocking)** |
 
 ## For AI Sessions
 
@@ -70,7 +75,7 @@ When starting any work, check:
 3. `.guarani/PREFERENCES.md` — coding and rollout standards
 4. `CLAUDE.md` / `.windsurfrules` — environment adapter surface only
 5. `.guarani/orchestration/` — if touching governance or planning execution
-6. `docs/REPORT_SSOT.md` — if generating reports
+6. `docs/modules/REPORT_SSOT.md` — if generating reports
 
 > **Rule:** Never generate a report without reading REPORT_SSOT.md first.
 > **Rule:** Never claim an agent capability without proof-of-function (§L CLAUDE.md, AGENTS.md §R2).
