@@ -1,117 +1,117 @@
-# /novodemo — Nova Loja Demo EGOS
+---
+description: Cria novo Demo Central EGOS para cliente qualificado. Wrapper de provision-client.sh + checklist pós-provision (12 itens). Triggers — novo demo, criar demo, novo cliente, provisionar tenant. Pré-requisito — cliente passou Fase 0 (CNPJ, faturamento, reunião 30min).
+---
 
-Cria uma nova demo white-label a partir do template Central EGOS (base G Peças).
+# /novodemo — Criar Demo Central EGOS
 
-## Como usar
+> **Pré-requisito obrigatório (Fase 0):** cliente passou qualificação Bernardo
+> Ver: [`docs/governance/CLIENT_ONBOARDING_CHECKLIST.md`](../../docs/governance/CLIENT_ONBOARDING_CHECKLIST.md) Fase 0
+> Demo customizado custa 2-4h Enio sem cobrança — não desperdiçar com lead não qualificado.
 
-```
-/novodemo <nome-do-cliente>
-/novodemo "Peças Patense" --tipo=autopecas
-/novodemo --ajuda
-```
+## Quando invocar
 
-## Fluxo de execução (6 fases)
+- Bernardo enviou ficha cliente qualificado
+- Cliente pediu reunião e bateu critério Fase 0
+- Enio quer testar nova feature com tenant fictício (`<slug>=test-XXX`)
 
-### Fase 1 — Intake (5 min)
-Coletar do usuário ou inferir do nome:
-- Nome comercial e nome curto
-- Setor (eletrodomésticos / auto peças / outro)
-- Cidade e estado
-- WhatsApp e telefone (opcional)
-- Cores: primária + accent (sugerir paleta por setor se não informado)
+## Inputs obrigatórios (perguntar antes)
 
-### Fase 2 — Research (automático)
-- Checar se já existe `TenantProfile` para o slug em `apps/central-egos-template/src/lib/tenant.ts`
-- Gerar slug a partir do nome (ex: "Peças Patense" → `pecas-patense`)
-- Sugerir categorias baseadas no setor (eletrodomésticos vs auto peças vs genérico)
-- Gerar headline candidata
+1. **Slug** (kebab-case): ex `farmacia-vivamais`
+2. **Subdomain**: ex `farmaciavivamais.egos.ia.br`
+3. **Porta PM2** (opcional, default 7080+offset)
+4. **Nome comercial**: ex "Farmácia Viva+"
+5. **Cores brand** (hex): primary + accent
+6. **Logo URL ou path local**: cliente envia OR placeholder
+7. **Segmento**: ex `farmácia, comércio, pet, peças`
+8. **5-10 produtos exemplo** (nome + preço + categoria mínimo)
 
-### Fase 3 — Config (escrita em código)
-Criar `TenantProfile` completo e adicionar em `tenant.ts`:
-```typescript
-const NOVA_LOJA_PROFILE: TenantProfile = {
-  slug: "<slug>",
-  domains: ["<slug>.egos.ia.br", "localhost:<porta>"],
-  branding: {
-    name: "<Nome Completo>",
-    shortName: "<Nome Curto>",
-    logoText: "<Inicial>",
-    primaryColor: "<#hex>",
-    accentColor: "<#hex>",
-    headline: "<headline>",
-    categories: [/* setor-appropriate */],
-  },
-  contact: { phone: "", whatsapp: "", address: "", hours: "" },
-  seo: { /* derivado do nome + setor */ },
-  runtime: {
-    publicBaseUrl: "https://<slug>.egos.ia.br",
-    caddyDomain: "<slug>.egos.ia.br",
-    pm2AppName: "<slug>-app",
-    port: <próxima porta disponível>,
-    remoteAppPath: "/opt/apps/<slug>",
-    whatsappInstance: "egos-<slug>",
-  },
-  dataNamespace: { mode: "neutral-tables", tablePrefix: "" },
-  storage: {
-    productImagesBucket: "product-images",
-    strategy: "shared-bucket",
-    basePath: "<slug>/products",
-  },
-  adminBootstrap: {
-    ownerEmail: "admin@<slug>.local",
-    ownerName: "Owner <Nome Curto>",
-    initialRole: "owner",
-    passwordDelivery: "manual",
-  },
-};
-```
+## Execução
 
-### Fase 4 — Design Handoff
-Gerar checklist de assets necessários:
-- [ ] Logo (SVG ou PNG, fundo transparente)
-- [ ] Cor primária confirmada (hex)
-- [ ] Cor accent confirmada (hex)
-- [ ] Foto hero (opcional)
-- [ ] Descrição SEO (1-2 frases)
-- [ ] 3-5 categorias de produtos
+### Via Ops API (canônico — INV-MON-002..006)
 
-### Fase 5 — Infrastructure
-Gerar comandos para o VPS (não executar — apresentar para aprovação):
 ```bash
-# Caddy: adicionar bloco em /opt/bracc/infra/Caddyfile
-# PM2: criar ecosystem entry
-# Supabase: garantir tenant_slug nos produtos existentes
+OPS_TOKEN="$EGOS_OPS_TOKEN"
+BASE="https://gpecas.egos.ia.br"  # ou localhost:3080 pra testes
+
+# 1. Provision — cria tenant em `tenants` + stub em `tenant_settings`
+curl -s -X POST "$BASE/api/ops/tenant-provision" \
+  -H "X-Ops-Token: $OPS_TOKEN" -H "Content-Type: application/json" \
+  -d '{"slug":"<slug>","branding":{"name":"<Nome>","primaryColor":"<hex>","contactEmail":"<email>","whatsappNumber":"<ddi+numero>"},"dataNamespace":{"mode":"neutral-tables"},"runtime":{"whatsappInstance":"<slug>-wa","port":<porta>},"deployment":{"caddyDomain":"<subdomain>","repoUrl":"https://github.com/enioxt/egos","deployScript":"scripts/deploy-tenant.sh"}}'
+
+# 2. Seed — popula consulting_clients (WHITELIST), tenant_bot_config, tenant_settings.sector
+# ⚠️ CRÍTICO: sem este passo, chatbot WA NÃO aceita mensagens do tenant (bug 2026-05-25)
+curl -s -X POST "$BASE/api/ops/tenant-seed" \
+  -H "X-Ops-Token: $OPS_TOKEN" -H "Content-Type: application/json" \
+  -d '{"slug":"<slug>","sector":"<segmento>","welcomeMessage":"Olá! Bem-vindo(a) à <Nome>!"}'
+
+# 3. Config — branding avançado + feature flags
+curl -s -X POST "$BASE/api/ops/tenant-config" \
+  -H "X-Ops-Token: $OPS_TOKEN" -H "Content-Type: application/json" \
+  -d '{"slug":"<slug>","branding":{"name":"<Nome>","primaryColor":"<hex>"},"featureFlags":{"chatbotEnabled":true,"catalogPublic":true}}'
+
+# 4. Deploy — PM2 start + Caddy (requer vps-api online)
+curl -s -X POST "$BASE/api/ops/tenant-deploy" \
+  -H "X-Ops-Token: $OPS_TOKEN" -H "Content-Type: application/json" \
+  -d '{"slug":"<slug>","port":<porta>,"domain":"<subdomain>","appPath":"/opt/apps/<slug>-standalone","envVars":{},"addCaddy":true}'
+
+# 5. Smoke
+curl -s "$BASE/api/ops/tenant-smoke?slug=<slug>"
+
+# 6. Cadastrar produtos
+bun central-egos/scripts/ingest-xlsx-products.ts --tenant <slug> --file <products.xlsx>
 ```
 
-### Fase 6 — QA Checklist
-- [ ] `getTenantFromHost("<slug>.egos.ia.br")` retorna slug correto
-- [ ] Storefront home mostra nome, headline, categorias corretos
-- [ ] Catálogo com filtro `tenant_slug` ativo (neutral-tables)
-- [ ] Dark mode desabilitado no storefront (light wrapper)
-- [ ] MCP: verificar se precisa de instância nova ou compartilha existente
-- [ ] `bun run typecheck` limpo
+## Checklist pós-provision (13 itens)
 
-## Paletas por setor
+- [ ] Tenant em `tenants` registrado (via `/api/ops/tenant-provision`)
+- [ ] **`consulting_clients` INSERT confirmado** — smoke check `db.consulting_clients=pass` (⚠️ sem isto chatbot WA rejeita todas as mensagens — bug 2026-05-25)
+- [ ] Tenant em `tenant_bot_config` criado
+- [ ] Storage bucket `product-images/<slug>/` criado
+- [ ] PM2 process `egos-<slug>` rodando
+- [ ] Caddy bloco subdomain + MCP bloco adicionados
+- [ ] DNS subdomain resolve
+- [ ] Login admin/admin documentado
+- [ ] Watermark "Preview" visível
+- [ ] Checkout em modo fake (banner "Não homologado")
+- [ ] 5-10 produtos cadastrados
+- [ ] Cores brand aplicadas
+- [ ] Logo carregado
+- [ ] Smoke 7 rotas 200 OK
 
-| Setor | Primária | Accent |
-|-------|----------|--------|
-| Auto peças | #1565C0 | #FFC107 |
-| Eletrodomésticos | #1a56b0 | #f5c518 |
-| Ferragens | #37474F | #FF6F00 |
-| Materiais de construção | #2E7D32 | #FF8F00 |
-| Móveis usados | #4A148C | #FFD600 |
-| Genérico | #1E88E5 | #FFA000 |
+**Tempo total:** 2-5h Enio.
 
-## Próximas portas disponíveis
+## Regra de ouro
 
-Verificar em `tenant.ts`: porta atual maior + 1.
-- G Peças: 3080
-- Auto Peças Patense (FVP): 3081
-- Próxima: 3082
+> **Nunca crie hardcode em `central-egos/clients/<slug>/`**
+> Regras gerais ficam no `central-egos/template/`.
+> Cliente dir só tem overrides específicos (cores, segmento, produtos seed).
+> Toda feature nova deve funcionar em TODOS os tenants — modular no template.
 
-## SSOT
+## Erros comuns
 
-- Template base: `apps/central-egos-template/`
-- Perfis de tenant: `apps/central-egos-template/src/lib/tenant.ts`
-- Caddyfile: `/opt/bracc/infra/Caddyfile` (VPS)
-- Deploy: `scripts/deploy-gpecas.sh` (adaptar para novo slug)
+| Erro | Solução |
+|---|---|
+| `SUPABASE_URL` não definido | `source ~/.egos/.env.prod` antes |
+| Caddy 502 | `pm2 restart egos-<slug>` + check logs |
+| Smoke `db.consulting_clients=fail` | Executar passo 2 (`/api/ops/tenant-seed`) — **chatbot WA fica mudo sem isso** |
+| Smoke `db.tenants=fail` | Executar passo 1 (`/api/ops/tenant-provision`) |
+| Smoke falha rota X | Check `tenant_bot_config` campos obrigatórios |
+| Ops API → 403 Forbidden | Token tem role insuficiente — usar master token (EGOS_OPS_TOKEN) |
+| DNS não resolve | Cloudflare propaga em 5-15min |
+
+## Pós-Demo
+
+**Cliente fecha contrato** (em 7-14 dias): ver `CLIENT_ONBOARDING_CHECKLIST` Fase 2-6.
+
+**Cliente NÃO fecha em 14d**: marcar tenant `inactive`, parar PM2 (preservar dados):
+```bash
+pm2 stop egos-<slug>
+bun -e "import {createClient} from '@supabase/supabase-js'; const s = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY); await s.from('tenant_bot_config').update({status:'inactive', deactivated_at: new Date()}).eq('slug', '<slug>')"
+```
+
+## Referências
+
+- `docs/governance/CLIENT_ONBOARDING_CHECKLIST.md` — fluxo completo 6 fases
+- `docs/governance/EGOS_COMERCIO_PLANO_UNICO.md` v3.2 — preços canonical
+- `central-egos/scripts/provision-client.sh` — automação técnica (263 LOC)
+- `central-egos/README.md` — overview produto

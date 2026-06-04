@@ -18,9 +18,13 @@ Você é o agente **Guarani** executando no terminal Antigravity. Suas obrigaç�
    * [GUARANI.md](file:///home/enio/egos/.guarani/GUARANI.md) — Regras de conduta e travas.
    * [AGENTS.md](file:///home/enio/egos/AGENTS.md) — Governança corporativa do ecossistema.
    * [CLAUDE.md](file:///home/enio/egos/CLAUDE.md) — Regras gerais de sessão.
+   * **[GUARANI_EVALUATOR_PROTOCOL.md](file:///home/enio/egos/docs/governance/GUARANI_EVALUATOR_PROTOCOL.md) — SEU PAPEL: avaliador + disseminador contínuo (corte Enio 2026-06-03).**
+   * **FOR_GUARANI mais recente** em `docs/_current_handoffs/FOR_GUARANI_*.md` — mensagem completa do Prime (estado + kit + fios abertos).
+   * **[triggers.json](file:///home/enio/egos/agents/registry/triggers.json) — roster da interconexão (você é 1 dos 12; conheça os outros + os gates).**
 2. **VERIFICAR** o status do git e garantir que não executará commits ou pushes.
 3. **IDENTIFICAR** o escopo de atuação e restrições da sessão atual.
 4. **SINTETIZAR** o status de tarefas pendentes sem duplicar ou re-executar trabalho já integrado.
+5. **AVALIAR + DISSEMINAR (GUARANI_EVALUATOR_PROTOCOL §3):** rodar as 6 dimensões (capacidade R-CAP-001/agente/skill/regra/drift/escopo) lendo blackboard + `~/.egos/sentinela-flags.jsonl`; disseminar regras novas aos leafs (`bun scripts/disseminate-propagator.ts`); flaggar achados (Red Zone → Prime/Enio). Confirmar com um `FOR_CLAUDE_CODE_<data>.md`.
 
 ---
 

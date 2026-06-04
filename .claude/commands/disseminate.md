@@ -1,116 +1,115 @@
 ---
-description: Disseminate kernel rules and governance to all leaf repos. Use when: 3+ feat: commits without propagating, AGENTS.md changed, or user asks to sync governance. Skip when zero feat: commits this session.
+description: Disseminate kernel rules, governance, skills & tooling to the whole ecosystem (mirrors + leaf repos + VPS) via a safe, zero-downtime patch pipeline. Use when governance/skills/hooks changed, 3+ feat: commits unpropagated, or user asks to sync/patch the system.
 ---
 
-# Workflow: /disseminate (Knowledge + Governance Propagation)
+# /disseminate v2 — Patch Propagation System (anéis + pipeline seguro + zero-downtime)
 
-## Objetivo
-Propagar conhecimento, governanca e workflows do kernel para todos os repositorios do ecossistema. Deve ser chamado ao final de toda sessao produtiva.
+> **Princípio (corte Enio 2026-06-03):** quanto melhor a capacidade de aplicar patches importantes RÁPIDO no sistema inteiro SEM comprometer nada (downtime 0), melhor. Disseminação não é "copiar arquivo" — é **propagar uma mudança por anéis, com dry-run, verificação e rollback**.
+> **SSOT do mapa de regras:** `docs/governance/RULE_SETS_INDEX.md` · **Mirrors:** `egos-autoheal.ts` · **Leaves:** `disseminate-propagator.ts` + `.egos-disseminate-manifest.json` + `~/.egos/sync.sh`.
 
-## Fase 1: Conhecimento (HARVEST.md + CAPABILITY_REGISTRY)
+---
 
-**Identificar o que foi criado/mudado nesta sessao:**
-- Novo pattern? → Adicionar a `docs/knowledge/HARVEST.md`
-- Nova capability? → Adicionar a `docs/CAPABILITY_REGISTRY.md`
-- Bug fix com gotcha? → Adicionar a HARVEST.md
-- Decisao arquitetural? → Documentar em HARVEST.md com problema/solucao/regra
+## §1. ANÉIS (de onde a mudança parte e até onde vai)
 
-**Formato HARVEST entry:**
-```markdown
-## {Nome do Pattern} ({data})
+| Anel | Alvo | Mecanismo | Risco |
+|------|------|-----------|-------|
+| **R0 — Kernel** | `egos/` (SSOT) | edição + commit + push | — (origem) |
+| **R1 — Mirrors runtime** | `~/.egos`, `~/.claude` | `egos-autoheal.ts` (10 arquivos) + `~/.egos/sync.sh` (commands, .guarani) | baixo (cópia idempotente) |
+| **R2 — Leaf repos** | manifest `existing_repos` (852, egos-lab, br-acc, forja, egos-self, smartbuscas, santiago, arch, …) | `disseminate-propagator.ts --all` (bloco PROPAGATE-RULES) + `sync.sh` (symlinks) | médio (commita em outros repos) |
+| **R3 — VPS (serviços vivos)** | gateway, MCPs, storefronts (Docker/pm2) | `git pull` em `/opt/egos-git` → rebuild/reload **swap** | alto (produção — gated, zero-downtime) |
 
-### Problem
-{O que estava errado}
+Regra: propaga **de dentro pra fora** (R0→R1→R2→R3). Nunca pula verificação entre anéis.
 
-### Solution
-{O que foi feito}
+## §2. CLASSES DE ARTEFATO (o que se copia vs o que se ADAPTA)
 
-### Key Detail / Rule
-{O detalhe que ninguem lembra}
-```
+| Classe | Exemplos | Como propaga |
+|--------|----------|--------------|
+| **Universal (copia verbatim)** | bloco de regras (`PROPAGATE-RULES`), agent defs `.claude/agents/`, standards de governança | propagator/sync — idêntico em todo lugar |
+| **Mirror (kernel↔home)** | skills `/start` `/end` `/disseminate`, hooks, `.guarani/**` | autoheal + sync.sh |
+| **Per-repo (ADAPTA, não copia)** | README (conteúdo), config específica | **metaprompt copy-adapt** (`docs/metaprompt-generator/`) — NUNCA cópia cega; adapta nomes/caminhos/integrações |
+| **Frozen (nunca auto)** | `.husky/pre-commit`, `.guarani` core | só kernel + HITL/`EGOS_FROZEN_OVERRIDE` |
 
-## Fase 2: Governanca (kernel → ~/.egos → leaf repos)
+> **Anti-cópia-cega:** artefato per-repo viaja como *instrução de adaptação*, não como arquivo bruto. README padrão = `docs/governance/README_PADRAO_OURO.md` (o STANDARD propaga; o conteúdo cada repo adapta).
+
+## §3. PIPELINE SEGURO (a capacidade de patch rápido sem comprometer)
 
 ```bash
-# 1. Sync kernel para ~/.egos
-cd ~/egos && bash scripts/governance-sync.sh --exec
+cd ~/egos
+# 1. SCAN — o que mudou + o que está drifted
+git log --oneline "$(git describe --tags --abbrev=0 2>/dev/null || echo HEAD~10)"..HEAD 2>/dev/null | head
+bun scripts/egos-autoheal.ts --check 2>/dev/null | tail -1      # drift dos mirrors
+bun scripts/disseminate-propagator.ts --all --dry 2>&1 | tail -3 # escopo nos leaves
 
-# 2. Propagar para TODOS os leaf repos (9 repos)
-bash ~/.egos/sync.sh
+# 2. DRY-RUN (preview, zero escrita) — já no scan acima (--dry / --check)
 
-# 3. Verificar drift zero
+# 3. APPLY (idempotente, de dentro pra fora)
+bun scripts/egos-autoheal.ts 2>/dev/null | tail -1              # R1 mirrors
+bash scripts/governance-sync.sh --exec                          # R1 kernel→~/.egos
+bun scripts/disseminate-propagator.ts --all                    # R2 leaves (bloco de regras) — COMMITA local
+bash ~/.egos/sync.sh                                            # R2 symlinks + commands
+# ⚠️ GAP CRÍTICO (achado 2026-06-03): o propagator COMMITA nos leaves mas NÃO PUSHA.
+# "Disseminado" ≠ "commitado local" — só está disseminado quando está no GitHub.
+# PUSH OBRIGATÓRIO dos leaves que ficaram ahead:
+for d in /home/enio/intelink /home/enio/egos-inteligencia /home/enio/egos-lab /home/enio/852 \
+         /home/enio/smartbuscas /home/enio/santiago /home/enio/arch /home/enio/egos-self; do
+  [ -d "$d/.git" ] || continue
+  ahead=$(git -C "$d" rev-list --count @{u}..HEAD 2>/dev/null || echo 0)
+  [ "$ahead" -gt 0 ] && echo "push $(basename $d) ($ahead ahead)" && git -C "$d" push origin "$(git -C "$d" branch --show-current)" 2>&1 | grep -E "\->|rejected|error" | head -1
+done
+
+# 4. VERIFY (drift=0 + saúde)
+bun scripts/egos-autoheal.ts --check 2>/dev/null | tail -1      # drift==0
 bash scripts/governance-sync.sh --check
+bun scripts/runtime-smoke.ts --quiet 2>&1 | head -1            # 0 fail
+bun run typecheck 2>&1 | grep -c "error TS"                    # 0 (se tocou código)
+
+# 5. ROLLBACK (se VERIFY falhar)
+#   - leaf repo: git -C <repo> revert --no-edit HEAD  (mudança é path-scoped/idempotente)
+#   - mirror: re-rodar autoheal (re-copia do kernel)
+#   - VPS: ver §4 (backup+swap)
 ```
 
-**Leaf repos cobertos:** 852, egos-lab, carteira-livre, br-acc, forja, egos-self, smartbuscas, santiago, arch
+**Gate:** só avança de APPLY p/ próximo anel se o VERIFY do anterior passou. Drift>0 após apply → investigar antes de seguir.
 
-## Fase 3: TASKS.md Update
+## §4. R3 VPS — zero-downtime (serviços vivos)
 
-- Marcar tasks completadas como [x]
-- Adicionar novas tasks descobertas
-- Verificar que TASKS.md < 500 linhas (comprimir se necessario)
-- Atualizar version e LAST SESSION header
-
-## Fase 3B: Gem Hunter SSOT Sync
-
-Se houve descoberta de repositório ou sessão `/study` nesta sessão:
-- Atualizar `egos/docs/gem-hunter/registry.yaml` com status do repo estudado
-- Mover relatórios de sessão para `egos/docs/gem-hunter/sessions/`
-- Verificar que apenas `egos/docs/gem-hunter/SSOT.md` define a arquitetura (sem duplicatas)
-- Reports gerados pelo CCR job: `egos-lab/docs/gem-hunter/gems-*.md` (não mover — CCR escreve lá)
-
-## Fase 4: Meta-Prompt Triggers
-
+> Só quando a mudança precisa chegar na produção (gateway, MCPs). Red Zone — gated.
 ```bash
-cat .guarani/prompts/triggers.json 2>/dev/null | jq '.triggers | keys' 2>/dev/null
+SSH="ssh -i ~/.ssh/hetzner_ed25519 root@204.168.217.125"
+# backup antes (rollback): $SSH "cp <file> <file>.bak-$(date +%s)"  + tag da imagem
+$SSH "cd /opt/egos-git && git pull --ff-only origin main"        # traz o patch
+# copiar arquivo(s) p/ o build-context não-git (/opt/<svc>), depois SWAP:
+# Docker: docker compose build <svc> && docker compose up -d <svc>  (recreate atômico)
+# pm2:    pm2 reload <svc> --update-env                            (reload sem downtime)
+# smoke:  curl health + docker logs/pm2 logs (sem 409/erro)
 ```
-- Algum trigger se aplica a esta sessao?
-- Deve ser criado um novo trigger?
+Nunca `restart` destrutivo sem `build`/`reload`. Backup + smoke obrigatórios. SSOT deploy: `docs/governance/PRODUCTION_DEPLOY_RULES.md` (INC-PROD-001).
 
-## Fase 5: Memory
+---
 
-Salvar em `~/.claude/projects/-home-enio-egos/memory/` com:
-- Session summary (key deliverables, decisions, state)
-- Atualizar MEMORY.md index
-- Remover memories obsoletas se encontrar
+## §5. Conhecimento + estado (fases de fechamento — preserva v1)
 
-## Fase 6: Social (se milestone)
+- **HARVEST.md** — novo pattern/gotcha/decisão da sessão (formato Problem/Solution/Rule).
+- **CAPABILITY_REGISTRY** — nova capability (Status+Evidence+Owner; R-CAP-001 ciclo de vida).
+- **TASKS.md** — marcar [x], adicionar descobertas, manter < limite.
+- **Memory** — `~/.claude/projects/-home-enio-egos/memory/` + índice.
+- **NotebookLM** — doc canônico mudou → re-sync ADD-only (HITL deleção).
+- **Social** (só milestone): Telegram @ethikin · X @anoineim.
 
-Canais disponiveis:
-- **Telegram**: @ethikin (markdown completo, ate 4096 chars)
-- **X.com**: @anoineim (280 chars + link)
+## §6. Checklist de saída
 
-Criterio: so postar se houve milestone visivel (API live, feature publica, release)
+- [ ] SCAN feito (git diff + autoheal --check + propagator --dry)
+- [ ] APPLY por anel (R1→R2[→R3 se gated])
+- [ ] VERIFY: drift=0 · governance:check ok · smoke 0-fail · typecheck 0-erro
+- [ ] Per-repo/README via adapt (não cópia cega)
+- [ ] HARVEST/CAPABILITY/TASKS/Memory atualizados
+- [ ] Rollback pronto (path-scoped) se algo falhar
 
-## Fase 7: Validacao Final
+## §7. Regras
+- Frozen zones (`.husky/pre-commit`, `.guarani` core) nunca auto — só kernel + HITL.
+- `egos-autoheal` SEMPRE antes de propagar (senão dissemina drift).
+- Conhecimento vai pro HARVEST.md do KERNEL mesmo se descoberto em leaf.
+- Governança é symlinkada nos leaves (não copiada) — não editar lá.
+- Drift>0 pós-sync = bloqueador: investigar antes de encerrar.
 
-```bash
-# Governanca
-cd ~/egos && bun run governance:check
-
-# TASKS.md size
-wc -l TASKS.md  # deve ser < 500
-
-# Pre-commit ativo
-ls .husky/pre-commit
-
-# Ultimo commit
-git log --oneline -3
-```
-
-## Checklist de Saida
-
-- [ ] HARVEST.md atualizado com patterns da sessao
-- [ ] CAPABILITY_REGISTRY atualizado (se nova capability)
-- [ ] Governance sync executado (drift = 0)
-- [ ] Leaf repos sincronizados via ~/.egos/sync.sh
-- [ ] TASKS.md atualizado e < 500 linhas
-- [ ] Memory salvo
-- [ ] Triggers revisados
-- [ ] Social postado (se milestone)
-
-## Regras
-- Nunca alterar frozen zones sem autorizacao explicita
-- Se drift > 0 apos sync, investigar e corrigir antes de encerrar
-- Knowledge vai para HARVEST.md do KERNEL (~/egos), mesmo se descoberto em outro repo
-- Governance e symlinkada para leaf repos (nao copiada)
+*v2 2026-06-03 — modelo de anéis + pipeline seguro (scan→dry→apply→verify→rollback) + zero-downtime VPS + classes de artefato (adapt-not-copy liga ao metaprompt-generator). v1 era checklist; v2 é sistema de patch.*

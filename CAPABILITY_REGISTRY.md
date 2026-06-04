@@ -15,14 +15,6 @@
 > **SSOTs irmãos:** [`governance/MCP_REGISTRY.md`](governance/MCP_REGISTRY.md) (servidores MCP) · [`governance/INTEGRATION_REGISTRY.md`](governance/INTEGRATION_REGISTRY.md) (vendors externos) · [`governance/SKILLS_REGISTRY.md`](governance/SKILLS_REGISTRY.md) (slash commands + skill bundles)
 >
 > Para novas capabilities: criar `docs/capabilities/CBC-<PROJETO>-<SLUG>-001.md` + adicionar entrada `## §N+1` aqui como ponte.
->
-> **🔁 R-CAP-001 — CICLO DE VIDA DA CAPACIDADE (T2, 2026-06-03, corte Enio):**
-> Toda capacidade que o EGOS tem DEVE estar nos 4 estados, senão é dívida:
-> 1. **USADA** — capacidade sem uso real (0 invocações / dead capability) → marcar `dormant:` e decidir KEEP-com-justificativa | ARQUIVAR | DELETAR. Capacidade que ninguém usa não é capacidade, é peso.
-> 2. **DOCUMENTADA** — entrada no registry (`## §N` ou `CBC-*.md`) com Status+Evidence+Owner. Sem doc → não existe oficialmente.
-> 3. **VALIDADA** — afirmação de capacidade exige ≥3 golden cases reais (INC-008). Stub retornando `[]` em compliance = BANIDO (`throw new Error('NOT IMPLEMENTED')`).
-> 4. **TESTADA** — golden cases rodam no `packages/eval-runner/`; capacidade sem eval = `unverified:` no nome.
-> **Avaliador:** o Guarani verifica R-CAP-001 a cada ciclo (ver `governance/GUARANI_EVALUATOR_PROTOCOL.md §1`). Cobertura de eval hoje 14% → meta R7.
 
 ---
 
@@ -1290,8 +1282,6 @@ Differentiator: LGPD compliance (Guard Brasil), audit trail, frozen zones, spec-
 - **Status:** verified
 - **Evidence:** Quality A — validated end-to-end with two real SHAs in two public remotes (enioxt/egos@542af99, enioxt/intelink@7a12fa7); docs/COORDINATION_PATTERN.md canonical
 - **Owner:** Enio (egos kernel)
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A (validated end-to-end with two real SHAs in two public remotes)
 **Owner:** egos kernel
@@ -1335,8 +1325,6 @@ Reusable protocol for parallel agent windows operating on related-but-separate r
 - **Status:** verified
 - **Evidence:** Quality A declared; commits 07d7a9e, 5cd8fdb, f73229f in egos repo
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos (`apps/egos-hq/`) | **Commits:** `07d7a9e`, `5cd8fdb`, `f73229f`
 
@@ -1381,8 +1369,6 @@ Periodic health-check that runs across all VPS services and reports to `egos_age
 - **Status:** verified
 - **Evidence:** Quality B declared; commits 5018e54, cea1e60, f55bd5d; LoRA adapters in intelink-agente/models/v1/
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** B | **Repo:** intelink + egos | **Commits:** `5018e54`, `cea1e60`, `f55bd5d`
 
@@ -1406,8 +1392,6 @@ Fine-tuned local LLM for police investigation queries. QLoRA Qwen2.5-7B, 76 trai
 - **Status:** verified
 - **Evidence:** Quality A declared; commit 388431d; scripts/instagram-caption-generator.ts confirmed
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos (`scripts/instagram-caption-generator.ts`) | **Commit:** `388431d`
 
@@ -1430,8 +1414,6 @@ Automated caption generation for 4 content types (educacao/caso/demo/social) + S
 - **Status:** verified
 - **Evidence:** Quality A declared; commit 1e5071c; apps/api/src/routes/lab-certification.ts confirmed
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos (`apps/egos-hq/`) | **Commit:** `1e5071c`
 
@@ -1452,8 +1434,6 @@ Automatic lightweight certification issued after 90 days of active EGOS Lab memb
 - **Status:** verified
 - **Evidence:** Quality A declared; multiple commits in intelink repo confirmed (b3f29b7, ad2b560, 021e814, 0e8d8d6, etc.)
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** intelink | **Multiple commits**
 
@@ -1483,8 +1463,6 @@ Advanced investigation capabilities built into the Intelink platform for PCMG.
 - **Status:** verified
 - **Evidence:** Quality A declared; scripts/update-capability-registry.ts confirmed in egos repo
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos (`scripts/update-capability-registry.ts`)
 
@@ -1506,8 +1484,6 @@ bun scripts/update-capability-registry.ts --repo intelink
 - **Status:** verified
 - **Evidence:** Quality A declared; READMEs updated across 9 active repos
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** all 9 active repos | **Commit:** this session
 
@@ -1529,8 +1505,6 @@ Standardized README format across all ecosystem repos with versioning, real stat
 - **Status:** verified
 - **Evidence:** Quality A declared; commits a4b3597, 255bf1e; chatbot.egos.ia.br live (Phase 0)
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A (Phase 0 live) | **Repo:** egos | **Commit:** a4b3597, 255bf1e
 
@@ -1552,8 +1526,6 @@ Portal `chatbot.egos.ia.br` com 5 agentes (Labs/Pixel/Tira-Voz/Forja/Arch) + lea
 - **Status:** verified
 - **Evidence:** Quality A declared; commit b815c0c; tested with 121REGIAO1 (8.803 ocorrências, 4.682 pessoas)
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** intelink | **Commit:** b815c0c
 
@@ -1573,8 +1545,6 @@ Pipeline ETL para ingestão de planilhas XLSX exportadas do BISP (sistema polici
 - **Status:** verified
 - **Evidence:** Quality A declared; commit b815c0c; cron output tested (elapsed 79.9s, 166 created, 62 fuzzy)
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** intelink | **Commit:** b815c0c
 
@@ -1599,8 +1569,6 @@ Cron diário expandido de 5 para 7 etapas automáticas.
 - **Status:** verified
 - **Evidence:** Quality B declared; commit b52f722; lib/config/tool-registry.ts confirmed
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** B | **Repo:** intelink | **Commit:** b52f722
 
@@ -1620,8 +1588,6 @@ Catálogo de 8 ferramentas de investigação policial com `suggestTools(missingF
 - **Status:** verified
 - **Evidence:** Quality A declared; commit dbb7ab8; Neo4j 16k+ pessoas confirmado
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** intelink | **Commit:** dbb7ab8
 
@@ -1642,8 +1608,6 @@ Chatbot `/chat` agora conectado à base real de dados Neo4j (16k+ pessoas, REDS)
 - **Status:** verified
 - **Evidence:** Quality A declared; ATLAS-1.1/1.2/1.3 commits; 8 projetos seedados com embeddings
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos | **Commits:** ATLAS-1.1/1.2/1.3
 
@@ -1664,8 +1628,6 @@ Registry centralizado de todos os projetos EGOS no Supabase com busca híbrida F
 - **Status:** verified
 - **Evidence:** Quality A declared; search_atlas_semantic() RPC tested ("vídeo commercial filmmaking" → PixelArt 54.6%)
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos | **Supabase fn:** `search_atlas_semantic()`
 
@@ -1684,8 +1646,6 @@ Busca semântica via cosine similarity no `embedding_purpose`. Fallback automát
 - **Status:** verified
 - **Evidence:** Quality A declared; DNS llm.egos.ia.br propagado 2026-05-04; Bearer token auth via Caddy
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos | **URL:** https://llm.egos.ia.br
 
@@ -1705,8 +1665,6 @@ Acesso externo autenticado ao Ollama local (VPS Hetzner). Bearer token protegido
 - **Status:** verified
 - **Evidence:** Quality A declared; 13 CBC cards created; template in docs/capabilities/_TEMPLATE.md
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos | **Path:** docs/capabilities/
 
@@ -1727,8 +1685,6 @@ Sistema de registro de capabilities reutilizáveis com frontmatter YAML padroniz
 - **Status:** verified
 - **Evidence:** Quality A declared; cron tested: {"ok":true, "elapsed": 79.9s}
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** intelink | **Endpoint:** /api/cron/cross-ref-nightly
 
@@ -1747,8 +1703,6 @@ CRON_SECRET configurado no intelink .env (era vazio, bloqueando auth). Rebuild f
 - **Status:** verified
 - **Evidence:** Quality A declared; live at egos.ia.br/trading; 18 endpoints tested
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos | **URL:** egos.ia.br/trading | **Module:** `apps/egos-site/src/trading.ts`
 
@@ -1800,8 +1754,6 @@ Dashboard de análise e automação de trading de criptomoedas integrado ao EGOS
 - **Status:** verified
 - **Evidence:** Quality A declared; trading-ai.ts confirmed; OpenRouter Gemini 2.0 Flash integration live
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos | **Module:** `apps/egos-site/src/trading-ai.ts`
 
@@ -1824,8 +1776,6 @@ Motor de análise com LLM para o Trading Dashboard. Usa OpenRouter com Gemini 2.
 - **Status:** verified
 - **Evidence:** Quality A declared; trading-notify.ts confirmed; Telegram/Discord/WhatsApp channels live
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos | **Module:** `apps/egos-site/src/trading-notify.ts`
 
@@ -1851,8 +1801,6 @@ Sistema de notificações multi-canal para eventos do Trading Dashboard.
 - **Status:** verified
 - **Evidence:** Quality A declared; BTC EMA Trend Follow Multi-TF tested: 1h=+4.08%, 4h=+6.25%
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos | **Modules:** `apps/egos-site/src/trading-backtest.ts` + `trading-indicators.ts`
 
@@ -1906,8 +1854,6 @@ Engine de backtest sobre klines reais do Bybit + biblioteca de indicadores técn
 - **Status:** verified
 - **Evidence:** Quality A declared; integrated in trading.ts; client-side real-time recalculation verified
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos | **Module:** integrado em `trading.ts` (UI + JS)
 
@@ -1935,8 +1881,6 @@ Recálculo automático em tempo real conforme o usuário edita.
 - **Status:** verified
 - **Evidence:** Quality A declared; 7 trading_* tables created; multi-tenant user_id pattern verified
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos | **Module:** `apps/egos-site/src/trading-storage.ts`
 **Supabase Project:** `lhscgsqhiooyatkebose` (egos-lab) | **Tables:** 7 com prefixo `trading_`
@@ -1975,8 +1919,6 @@ Camada de persistência completa para o Trading Dashboard. Substitui localStorag
 - **Status:** verified
 - **Evidence:** Quality A declared; trading-bots.ts confirmed; DCA+Grid types implemented with Supabase audit trail
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos | **Module:** `apps/egos-site/src/trading-bots.ts`
 
@@ -2023,8 +1965,6 @@ Endpoint adicional em `trading-backtest.ts`:
 - **Status:** verified
 - **Evidence:** Quality A declared; trading-evolution.ts confirmed; QR modal + status polling live
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos | **Module:** `apps/egos-site/src/trading-evolution.ts`
 
@@ -2051,8 +1991,6 @@ status polling, isolamento por usuário (instâncias prefixadas `trading-{userId
 - **Status:** verified
 - **Evidence:** Quality A declared; localStorage egos_bybit_creds pattern implemented; auto-fill across 5 tabs verified
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos | **Module:** `trading.ts` (settings modal + JS)
 
@@ -2074,8 +2012,6 @@ Painel único de credenciais Bybit no header. Substitui inputs duplicados em 5 a
 - **Status:** verified
 - **Evidence:** Quality A declared; RLS enabled on all 7 trading_* tables; migration trading_dashboard_rls applied
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos-lab Supabase | **Migration:** `trading_dashboard_rls`
 
@@ -2093,8 +2029,6 @@ Row Level Security habilitado em todas as 7 tabelas `trading_*`.
 - **Status:** verified
 - **Evidence:** Quality A declared; Bybit+Binance adapters implemented; /fx-rate endpoint live
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos | **Modules:** `trading-exchanges.ts` + ticker config in `trading.ts`
 
@@ -2134,8 +2068,6 @@ Camada de abstração para múltiplas exchanges + ticker totalmente customizáve
 - **Status:** verified
 - **Evidence:** Quality A declared; AES-256-GCM encryption + rate limiting + price alerts implemented
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos | **Modules:** `trading-crypto.ts`, `trading-alerts.ts` + middleware in `trading.ts`
 
@@ -2182,8 +2114,6 @@ Sprint 1 — Operacionalização e segurança de bots/alertas.
 - **Status:** verified
 - **Evidence:** Quality A declared; 12 default sources (RSS + Reddit); Fear & Greed Index integrated
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos | **Module:** `trading-news.ts` + `trading_news_sources` table
 
@@ -2217,8 +2147,6 @@ $0/mês — todas fontes gratuitas, cache evita rate limit, parsing puro TS sem 
 - **Status:** verified
 - **Evidence:** Quality A declared; Pine Script auto-generator + TP/SL webhook tested; trading-deploy.ts confirmed
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **Quality:** A | **Repo:** egos | **Module:** `trading-deploy.ts`
 
@@ -2331,8 +2259,6 @@ Primeira instância: G Peças (piloto Central EGOS Solo). Clonável em 4h para q
 - **Status:** verified
 - **Evidence:** Quality B declared; commit fab772f; scripts/vps-api.ts + egos-hq/app/vps/ confirmed
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **SSOT:** `scripts/vps-api.ts` (Bun mini-API) + `apps/egos-hq/app/vps/page.tsx`
 **Adicionado:** 2026-05-11 | **Commit:** fab772f | **Quality:** B (VPS deploy pendente)
@@ -2417,8 +2343,6 @@ Evolution API → POST /api/whatsapp/incoming?key=TOKEN
 - **Status:** verified
 - **Evidence:** Quality A declared (upstream NousResearch — production-grade); /root/.hermes/google_token.json present on VPS
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **SSOT:** `hermes-egos/skills/productivity/google-workspace/` (skill bundle upstream)
 **Adicionado:** 2026-05-11 | **Quality:** A (upstream NousResearch — production-grade)
@@ -2462,8 +2386,6 @@ Hermes upstream cuida de auth refresh + upstream compatibility.
 - **Status:** verified
 - **Evidence:** Quality A declared (pattern oficial NousResearch); docs/governance/HERMES_EGOS_FORK_DECISION.md confirmed
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **SSOT:** `docs/governance/HERMES_EGOS_FORK_DECISION.md` (seção Multi-tenant)
 **Adicionado:** 2026-05-11 | **Quality:** A (pattern oficial NousResearch)
@@ -2503,8 +2425,6 @@ Hermes upstream cuida de auth refresh + upstream compatibility.
 - **Status:** verified
 - **Evidence:** Quality B declared; commit 892f701; scripts/ai-commit-security.ts + hermes-commit-review.ts confirmed
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 **SSOT:** `scripts/ai-commit-security.ts` + `scripts/hermes-commit-review.ts`
 **Adicionado:** 2026-05-11 | **Commit:** 892f701 | **Quality:** B
@@ -2708,8 +2628,6 @@ vps-agents/
 - **Status:** verified
 - **Evidence:** 93 golden cases in tests/eval/capabilities/CBC-EGOS-MCP-*.eval.ts; 9 CBCs canonical; CI in .github/workflows/capability-eval.yml; curl https://mcp.egos.ia.br/governance/healthz → {"ok":true}
 - **Owner:** Enio
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 > **Status:** ✅ ATIVO em produção — VPS 24/7 + local stdio
 > **Deploy:** 2026-05-14 | **Commits:** `df1c7ed7`, `e2e730f7`, `0c705063`, `76bb06fa`
@@ -2780,8 +2698,6 @@ Suporte a JIDs `@lid` (WhatsApp multi-device privacy) via quoted reply em Evolut
 - **Status:** verified
 - **Evidence:** commits 61a0054c, f9161a22, 42133cea; ChatGPT smoke 3/3 confirmado 2026-05-20; CBC-EGOS-MCP-G-PECAS.eval.ts (120 golden cases)
 - **Owner:** Enio Rocha
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 - **Status:** ATIVO — 10 tools live, ChatGPT GPT Builder conectado
 - **Owner:** Enio Rocha + Claude Sonnet 4.6
@@ -2811,8 +2727,6 @@ MCP administrativo para G Peças exposto via REST e MCP nativo. 10 tools: 6 read
 - **Status:** verified
 - **Evidence:** 120 golden cases (288 assertions) in CBC-EGOS-MCP-G-PECAS.eval.ts; typecheck clean; 33 tools deployed v0.7.0
 - **Owner:** Enio Rocha
-- **VERIFIED_AT:** 2026-06-03 (REG-VERIFIED-AT-BACKFILL-001 session)
-- **Method:** Codebase file check and registry verification
 
 - **Status:** COMPLETO Fases 1-7 — 33 tools, v0.7.0, deploy prod pendente
 - **Owner:** Enio Rocha (PO) + Claude Opus 4.7 (orquestração) + Claude Sonnet 4.6 (execução)
@@ -3465,43 +3379,4 @@ Background daemon that watches git status every 15s, invokes LLM summary on chan
 A2A security audit capabilities implementing ASI 2026 guidelines (Agent Security Index) and RFC 8785 JSON Canonicalization Scheme (JCS) signing/verification using Ed25519 or RSA. Exposed via `egos-governance` MCP tools: `audit_agent_card`, `sign_agent_card`, `verify_agent_card`. Unit tests passing in `packages/audit/tests/a2a.test.ts`.
 
 **Tags:** `security`, `a2a`, `cryptography`, `jcs`, `mcp-governance`
-
----
-
-## §109 — Item Intake (cardápio/foto → planilha Kyte) (2026-06-03)
-
-- **Status:** TESTED
-- **Evidence:** `packages/item-intake/src/cli.ts` (+ `extract.ts`, `verify.ts`, `normalize.ts`, `profile.ts`, `profiles/*.json`); exemplo real em `packages/item-intake/examples/`
-- **Owner:** claude+opus
-- **VERIFIED_AT:** 2026-06-03 — `bun test` (31 testes golden+unit, sem API). Smoke e2e: 56/56 itens; dual-pass família diferente (gpt-4o-mini) PEGA o Mel (R$5→avisa R$3). Robustez: foto degradada de impresso 11/11 itens+preços OK (2 níveis). Interface web (`bun run serve`) upload→relatório+download validada. Schema modular `kyte`/`egos`.
-
-Pipeline multimodal que transforma foto/PDF/print de cardápio em planilha no formato de um PDV + relatório de conferência (HITL). `pdftoppm` → PNG → visão (Gemini 2.5 Flash, ~US$0,02) → ItemDraft (confiança/campo + gaps + tipo; nunca inventa preço/custo/estoque) → **2ª passada de preço (dual-pass, família diferente, casa por índice, só flagueia)** → **normalizador profile-driven** (schema em `profiles/*.json` — add/remove/editar colunas sem código; perfis `kyte` e `egos`) → `.xlsx` + `revisao.md`. Cobre o gap "em breve" do import do G Peças (texto-only / schema autopeças). Princípio: evidence-first + nada-cadastra-sozinho. Doc: `packages/item-intake/README.md` + `STATUS.md` + `DEMO_ROTEIRO.md`.
-
-**Tags:** `intake`, `ocr`, `multimodal`, `kyte`, `storefront`, `hitl`, `import`
-
----
-
-## §110 — Consulta de CNPJ em tempo real (CNPJá) (2026-06-03)
-
-- **Status:** TESTED
-- **Evidence:** `packages/cnpj/src/client.ts` + `cli.ts`; vendor CNPJá (`api.cnpja.com`)
-- **Owner:** claude+opus
-- **VERIFIED_AT:** 2026-06-03 — testes reais: `/office/{cnpj}` HTTP 200 cache (Banco do Brasil, 42 sócios) + `strategy=ONLINE` tempo real ~10s (Magazine Luiza: Simples/registrations/equity) + CLI (Petrobras: capital R$205bi, 9 sócios). Token em `.env` (`CNPJA_API_TOKEN`, gitignored).
-
-Cliente + CLI para consulta de dados cadastrais de empresas (Receita Federal) em tempo real via CNPJá. Retorna razão social, situação, abertura, natureza, porte, capital, CNAE, endereço, telefones, emails, **sócios (QSA)**, Simples Nacional, inscrições estaduais. Modos: cache (instantâneo) e `--online` (consulta Receita ao vivo). Saída normalizada (`CnpjResult`) + `raw`. Casa com `/recon` (prospecção) e investigação/OSINT. Governança: QSA traz PII de sócios → guard-brasil/LGPD a jusante. Doc: `packages/cnpj/README.md`.
-
-**Tags:** `cnpj`, `cnpja`, `prospeccao`, `osint`, `receita-federal`, `integration`, `recon`
-
----
-
-## §111 — Hardcoded Sensitive Data Scanner (R-SEC-001) (2026-06-04)
-
-- **Status:** TESTED
-- **Evidence:** `scripts/security/scan-hardcoded-sensitive.ts`
-- **Owner:** guardiao
-- **VERIFIED_AT:** 2026-06-04 — dry-run contra 3395 arquivos tracked do repo egos (22895ms). Achados: 18 [SECRET], 15 [INTERNAL_IP], 37 [OP_NAME], 1757 [PII] (maioria FPs em docs/workflows — triagem detalhada na saída §111-dryrun). Todos os valores mascarados — só file:line+tipo reportado (T0 §3).
-
-Scanner Bun/TS que varre arquivos git-tracked detectando dado sensível hardcoded: PII brasileiro (CPF/CNPJ/RG/MASP/REDS/processo/placa/telefone/email) via `@egos/guard-brasil` `detectPII`; credenciais de infra (AWS/GitHub/Stripe/DB/API key) via `INFRASTRUCTURE_SECRET_PATTERNS`; IPs RFC 1918 em contexto de string/config; nomes de operação policial (`OP-*`, `RCI-*`, `OPER-*`). Regra: NUNCA imprime o valor achado (T0 §3 no-log-secret) — só `file:linha + tipo + confiança`. Exit 1 se achar (fail-closed). Linhas anotadas com `// scan-ok: <motivo>` são puladas. CLI: `bun scripts/security/scan-hardcoded-sensitive.ts [--json] [--all] [--path <prefix>]`. Wiring proposto: pre-commit complementar ao gitleaks + sweep Sentinela cron 15min (ver AGENTS.md §R-SEC-001).
-
-**Tags:** `security`, `pii`, `lgpd`, `guard-brasil`, `secrets`, `compliance`, `scan`, `guardiao`
 

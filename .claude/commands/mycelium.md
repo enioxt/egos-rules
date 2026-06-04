@@ -1,8 +1,9 @@
----
-description: Full Mycelium mesh reality check via VPS SSH. Use when: cross-repo sync needed, agents misbehaving, release validation, or weekly health sweep. Skip for quick governance-only checks (use /mycelium-check).
----
-
 # /mycelium — Kernel Reality Check (EGOS)
+
+> [!WARNING]
+> **EGOS-070 AUDIT (2026-03-30):** Step 3 below queries `bracc-neo4j` — this is the br-acc OSINT graph database (77M entities).
+> It is NOT a Mycelium database. The Mycelium layer has no Neo4j backend.
+> The query is useful for VPS health but should NOT be labeled as a Mycelium check.
 
 Validate Mycelium mesh reality, references, and maturity.
 
@@ -10,7 +11,7 @@ Validate Mycelium mesh reality, references, and maturity.
 
 1. **Check VPS Agents**
 ```bash
-ssh -p 22 root@217.216.95.126 -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
+ssh -p 22 root@204.168.217.125 -i ~/.ssh/hetzner_ed25519 -o StrictHostKeyChecking=no \
   "pm2 list && docker ps --format '{{.Names}}: {{.Status}}'"
 ```
 
@@ -21,7 +22,7 @@ bash /home/enio/egos/scripts/sync-all-leaf-repos.sh --check 2>/dev/null | tail -
 
 3. **Check Neo4j (Graph/Memory)**
 ```bash
-ssh -p 22 root@217.216.95.126 -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
+ssh -p 22 root@204.168.217.125 -i ~/.ssh/hetzner_ed25519 -o StrictHostKeyChecking=no \
   "docker exec bracc-neo4j cypher-shell -u neo4j 'MATCH (n) RETURN count(n) as nodes'"
 ```
 

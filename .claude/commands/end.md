@@ -204,7 +204,16 @@ git log --oneline --since='8 hours ago' 2>/dev/null
 echo ""
 echo "=== Files changed ==="
 git log --since='8 hours ago' --name-only --pretty=format: 2>/dev/null | sort -u | grep -v '^$' | head -30
+
+# Phase 2.6 — Dispersion (fecha o loop medir-e-fluir; START-DISPERSION-001 mede na entrada, /end mede na saída) — END-DISPERSION-001
+if [ -f "$ROOT/scripts/dispersion-meter.ts" ] && command -v bun >/dev/null 2>&1; then
+  echo ""
+  echo "=== Dispersão (saída da sessão — Norte: Pursuit A/intelink) ==="
+  bun "$ROOT/scripts/dispersion-meter.ts" 2>/dev/null || echo "dispersion-meter: erro (skip)"
+fi
 ```
+
+> **Phase 2.6 — leitura de dispersão na saída.** Se 🔴 (ask_recentering), registrar no handoff/memory que a sessão foi alta-dispersão + se foi generativa (capabilities/descoberta) ou ruído (re-juggling/colisão). O delta com a leitura do /start mostra se a sessão concentrou ou espalhou. NÃO bloqueia — instrumento. SSOT: `scripts/dispersion-meter.ts` + `feedback_dispersion_norte_hybrid`.
 
 ---
 
@@ -306,6 +315,55 @@ R6. MUDANÇA EM POSTURA/COMPORTAMENTO do agente (CLAUDE.md T0/T1)?
 - R6 → garantir que Phase 8 (memory) vai capturar o contexto
 
 **Skip:** todos N-A → "Phase 3.5: sem mudanças de regras nesta sessão"
+
+---
+
+## PHASE 3.6 — Varredura Anti-Atropelo: idéia/conceito → task (OBRIGATÓRIA — END-ANTIATROPELO-001)
+
+> **Origem:** Enio 2026-06-03 — "documente tudo que falamos aqui, não deixe nenhuma task pendente, nenhuma idéia, conceito que deveria ter virado task, não virou mas é importante e fomos atropelando assuntos. Quero que vire regra, executada no final de cada /end."
+> **Princípio:** numa sessão de fluxo, assuntos se atropelam — idéias boas são ditas de passagem e morrem. Esta fase **relê a sessão inteira** e força cada idéia/conceito/decisão importante a virar task em `TASKS.md` (ou nota deferida registrada), ANTES do handoff e do commit final. **Nada de valor pode morrer no transcript.**
+> **Não-negociável:** /end SEM esta varredura = incompleto. NÃO é skipável (nem em sessão pequena — só read-only zero-commit pode declarar "Phase 3.6: skip — read-only").
+
+### Procedimento (executar de fato, não declarar)
+
+1. **Reler a sessão inteira** (não só os últimos turnos) procurando os GATILHOS abaixo. Inclui o que VOCÊ propôs, o que o Enio disse de passagem, e o que veio de fonte externa (LLM colado, doc, link).
+2. Para CADA achado: triagem `R = L/C` (Resolver Doctrine): **RESOLVE-NOW** (barato+alta alavancagem, faça já antes de fechar) · **TASK** (vira `[ ]` em TASKS.md com ID + prioridade derivada de L) · **NOTA-DEFERIDA** (registrar como nota `>` no bloco da sessão p/ não perder, com motivo explícito de por que NÃO é task agora — ex: Karpathy/over-engineering).
+3. Idéia da qual você não tem certeza se já virou task → **grep no TASKS.md primeiro**; só então decидir. Duplicar é melhor que perder, mas verifique.
+4. Tasks novas entram na Phase 5 (TASKS.md) e vão no commit final (Phase 12).
+
+### GATILHOS específicos (customizados — varrer por TODOS)
+
+**Linguísticos (o que foi dito):**
+- futuro/adiamento: "depois", "no futuro", "mais pra frente", "outra hora", "em algum momento", "quando der"
+- desejo/sugestão: "seria bom", "podíamos", "dava pra", "vale a pena", "e se", "também", "ideia de", "imagina se"
+- falta/lacuna: "falta", "ainda não", "precisa", "tem que", "o que falta", "limitação", "gap"
+- corte/deferimento: "deferido", "adiar", "fica pra", "por enquanto não", "Red Zone → task", "depois a gente vê"
+- decisão do Enio entre opções (cada opção NÃO escolhida pode virar task/nota)
+
+**Estruturais (o que ficou nos artefatos):**
+- seções "Próximos passos", "Limitações", "O que falta", "Future", "em breve", "TODO", "FIXME" em docs/README/STATUS criados ou tocados na sessão
+- achados incidentais não corrigidos (bug visto de passagem, drift, dívida técnica)
+- sugestões de LLM externo coladas na sessão (specs, listas numeradas, arquiteturas propostas) — cada item é candidato
+- features mencionadas no commit/handoff como `[CONCEPT]` ou "próxima sessão"
+- qualquer "opção" apresentada ao Enio que ele não escolheu mas não rejeitou
+
+### Output OBRIGATÓRIO (formato literal)
+
+```
+VARREDURA ANTI-ATROPELO
+=======================
+Sessão relida: [N turnos / desde quando]
+Achados: [N]  →  RESOLVE-NOW: [n]  ·  TASK nova: [n]  ·  NOTA-deferida: [n]  ·  já-existia: [n]
+
+NOVAS TASKS criadas (com ID + prioridade):
+- [ID] [P?] — [1 linha]
+RESOLVIDO AGORA (antes de fechar):
+- [o quê] — [SHA se commitado]
+NOTAS DEFERIDAS (registradas, não-task, com motivo):
+- [idéia] — por que NÃO é task agora: [motivo]
+```
+
+**Critério de aceite:** ao final, o agente afirma: *"Nenhuma idéia/conceito da sessão ficou sem destino (task, resolução ou nota com motivo)."* Se não puder afirmar isso → continuar varrendo.
 
 ---
 
@@ -616,6 +674,11 @@ Phase 3 — Session Review (7 questions answered):
   ✓ Use cases: [N]
   ✓ [CONCEPT] markers: [N] (sem SHA)
 
+Phase 3.6 — Varredura Anti-Atropelo (OBRIGATÓRIA)
+  ✓ Achados: [N] → TASK nova: [n] · RESOLVE-NOW: [n] · NOTA-deferida: [n]
+  ✓ Afirmação: "Nenhuma idéia/conceito ficou sem destino" ✅
+  ✗ NÃO ACEITO: pular sem reler a sessão inteira
+
 Phase 4 — Handoff
   ✓ Path: docs/_current_handoffs/handoff_YYYY-MM-DD.md
   ✓ All sections filled (Accomplished/InProgress/Blocked/Next/Env/Decisions)
@@ -734,16 +797,29 @@ ENTENDIMENTO — <artefato>
 
 ## PHASE 12 — Final Commit & Push
 
-Se houver mudanças não-commitadas (TASKS.md, handoff, MEMORY.md):
+> **MELHORIA 2026-06-02 (sessão maratona):** ANTES do commit final, **sincronizar espelhos** — senão /end deixa drift que o próximo /start/Sentinela pega (bati nisso ~6× numa sessão). E rodar a Sentinela pro relatório final.
 
 ```bash
+# 0. Auto-heal mirrors (kernel→claude-runtime/egos-home/.guarani) — fim do drift de espelho
+bun scripts/egos-autoheal.ts 2>/dev/null || echo "autoheal indisponível"
+# 0.1 Sentinela: relatório + flags finais (o que fica pro próximo)
+bun scripts/agent-sentinela.ts --force 2>/dev/null | tail -3 || true
+
+# 1. Commit final (path-scoped, nunca -A; -m ANTES de qualquer --path)
 git add TASKS.md docs/_current_handoffs/handoff_*.md
 # Memory files: git add ~/.claude/... separately if tracked
-git commit -m "chore(end): session close YYYY-MM-DD — [N] commits, [topic]"
+# NOTA (2026-06-02): se a coordination-watcher estiver stale, o pre-commit BLOQUEIA com
+# "❌ BLOCKED: Coordination watcher stale". Bypass sancionado: prefixar EGOS_WATCHER_OVERRIDE=1.
+# (Recorrente em sessões longas sem watcher rodando — bati ~8× numa sessão.)
+EGOS_WATCHER_OVERRIDE=1 git commit -m "chore(end): session close YYYY-MM-DD — [N] commits, [topic]"
 
 # Push via safe-push (T0 rule §4)
 bash scripts/safe-push.sh main
 ```
+
+> **Lição de sintaxe (recorrente):** `git commit -m "msg" -- <path>` — a mensagem vem ANTES do `--`, senão vira pathspec ("did not match any file"). E `git checkout -- docs/jobs/` antes do commit limpa o ruído do hook-log auto-gerado.
+
+> **Atrito recorrente — watcher stale (2026-06-02):** em sessão longa sem `coordination-watcher.ts` rodando, TODO commit do /end bate em "❌ BLOCKED: Coordination watcher stale (>Ns)". O bypass documentado é `EGOS_WATCHER_OVERRIDE=1 git commit ...`. Já está embutido no comando acima. (Idem para /start e commits intermediários.)
 
 ---
 
@@ -919,6 +995,7 @@ Ao final, imprimir para o usuário (copiável para a janela-mestre):
 | 6 | NUNCA — drift check obrigatório | — |
 | 7 | Feat commits = 0 | "Phase 7: nada a propagar" |
 | 3.5 | Nenhum arquivo de regra mudado | "Phase 3.5: sem mudanças de regras nesta sessão" |
+| 3.6 | NUNCA (exceto read-only zero-commit) | "Phase 3.6: skip — read-only" |
 | 7.2 | Zero commits OU só mudanças em docs/jobs+audits | "Phase 7.2: skip — sem impacto L0/templates" |
 | 8 | NUNCA — memory write obrigatório | — |
 | 9 | Sessão zero commits OU só infra/chore | "Phase 9: skip — [reason]" |
@@ -944,6 +1021,7 @@ Ao final, imprimir para o usuário (copiável para a janela-mestre):
 
 ---
 
+*v6.6 — 2026-06-03 | Phase 3.6 Varredura Anti-Atropelo (END-ANTIATROPELO-001, pedido Enio): relê a sessão INTEIRA por gatilhos linguísticos+estruturais e força cada idéia/conceito/decisão a virar task (ou nota deferida com motivo) antes do handoff/commit. Não-skipável (exceto read-only). Origem: sessão item-intake onde idéias boas (KYTE-API, DEDUP, GENERIC, TOOLS-INVENTORY…) foram ditas de passagem e só viraram task numa varredura manual pós-/end.*
 *v6.5.1 — 2026-05-30 | Phase 14 cross-repo fix (INC-MERGE-001): inbox de merge SEMPRE no kernel egos (a mestre só pulla lá). Janela em leaf-repo escreve o block no kernel referenciando os SHAs do leaf; commit/push do block a partir do kernel. Descoberto no merge de 3 janelas onde a janela intelink-platform teve que improvisar o destino.*
 *v6.5 — 2026-05-30 | Adiciona Phase 14 Cross-Session Merge Handoff — MERGE BLOCK auto-suficiente por janela quando N sessões Claude Code são fundidas numa sessão-mestre única (index .git compartilhado, INC-002).*
 *v6.4 — 2026-05-29 | Adiciona Phase 3.5 Rule Change Interview (END-EXPAND-002) — 6 perguntas estruturadas quando CLAUDE.md/AGENTS.md/OVERRIDES.md/INHERITS.md/.guarani mudaram.*

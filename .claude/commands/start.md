@@ -1,8 +1,8 @@
 ---
-description: Session Initialization v6.13 — MODE detection (research|write) + Cross-Platform Sanity (0.0) + EPOS/0.5 (obrigatório no checkpoint) + Codex Health (4.8) + Leaf SSOTs/4.6 + Evolution Health/4.7 + Handoff/4.5 + Capability Delta (6.5) + Governance Smoke
+description: Session Initialization v6.14 — MODE detection (research|write) + Cross-Platform Sanity (0.0) + EPOS/0.5 (obrigatório no checkpoint) + PRIME Process+Flow/1.5 + Codex Health (4.8) + Handoff⨯Commits⨯TASKS reconcile (4.5c) + Leaf SSOTs/4.6 + Capability Delta (6.5) + Governance Smoke
 ---
 
-# /start — Session Initialization v6.13 (EGOS)
+# /start — Session Initialization v6.14 (EGOS)
 
 > **Princípio:** Não basta verificar existência — é preciso LER o conteúdo.
 > **Bugs corrigidos:** v5.9 (`head -60` truncava 70%+) | v6.1 (handoff não lido) | v6.2 (smoke grep JSON) | v6.4 (INC-009 leaf SSOTs) | v6.9 (Layer 4.8 bash obrigatório).
@@ -19,12 +19,13 @@ Você está executando `/start`. Sua obrigação:
 3. **PARALELIZAR** Read tools que não dependem entre si.
 4. Ao final, preencher o **Verification Checkpoint** (Layer 7) com respostas concretas.
 5. Se omitir uma layer, **declare explicitamente** o motivo (ex: "Layer 5 skipped: VPS unreachable").
-6. **"Próximos passos"** = handoff.next PRIMEIRO, depois P0 do Single Pursuit. Nunca só grep P0.
+6. **"Próximos passos" = reconciliar 3 fontes** (Layer 4.5): handoff.next ⨯ últimos commit-subjects ⨯ TASKS. Se um `feat:` recente nomeia doc/task que o handoff não cita → esse é o fio da meada (LER + surfaçar). Pode ser P1/`research`. Nunca só grep P0; nunca surfaçar handoff.next já-feito (START-RECONCILE-001).
 7. **§4.8 OBRIGATÓRIO:** Layer 4.8 DEVE ser executada com Bash tool — rodar `scripts/codex-usage.ts --json` e reportar quota real. Citar sem rodar = checkpoint inválido (Bug v6.9).
 8. **MODELO PADRÃO SONNET 4.6:** Se você é Opus 4.7, avalie cada task via [MODEL_DELEGATION_POLICY](../../docs/governance/MODEL_DELEGATION_POLICY.md). Opus orquestra, Sonnet executa, Haiku faz mecânico. Reportar modelo atual + delegação no checkpoint.
 9. **SWARM COMMIT POLICY:** Quando 1+ `Agent` em background, **NÃO fazer git commit incremental** — race condition. Commit consolidado final. SSOT: [SWARM_COMMIT_POLICY](../../docs/governance/SWARM_COMMIT_POLICY.md).
 11. **RESOLVER DOCTRINE [T1]:** Você é EGOS Prime, a última camada — se algo para na sua porta, você resolve (não recua, não culpa subagente: erro de subagente = falha de orquestração sua). Todo achado da sessão passa por **triagem matemática** `R = L/C` antes de parar o trabalho atual: RESOLVE NOW (barato+alta alavancagem) ou TASK com prioridade derivada de L. Red Zone nunca auto-resolve. SSOT: [RESOLVER_DOCTRINE](../../docs/governance/RESOLVER_DOCTRINE.md).
 10. **MODE DETECTION:** Prompt com (`pesquisa`, `governança`, `leitura`, `revisão`, `auditoria`, `entender`, `só ler`) → `MODE=research` (executa só Layers `0.0+0+0.5+4.8+1+2+3+4+4.5+7`). Caso contrário → `MODE=write` (todas as layers). Declarar MODE como **primeiro campo** do checkpoint. Corte silencioso sem MODE = checkpoint inválido.
+12. **PERGUNTA OBRIGATÓRIA DE DIREÇÃO [T1 — Enio 2026-06-02, START-ASK-001]:** Todo `/start` DEVE terminar **perguntando ativamente ao Enio o que for necessário sobre os próximos passos** antes de executar qualquer trabalho — nunca auto-prosseguir. Use `AskUserQuestion` com opções+argumentos quando houver escolha de track/persona/forma-de-agir; pergunta aberta quando faltar contexto. O checkpoint (Layer 7) que **não** fecha com pergunta de direção = `/start` inválido. Enio elogiou explicitamente este comportamento e pediu persistência: "reforce mais ainda para toda as vezes que der /start obrigatoriamente você questionar o que for necessário sobre os próximos passos." Não confundir com pressa: descobrir o rumo certo > começar rápido no rumo errado.
 
 ---
 
@@ -130,6 +131,35 @@ Layer 0.5 — EPOS Continuation
 
 ---
 
+## LAYER 0.6 — Dispersion / Focus Signal (HÍBRIDO POR MÉTRICA — START-DISPERSION-001)
+
+> **Origem:** reflexão Enio 2026-06-03 — "calcular nossa dispersão, aprender com ela; híbrido por métrica: flui até um limiar, aí o /start pergunta — socrático, não impõe."
+> **Norte atual (corte Enio 2026-06-03):** **Pursuit A = intelink/DHPP**.
+> **Princípio:** o trabalho FLUI por padrão. Só quando a métrica de dispersão estoura (vermelho) o /start **dispara uma pergunta socrática de recentragem** — nunca bloqueia.
+
+```bash
+EGOS_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$HOME/egos")
+if [ -f "$EGOS_ROOT/scripts/dispersion-meter.ts" ] && command -v bun >/dev/null 2>&1; then
+  bun "$EGOS_ROOT/scripts/dispersion-meter.ts" 2>/dev/null || echo "dispersion-meter: erro (skip)"
+else
+  echo "Layer 0.6: dispersion-meter ausente — skip"
+fi
+```
+
+**Regra de disparo:**
+- `level: green/yellow` → apenas reportar a leitura no checkpoint (deixa fluir).
+- `level: red` (`ask_recentering=true`) → **a Pergunta de Direção obrigatória (regra 12) DEVE incluir a recentragem socrática:** "Dispersão 🔴 (X commits/7d, Y scopes, Pursuit A parado Zd). Esta sessão **recentra no Norte (Pursuit A / intelink)** ou é um **detour justificado** (qual e por quanto tempo)?"
+- Limiares ajustáveis em `scripts/dispersion-meter.ts` (TH). Enio recalibra conforme a leitura.
+
+**Reportar no Verification Checkpoint:**
+```
+Layer 0.6 — Dispersion Signal
+  ✓ Nível: [🟢/🟡/🔴] | total=[N]/7d (A=[n] · B+meta=[n]) | scopes=[n] | meta=[n]% | A-stale=[n]d
+  ✓ ask_recentering: [sim → pergunta socrática na direção | não]
+```
+
+---
+
 ## LAYER 4.8 — Codex Health Check (executar antes de Layers 4+)
 
 > **Posição:** após 0.5 — saber quota antes de decidir delegação. SSOT: `docs/governance/MULTI_LLM_ORCHESTRATION.md` §3.
@@ -174,6 +204,19 @@ Layer 4.8 — Codex Health
 
 ---
 
+## LAYER 1.5 — PRIME Process + Flow State (COMO AGIR nesta sessão)
+
+> **Origem:** Enio 2026-06-01 — "identifique todo esse seu jeito de agir pra a janela fresca agir igual". O substrato que faz a janela nova ter a MESMA calibração. Sem isto, o /start carrega *fatos* mas não o *método*.
+
+**LEIA com Read tool (paralelo):**
+- `/home/enio/egos/docs/governance/PRIME_OPERATING_PROCESS.md` — o loop do Prime (§1) + sinais de FLOW 🟢/🔴 (§2) + como replicar (§3)
+- `/home/enio/egos/docs/governance/RESOLVER_DOCTRINE.md` — §2 triagem `R=L/C` + **§6 fronteiras (onde entro sem medo vs onde paro limpo)**
+- `/home/enio/egos/docs/governance/RULE_SETS_INDEX.md` — índice dos conjuntos de regra (kernel + leaf)
+
+**Internalize:** (1) Loop: triagem `R=L/C` → descobre antes de criar → delega o pesado (janela Opus limpa) → valida tudo (subagente/LLM externo = UNVERIFIED) → commita path-scoped+push → §6 fronteiras → persiste cortes do Enio em memória → /end com SHAs. (2) **Flow 🟢** = loop apertado + diretivas meta ("avance em tudo") + eu pegando meu erro e surfaçando Red Zone sem ser pedido. **Flow 🔴** = colisão de janelas, bloat de contexto ($$$), eu perguntando onde devia agir / agindo onde devia parar. (3) Manter flow: um foco por turno, delegar, validar, commitar frequente, saber a fronteira, janela fresca quando incha.
+
+---
+
 ## LAYER 2 — Project Bootstrap
 
 **LEIA completo (Read tool):** `/home/enio/egos/docs/EGOS_BOOTSTRAP.md` — todas as linhas.
@@ -211,19 +254,38 @@ Pegue os 3 primeiros paths citados e use Read tool em cada um. (O reminder inici
 **Duas fontes complementares — leia AMBAS:**
 
 ```bash
-# 4.5a — Handoff mais recente
+# 4.5a — Handoff mais recente + GUARDA DE CONTAGEM (START-HANDOFF-COUNT-001 2026-06-03)
+# Causa: /start listava só top-3 por mtime → drift de SSOT ("1 handoff ativo")
+# ficava INVISÍVEL. Sessão 2026-06-03 achou 23 handoffs ativos onde o checkpoint
+# reportava 3. Agora conta e AVISA se >1 handoff de sessão (padrão handoff_*.md;
+# exclui _TEMPLATE e cross-agent FOR_*/sync_*).
 ls -t /home/enio/egos/docs/_current_handoffs/*.md 2>/dev/null | head -1
+_HCOUNT=$(ls /home/enio/egos/docs/_current_handoffs/handoff_*.md 2>/dev/null | wc -l)
+if [ "$_HCOUNT" -gt 1 ]; then
+  echo "🟡 SSOT DRIFT: $_HCOUNT handoffs de sessão ativos (SSOT = 1). Consolidar: manter o mais recente, mover o resto p/ docs/_archived_handoffs/."
+  ls -t /home/enio/egos/docs/_current_handoffs/handoff_*.md 2>/dev/null | tail -n +2 | sed 's|.*/|     - stale: |'
+fi
 
 # 4.5b — Top 10 P0 (INV-START-TASKS-001)
 grep "^- \[ \].*\[P0\]" /home/enio/egos/TASKS.md 2>/dev/null | head -10
+
+# 4.5c — Fio da meada: últimos 4 commit SUBJECTS (START-RECONCILE-001)
+# Quando a sessão anterior rotaciona janela MID-FLOW, o "onde paramos" NÃO está
+# no handoff (mtime-newest ≠ intent-freshest) — vive no subject do último feat:.
+git -C /home/enio/egos log --oneline -4
+# Extrai docs/tasks NOMEADOS nos commits recentes (candidatos a substrato a LER)
+git -C /home/enio/egos log -4 --pretty=%s | grep -oE "[A-Z][A-Z-]+-[0-9]+|[A-Z_]+\.md|[a-z-]+\.md" | sort -u
 ```
 
-Use **Read tool** no handoff retornado. Foque em: "Next / Próximos Passos", "In Progress", "Validações Pendentes".
+Use **Read tool** no handoff retornado. Foque em: "Next / Próximos Passos", "In Progress", "Validações Pendentes". **LEIA também** todo doc/SSOT nomeado num commit `feat:`/`docs:` recente que o handoff não mencione (regra abaixo).
 
-**Reconciliação obrigatória:**
+**Reconciliação obrigatória (3 fontes — handoff ⨯ commits ⨯ TASKS):**
 - handoff.next aponta task não P0 em TASKS.md → flag drift
 - P0 em TASKS.md não mencionado em handoff → adicionar como candidato
-- Ambos concordam → confiança máxima, primeira recomendação
+- **commit recente `feat:`/`docs:` nomeia doc/task que o handoff NÃO cita → é o fio da meada: LER esse doc + surfaçar a task como candidato a "próximo passo" (BUG v6.13 START-RECONCILE-001: CYBER-KB-001 era P1/research, o grep só-P0 a escondeu e o handoff 22:50 estava stale).**
+- **handoff.next já feito (ex: "commit/push staged" mas já pushado) → NÃO surfaçar como próximo passo; cavar o REAL next nos commits + TASKS.**
+- "Próximos passos" pode incluir task **P1/P2 `research`** se ela for o next combinado no commit/handoff/conversa — não filtrar por P0 quando o flow apontou pra ela.
+- Ambos/três concordam → confiança máxima, primeira recomendação
 
 ---
 
@@ -274,8 +336,20 @@ Layer 4.7 — Evolution API Health
 
 ## LAYER 5 — System State
 
+> **MELHORIA 2026-06-02:** a Sentinela (analista always-on, cron 15min) já observou o sistema — LER os flags dela em vez de redescobrir. E auto-curar drift de espelho na entrada.
+
 ```bash
 ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo $PWD)
+# Auto-heal mirrors na entrada (kernel→espelhos) — começa a sessão sem drift
+bun scripts/egos-autoheal.ts 2>/dev/null | tail -1 || true
+# Flags da Sentinela (o always-on já triou o estado) + último relatório
+echo "=== Sentinela flags (always-on) ==="; tail -6 /home/enio/.egos/sentinela-flags.jsonl 2>/dev/null | python3 -c "import sys,json
+seen=set()
+for l in sys.stdin:
+  try:
+    d=json.loads(l); k=d.get('flag')
+    if k and k not in seen: seen.add(k); print(' ',d.get('severity'),k,'-',d.get('detail','')[:60])
+  except: pass" 2>/dev/null || echo "  (sem flags)"
 echo "Repo: $(basename $ROOT) | Branch: $(git branch --show-current)"
 git log --oneline -5
 echo "Uncommitted: $(git status --short | wc -l) files" && git status --short
@@ -334,6 +408,10 @@ HERMES=$(ls -d /home/enio/hermes-egos/plugins/egos-* 2>/dev/null | wc -l)
 echo "Skills: ${PERSONAS} personas | ${DPIO} DPIO | ${SLASH} slash local | ${SLASH_GLOBAL} global | ${AGENT_TS} agent.ts | ${HERMES} hermes"
 echo -n "Supabase: "; grep -q SUPABASE_URL .env 2>/dev/null && echo "✅" || echo "❌"
 echo -n "codebase-memory-mcp: "; command -v codebase-memory-mcp >/dev/null && echo "✅" || echo "❌"
+# Agent Org (2026-06-02): papéis dispatcháveis via Agent tool. Os 3 novos
+# (investigador/guardiao/curador) só viram subagent_type nativo em sessão FRESCA.
+AGENTS_DEF=$(ls .claude/agents/*.md 2>/dev/null | grep -vE "brief" | wc -l)
+echo "Agent Org: ${AGENTS_DEF} papéis em .claude/agents/ | mapa: docs/governance/EGOS_AGENT_MAP.md (308 caps→10 dom→12 agentes)"
 ```
 
 ---
@@ -424,7 +502,7 @@ Layer 6.7 — NotebookLM Coverage
 
 ```
 ═══════════════════════════════════════════════════════════
-EGOS /start v6.13 — Verification Checkpoint
+EGOS /start v6.14 — Verification Checkpoint
 ═══════════════════════════════════════════════════════════
 
 🔒 MODE: [research | write] — [motivo da escolha]
@@ -440,9 +518,17 @@ Layer 0.5 — EPOS Pergunta Disparada (OBRIGATÓRIO — checkpoint inválido sem
   ✓ Pergunta: [B*-Q* + formato 6-seções] OU [motivo válido de pausa]
   ✗ NÃO ACEITO: override subjetivo sem motivo explícito
 
+Layer 0.6 — Dispersion Signal (híbrido por métrica)
+  ✓ Nível: [🟢/🟡/🔴] | total/7d | scopes | meta% | A-stale
+  ✓ ask_recentering: [sim → pergunta socrática na direção | não]
+
 Layer 1 — Global Rules
   ✓ T0 citada: [ex: "NEVER force-push main"]
   ✓ Single Pursuit (enio-profile): [data + descrição]
+
+Layer 1.5 — PRIME Process + Flow
+  ✓ Loop R=L/C internalizado | §6 fronteiras citadas
+  ✓ Flow state agora: [🟢 apertado | 🟡 | 🔴 quebrando — motivo]
 
 Layer 2 — Bootstrap
   ✓ EGOS_BOOTSTRAP.md: [versão + última atualização]
@@ -545,6 +631,8 @@ Re-leia EGOS_BOOTSTRAP.md (Layer 2) + handoff mais recente (Layer 4.5) — só e
 
 ---
 
+*v6.15 — 2026-06-03 | START-HANDOFF-COUNT-001 (pós-achado real): Layer 4.5a agora CONTA handoffs de sessão (`handoff_*.md`) e avisa se >1 — antes só listava top-3 por mtime, escondendo drift de SSOT (sessão 2026-06-03 achou 23 ativos onde o checkpoint dizia 3). Exclui _TEMPLATE + cross-agent FOR_*/sync_*.*
+*v6.14 — 2026-06-01 | START-RECONCILE-001 (pós-falha real do /start): Layer 1.5 (PRIME Process + Flow + Resolver §6 — o método, não só os fatos) + Layer 4.5c (fio-da-meada: reconcilia handoff ⨯ commit-subjects ⨯ TASKS; surfaça task nomeada em `feat:` recente mesmo P1/research; não surfaça handoff.next já-feito). Causa: /start leu handoff mtime-newest stale + grep só-P0 escondeu CYBER-KB-001 (o next combinado).*
 *v6.13 — 2026-05-21 | INV-START-SLIM-001: 900L → ~565L (-37%). Layers 4.6/4.7/6.5 extraídas para `docs/start-layers/`. Layer 0.0 condensada. Layer 0.5 condensada. Layer 6.6 condensada. Comparativo v5.9→v6.3 removido (coberto pelo changelog abaixo). Semântica preservada integralmente.*
 *v6.12 — 2026-05-21 | Layer 4.5 expandida (4.5a+4.5b) + reconciliação handoff↔TASKS (INV-START-TASKS-001)*
 *v6.11 — 2026-05-21 | +MODE detection + Layer 0.5 no checkpoint + Layer 4.8 movida para após 0.5*

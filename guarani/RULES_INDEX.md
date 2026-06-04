@@ -33,7 +33,7 @@
 | **MCP usage / registry** | MCP_REGISTRY.md (§Quando usar MCP) | `docs/governance/MCP_REGISTRY.md` |
 | **Domain rules** | DOMAIN_RULES.md | `.guarani/orchestration/DOMAIN_RULES.md` |
 | **Open access sourcing** | OPEN_ACCESS_SOURCING_RULE.md | `docs/governance/OPEN_ACCESS_SOURCING_RULE.md` |
-| **Agent scope gates** | agent-scope-check.ts ⚠️ PLANNED (não implementado — ver SEC-AGENT-SCOPE-REBUILD-001) | _path pendente_ |
+| **Agent scope gates** | agent-scope-check.ts | `scripts/security/agent-scope-check.ts` |
 | **Literature API** | OA REST + MCP | `apps/egos-hq/api/hq/literature/` + `packages/mcp-literature/` |
 | **Coordination monitor** | COORDINATION_MONITOR_SPEC.md | `docs/governance/COORDINATION_MONITOR_SPEC.md` |
 | **Pre-commit hooks** | pre-commit | `.husky/pre-commit` |
