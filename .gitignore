@@ -20,3 +20,17 @@ skill-usage.jsonl
 last-health-check.json
 review-queue*.jsonl
 review-queue*.jsonl.gz
+
+# Ephemeral runtime state (não versionar)
+sentinela-flags.jsonl
+sentinela-last.json
+sentinela-cron.log
+agent-gates.jsonl
+agent-runs/
+rules-pending.jsonl
+session-state.json
+coordination-blackboard.json
+coordination-blackboard.md
+coordination-history.jsonl
+codex-reviews/*.log
+logs/*.log

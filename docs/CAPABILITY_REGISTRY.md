@@ -3501,7 +3501,20 @@ Cliente + CLI para consulta de dados cadastrais de empresas (Receita Federal) em
 - **Owner:** guardiao
 - **VERIFIED_AT:** 2026-06-04 — dry-run contra 3395 arquivos tracked do repo egos (22895ms). Achados: 18 [SECRET], 15 [INTERNAL_IP], 37 [OP_NAME], 1757 [PII] (maioria FPs em docs/workflows — triagem detalhada na saída §111-dryrun). Todos os valores mascarados — só file:line+tipo reportado (T0 §3).
 
-Scanner Bun/TS que varre arquivos git-tracked detectando dado sensível hardcoded: PII brasileiro (CPF/CNPJ/RG/MASP/REDS/processo/placa/telefone/email) via `@egos/guard-brasil` `detectPII`; credenciais de infra (AWS/GitHub/Stripe/DB/API key) via `INFRASTRUCTURE_SECRET_PATTERNS`; IPs RFC 1918 em contexto de string/config; nomes de operação policial (`OP-*`, `RCI-*`, `OPER-*`). Regra: NUNCA imprime o valor achado (T0 §3 no-log-secret) — só `file:linha + tipo + confiança`. Exit 1 se achar (fail-closed). Linhas anotadas com `// scan-ok: <motivo>` são puladas. CLI: `bun scripts/security/scan-hardcoded-sensitive.ts [--json] [--all] [--path <prefix>]`. Wiring proposto: pre-commit complementar ao gitleaks + sweep Sentinela cron 15min (ver AGENTS.md §R-SEC-001).
+Scanner Bun/TS que varre arquivos git-tracked detectando dado sensível hardcoded: PII brasileiro (CPF/CNPJ/RG/MASP/REDS/processo/placa/telefone/email) via `@egos/guard-brasil` `detectPII`; credenciais de infra (AWS/GitHub/Stripe/DB/API key) via `INFRASTRUCTURE_SECRET_PATTERNS`; IPs RFC 1918 em contexto de string/config; nomes de operação policial (`OP-*`, `RCI-*`, `OPER-*`). Regra: NUNCA imprime o valor achado (T0 §3 no-log-secret) — só `file:linha + tipo + confiança`. Exit 1 se achar (fail-closed). Linhas anotadas com `// scan-ok: <motivo>` são puladas. CLI: `bun scripts/security/scan-hardcoded-sensitive.ts [--json] [--all] [--path <prefix>]`. Wiring: pre-commit (`.husky/pre-commit` linha 287–288, `--staged`) + sweep Sentinela 24/7 (`agent-sentinela.ts` tel-step 71, `--full-repo` default, flag HIGH `HARDCODED_SENSITIVE`).
 
 **Tags:** `security`, `pii`, `lgpd`, `guard-brasil`, `secrets`, `compliance`, `scan`, `guardiao`
 
+
+---
+
+## §112 — Visual Audit (Playwright End-to-End) (2026-06-04)
+
+- **Status:** TESTED
+- **Evidence:** `scripts/visual-audit.ts` — 12/12 passes (8 páginas + 4 interações), desktop+mobile+prod
+- **Owner:** prime
+- **VERIFIED_AT:** 2026-06-04 — `bun scripts/visual-audit.ts --url https://egos.ia.br` 12/12 ✅
+
+Script Bun/Playwright que navega todas as páginas do egos-landing e executa testes de interação: (1) 8 rotas de página com screenshot + check de texto esperado + JS errors; (2) consent flow (modal → Modo básico → badge); (3) consent detail (toggle analytics ON → "1 compartilhado"); (4) Guard Brasil local scanner (CPF/tel sintético → mascaramento); (5) ConsentBadge panel (open/close). Exit 1 se JS errors ou interação falhar. Relatório JSON em `docs/_proofs/<data>/report.json`. Integrado em `apps/egos-landing/deploy.sh` — roda automaticamente pós-rsync. Modos: `--url URL` (local ou prod), `--mobile` (375px), `--json`, `--baseline`.
+
+**Tags:** `testing`, `playwright`, `visual-proof`, `frontend`, `qa`, `ci`, `deploy`
