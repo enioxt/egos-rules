@@ -27,6 +27,8 @@ Você está executando `/start`. Sua obrigação:
 10. **MODE DETECTION:** Prompt com (`pesquisa`, `governança`, `leitura`, `revisão`, `auditoria`, `entender`, `só ler`) → `MODE=research` (executa só Layers `0.0+0+0.5+4.8+1+2+3+4+4.5+7`). Caso contrário → `MODE=write` (todas as layers). Declarar MODE como **primeiro campo** do checkpoint. Corte silencioso sem MODE = checkpoint inválido.
 12. **PERGUNTA OBRIGATÓRIA DE DIREÇÃO [T1 — Enio 2026-06-02, START-ASK-001]:** Todo `/start` DEVE terminar **perguntando ativamente ao Enio o que for necessário sobre os próximos passos** antes de executar qualquer trabalho — nunca auto-prosseguir. Use `AskUserQuestion` com opções+argumentos quando houver escolha de track/persona/forma-de-agir; pergunta aberta quando faltar contexto. O checkpoint (Layer 7) que **não** fecha com pergunta de direção = `/start` inválido. Enio elogiou explicitamente este comportamento e pediu persistência: "reforce mais ainda para toda as vezes que der /start obrigatoriamente você questionar o que for necessário sobre os próximos passos." Não confundir com pressa: descobrir o rumo certo > começar rápido no rumo errado.
 
+13. **NEW DIRECTION GATE [T1 — Enio 2026-06-07, A82]:** Se o Enio (ou qualquer agente, inclusive você) mencionar nova direção/insight/ideia/feature/refactor **durante a sessão** (não só no `/start`), **PARAR e executar `FOCUS_GATES.md §6b`** ANTES de engajar com o conteúdo da ideia: classificar REAL/CONCEPT/PHANTOM + DESCARTAR/ESTACIONAR/TESTAR/INTEGRAR/TROCAR-FOCO + 5 critérios. Vale para o entusiasmo do próprio Enio e para sugestões suas. A mesma confiança que descobre é a que dispersa — o gate confia em enforcement, não em força de vontade.
+
 ---
 
 ## LAYER 0.0 — Cross-Platform Sanity + Remote Staleness Check

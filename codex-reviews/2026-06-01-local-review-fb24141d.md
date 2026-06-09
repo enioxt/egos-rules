@@ -338,7 +338,7 @@ index ba739edf..efcef679 100644
  const GEMINI_KEY =
    process.env.GOOGLE_AI_STUDIO_API_KEY ||
    process.env.GEMINI_API_KEY ||
--  "AIzaSyBrM3iLF8TmXXgIoUVdDq06y_ka2qbHzMg";
+-  "AIza***REDACTED***";
 +  ""; // hardcoded key removed (SEC) — set GOOGLE_AI_STUDIO_API_KEY or GEMINI_API_KEY
  
  const DASHSCOPE_KEY = process.env.ALIBABA_DASHSCOPE_API_KEY ?? "";

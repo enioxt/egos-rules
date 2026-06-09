@@ -548,3 +548,553 @@
   "mode": "local-exec-review",
   "status": "DONE"
 }
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-05-local-review-c9afa5e9.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "c9afa5e9",
+  "submitted": "2026-06-05T12:39:57Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-05-local-review-4f6b7f3e.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "4f6b7f3e",
+  "submitted": "2026-06-05T12:55:18Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-05-local-review-114571c7.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "114571c7",
+  "submitted": "2026-06-05T12:59:26Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-05-local-review-d8e61ce0.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "d8e61ce0",
+  "submitted": "2026-06-05T15:37:55Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-05-local-review-20cba0ba.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "20cba0ba",
+  "submitted": "2026-06-05T16:07:11Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-05-local-review-c35a0473.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "c35a0473",
+  "submitted": "2026-06-05T16:26:37Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-05-local-review-b446d7b8.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "b446d7b8",
+  "submitted": "2026-06-05T16:34:32Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-05-local-review-6e09fcdc.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "6e09fcdc",
+  "submitted": "2026-06-05T16:39:03Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-05-local-review-21104bf2.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "21104bf2",
+  "submitted": "2026-06-05T18:59:21Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-07-local-review-f8e3c27d.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "f8e3c27d",
+  "submitted": "2026-06-07T12:42:38Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-07-local-review-e4277318.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "e4277318",
+  "submitted": "2026-06-07T13:01:41Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-07-local-review-97093134.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "97093134",
+  "submitted": "2026-06-07T16:24:43Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-07-local-review-6896a0cb.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "6896a0cb",
+  "submitted": "2026-06-07T16:37:55Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-07-local-review-c58fea1f.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "c58fea1f",
+  "submitted": "2026-06-07T17:00:38Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-07-local-review-bdb5d265.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "bdb5d265",
+  "submitted": "2026-06-07T17:07:20Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-07-local-review-2ebf3653.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "2ebf3653",
+  "submitted": "2026-06-07T17:17:17Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-07-local-review-23047087.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "23047087",
+  "submitted": "2026-06-07T17:23:22Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-07-local-review-0d7476a2.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "0d7476a2",
+  "submitted": "2026-06-07T17:30:37Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-07-local-review-3de5adf6.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "3de5adf6",
+  "submitted": "2026-06-07T17:39:42Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-07-local-review-a9156f52.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "a9156f52",
+  "submitted": "2026-06-07T17:49:05Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-07-local-review-fdff0021.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "fdff0021",
+  "submitted": "2026-06-07T17:55:28Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-07-local-review-e8ee9b65.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "e8ee9b65",
+  "submitted": "2026-06-07T19:11:01Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-07-local-review-e8ee9b65.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "e8ee9b65",
+  "submitted": "2026-06-07T19:24:43Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-07-local-review-d59bfeee.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "d59bfeee",
+  "submitted": "2026-06-07T19:56:22Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-07-local-review-ebc74410.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "ebc74410",
+  "submitted": "2026-06-07T20:01:08Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-07-local-review-ebc74410.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "ebc74410",
+  "submitted": "2026-06-07T20:05:07Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-08-local-review-ebc74410.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "ebc74410",
+  "submitted": "2026-06-08T00:07:19Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-08-local-review-ebc74410.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "ebc74410",
+  "submitted": "2026-06-08T00:39:26Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-08-local-review-68654ab1.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "68654ab1",
+  "submitted": "2026-06-08T11:31:58Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-08-local-review-a4b92102.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "a4b92102",
+  "submitted": "2026-06-08T12:10:32Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-08-local-review-b768190c.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "b768190c",
+  "submitted": "2026-06-08T12:21:54Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-08-local-review-9d535a7d.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "9d535a7d",
+  "submitted": "2026-06-08T16:20:47Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-08-local-review-9d535a7d.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "9d535a7d",
+  "submitted": "2026-06-08T16:48:31Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-08-local-review-d592ae02.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "d592ae02",
+  "submitted": "2026-06-08T17:08:30Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-08-local-review-d592ae02.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "d592ae02",
+  "submitted": "2026-06-08T17:12:38Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-08-local-review-869e8329.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "869e8329",
+  "submitted": "2026-06-08T17:41:45Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-08-local-review-f60954ff.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "f60954ff",
+  "submitted": "2026-06-08T17:51:25Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-08-local-review-88201591.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "88201591",
+  "submitted": "2026-06-08T19:45:51Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-08-local-review-d8411241.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "d8411241",
+  "submitted": "2026-06-08T19:52:59Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-4529821b.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "4529821b",
+  "submitted": "2026-06-09T12:32:28Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-8c2dbb5e.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "8c2dbb5e",
+  "submitted": "2026-06-09T12:34:47Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-0dbcd0c0.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "0dbcd0c0",
+  "submitted": "2026-06-09T12:48:09Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-547d31a5.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "547d31a5",
+  "submitted": "2026-06-09T12:55:58Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-dee4da45.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "dee4da45",
+  "submitted": "2026-06-09T13:02:40Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-dee4da45.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "dee4da45",
+  "submitted": "2026-06-09T13:09:34Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-84130718.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "84130718",
+  "submitted": "2026-06-09T13:13:14Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-1a2b9415.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "1a2b9415",
+  "submitted": "2026-06-09T13:40:26Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-b9f7c8e4.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "b9f7c8e4",
+  "submitted": "2026-06-09T14:18:07Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-3d0f899f.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "3d0f899f",
+  "submitted": "2026-06-09T14:23:04Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-ee38e623.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "ee38e623",
+  "submitted": "2026-06-09T14:46:09Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-0c0a5216.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "0c0a5216",
+  "submitted": "2026-06-09T14:48:32Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-83748a2e.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "83748a2e",
+  "submitted": "2026-06-09T17:54:31Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-26f8ee3a.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "26f8ee3a",
+  "submitted": "2026-06-09T18:13:14Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-afee6fd9.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "afee6fd9",
+  "submitted": "2026-06-09T18:31:26Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-b17894a1.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "b17894a1",
+  "submitted": "2026-06-09T18:40:35Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}

@@ -3518,3 +3518,79 @@ Scanner Bun/TS que varre arquivos git-tracked detectando dado sensível hardcode
 Script Bun/Playwright que navega todas as páginas do egos-landing e executa testes de interação: (1) 8 rotas de página com screenshot + check de texto esperado + JS errors; (2) consent flow (modal → Modo básico → badge); (3) consent detail (toggle analytics ON → "1 compartilhado"); (4) Guard Brasil local scanner (CPF/tel sintético → mascaramento); (5) ConsentBadge panel (open/close). Exit 1 se JS errors ou interação falhar. Relatório JSON em `docs/_proofs/<data>/report.json`. Integrado em `apps/egos-landing/deploy.sh` — roda automaticamente pós-rsync. Modos: `--url URL` (local ou prod), `--mobile` (375px), `--json`, `--baseline`.
 
 **Tags:** `testing`, `playwright`, `visual-proof`, `frontend`, `qa`, `ci`, `deploy`
+
+---
+
+## §113 — Material Eval Loop (MATERIAL-EVAL-LOOP-001) (2026-06-04)
+
+- **Status:** REAL
+- **Evidence:** `packages/eval-runner/src/material-evaluator.ts` + `scripts/material-eval-loop.ts`
+- **Owner:** prime
+- **Golden cases:** (1) avalia .md existente e retorna score 0-10 com 6 dimensões; (2) reprovado abaixo do threshold → exit 1 + gaps listados; (3) aprovado acima do threshold → exit 0 + resultado salvo em `docs/validation/evaluation-results/`
+
+Avaliação iterativa de artefatos estáticos (.md, .html, .txt) via LLM-as-judge multi-dimensão. Automatiza o protocolo manual `docs/validation/ai-value-evaluation-protocol.md` v1.0.0. Fluxo: lê arquivo → avalia via OpenRouter em 6 dimensões (clarity/value/depth/originality/applicability/credibility, pesos diferenciados) → score ponderado 0-10 → se abaixo do threshold e iterações restantes, lista gaps e sugestões inline → re-avalia. Salva resultado em `docs/validation/evaluation-results/eval-{slug}-{timestamp}.md`. Exit 0 = aprovado, Exit 1 = reprovado, Exit 2 = erro. Schema de dimensões: `data/eval/material-eval-schema.json`. Metaprompt canônico: `docs/metaprompts/MP-MATERIAL-EVAL-001.md`. Tipos estendidos em `packages/eval-runner/src/types.ts` (`MaterialEvalReport`).
+
+**CLI:** `bun scripts/material-eval-loop.ts --file <caminho> [--threshold 7.5] [--max-iterations 3] [--dry-run] [--json]`
+
+**Tags:** `eval`, `quality`, `material`, `llm-judge`, `iterative`, `courses`, `threshold`, `prime`
+
+## §114 — Motor de Purge de Entidades em Massa (pii-purge) (2026-06-07)
+
+- **Status:** REAL
+- **Path:** `packages/pii-purge/`
+- **Owner:** prime
+- **Evidence:** `packages/pii-purge/src/pii-purge.test.ts` (29 testes vitest verdes) + `packages/pii-purge/README.md`
+- **VERIFIED_AT:** 2026-06-07 (run independente Prime: 29 pass / 0 fail; R-SEC-001 0 achados; gitleaks 0)
+- **Method:** code review das travas de segurança + execução de testes
+- **Golden cases:** (1) todas as variantes de formato (CPF formatado/cru, placa antiga/Mercosul, telefone) de uma entidade sintética são detectadas; (2) token-map coerente — CPF e nome da mesma entidade viram o mesmo `[PESSOA_N]` em arquivos diferentes; (3) `--dry-run` (default) não modifica bytes; nome fuzzy = `REVIEW_REQUIRED`, nunca auto-purgado
+
+Dado conhecido (CPF/telefone/placa/nome+alias) → gera todas as variantes de formato (reusa `masks`/`normalizeOrtho` reimplementados) → varre diretório git-tracked → purga coerente com token estável por entidade → audit hash-chained → verify zero-tolerância. **Travas:** finding nunca carrega o valor casado (T0 §3, só offset+length); `--dry-run` é default, escrita só com `--apply`; nomes fuzzy só FLAG (HITL), nunca purge silencioso. Reusa `packages/guard-brasil` (pii-patterns/scanner). Origem: INC-PII-001 (purge manual irrepetível) + corte Enio 2026-06-07 (limpar dado sensível em massa antes de publicar). SSOT desta frente: `docs/_current_handoffs/handoff_2026-06-07-intelink-public-release.md` §4.
+
+**CLI:** `bun packages/pii-purge/src/cli.ts --entity-dict <path> --target <dir> [--dry-run(default)|--apply] [--json]`
+
+**Tags:** `security`, `pii`, `lgpd`, `purge`, `redaction`, `publish-gate`, `guard-brasil`, `prime`, `WS4`
+
+---
+
+## §115 — Apresentação HTML por cliente (padrão EGOS) (2026-06-08)
+
+- **Status:** REAL
+- **Path:** `docs/presentations/<cliente>-piloto.html`
+- **Owner:** prime
+- **Evidence:** `docs/presentations/mf-certificados-piloto.html` (548L, dark/light mode, sidebar + timeline) + `docs/presentations/HERMES_GOW_guia.html` (padrão base, 1440L)
+- **VERIFIED_AT:** 2026-06-08 (arquivo criado + estrutura validada)
+- **Method:** instanciação do padrão HERMES_GOW_guia.html para cliente específico
+
+HTML scrollável gerado para cada cliente/prospect com: sidebar navegável, timeline de entregas (o que existe / o que será construído / próximos passos), dark/light mode, seção de decisões pendentes. Segue R-DOC-AUDIENCE-001: README=máquina, HTML=humano. Base: `HERMES_GOW_guia.html` (CSS vars + sidebar pattern). O HTML responde 3 perguntas: o que existe hoje / o que está sendo construído / qual o próximo passo para o cliente decidir. Cada cliente tem 1 arquivo HTML na raiz de `docs/presentations/`.
+
+**Tags:** `presentation`, `html-per-client`, `ux`, `doc-audience`, `pilot`, `gow`, `prime`
+
+---
+
+## §116 — Pseudonimização de CPF no gateway (Option A) (2026-06-08)
+
+- **Status:** CONCEPT (implementação pendente para MF Certificados)
+- **Path:** `apps/egos-gateway/src/orchestrator.ts` (wiring pendente)
+- **Owner:** prime
+- **Evidence:** arquitetura documentada em `docs/presentations/mf-certificados-piloto.html` §fluxo + §privacidade
+- **VERIFIED_AT:** 2026-06-08 (arquitetura revisada e aprovada, implementação ~3h estimada)
+- **Method:** regex extraction do CPF antes do LLM, token PSE-xxxx em memória de sessão, resolução na camada de ferramentas
+
+Padrão de pseudonimização de PII obrigatório em fluxos onde o dado é necessário para o negócio (certificados, cartório, saúde) mas não deve ser exposto ao LLM externo. Alternativa ao mascaramento (que quebra o fluxo) e ao DPA isolado (que não previne vazamento). Implementação: (1) regex extrai CPF da mensagem; (2) gateway armazena `{token: "PSE-3f9a", cpf: "[CPF_REAL_AQUI]"}` em memória de sessão; (3) mensagem enviada ao LLM com token no lugar; (4) ao chamar ferramenta SERPRO/Receita, gateway resolve token → CPF real; (5) logs e audit trail gravam apenas o token. Custo: ~R$0 (puro código), ~3h implementação. Ver `feedback_guard_brasil_scope.md` para escopo correto de Guard Brasil vs pseudonimização.
+
+**Tags:** `security`, `lgpd`, `pii`, `pseudonymization`, `gateway`, `cpf`, `icp-brasil`, `concept`, `prime`
+
+---
+
+## §117 — Fluxo unificado HTML + NotebookLM por cliente (2026-06-08)
+
+- **Status:** CONCEPT (arquitetura definida, primeiro notebook criado)
+- **Path:** `docs/presentations/<cliente>-piloto.html` + NotebookLM per-client
+- **Owner:** prime
+- **Evidence:** notebook `e869308b-00cc-4212-9151-9c99884914f7` (MF Certificados × EGOS) criado via MCP
+- **VERIFIED_AT:** 2026-06-08 (notebook criado, fonte adicionada, artefatos pendentes geração)
+- **Method:** HTML (shell de navegação) + NotebookLM (amplificador de inteligência: áudio overview PT-BR, slides, briefing)
+
+Arquitetura de apresentação por cliente que combina HTML navegável (para leitura offline, sem login) com NotebookLM como camada de inteligência (para ouvir no carro, apresentar em reunião, tirar dúvidas). Fluxo: `.md` fonte (AI↔AI) → NotebookLM notebook (add_source) → gera áudio overview PT-BR 5-10min / slides / briefing executivo → HTML é atualizado com seção "Materiais" linkando aos artefatos baixados. O HTML funciona standalone; o NotebookLM amplifica para quem quiser mais. SSOT desta arquitetura: `docs/presentations/NOTEBOOKLM_HTML_INTEGRATION.md` (a criar).
+
+**Tags:** `presentation`, `notebooklm`, `html-per-client`, `audio-overview`, `slides`, `concept`, `gow`, `prime`

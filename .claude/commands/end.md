@@ -616,6 +616,49 @@ Se o usuário corrigiu approach OU validou approach não-óbvio durante a sessã
 - Update `feedback_*.md` existente OU criar novo
 - Formato: rule + **Why:** + **How to apply:**
 
+### 8.5 — Subagent/Research Intelligence Harvest (NOVO 2026-06-07 — END-HARVEST-001)
+
+> **Origem:** sessão de propósito 2026-06-07 — o /end salvou as CONCLUSÕES mas deixou a INTELIGÊNCIA das sondas (7 relatórios: mapa forense, correlação traço↔arquitetura, inventário de monetização) viver só no transcript. Enio teve que pedir "verifique de novo, não percamos algo precioso" para o gap ser pego. Causa-raiz: subagent output tratado como andaime descartável após síntese. Ironia: numa sessão sobre "preserve a evidência", a evidência foi descartada.
+> **Princípio:** numa sessão com `Agent`/`Explore`/`Workflow`, o subagente produz ANÁLISE/EVIDÊNCIA cara de re-derivar. A conclusão vai pra Phase 8; a EVIDÊNCIA que a sustenta NÃO PODE morrer no tool-result. Re-derivar custa tokens+tempo; o raciocínio é load-bearing.
+
+**Dispara quando:** a sessão chamou ≥1 `Agent`/`Explore`/`Workflow`/sonda que retornou análise NÃO-commitada como código (inventário, mapa, tabela, comparação, refutação, forense, correlação).
+
+**Ação (executar, não declarar):**
+1. Listar os relatórios de subagente da sessão (o que cada sonda produziu).
+2. Para cada um, triar: **JÁ-EM-CÓDIGO** (virou commit → ok) · **CONCLUSÃO-JÁ-EM-MEMORY** (a decisão está salva, mas e a evidência?) · **SÓ-NO-TRANSCRIPT** (perde no próximo chat).
+3. Para os **SÓ-NO-TRANSCRIPT** com valor de referência → **condensar** (não colar inteiro — anti-bloat) num arquivo `type: reference` em `memory/session_YYYY-MM-DD_intelligence-*.md` (tabelas-chave + números + paths) OU, se >20K e operacional, `docs/jobs/YYYY-MM-DD-*.md`. Linkar `[[conclusão]]`.
+4. Atualizar MEMORY.md index.
+
+**Output obrigatório:**
+```
+INTELLIGENCE HARVEST
+====================
+Subagentes na sessão: [N]
+  - [sonda] → JÁ-EM-CÓDIGO / CONCLUSÃO-EM-MEMORY / SÓ-NO-TRANSCRIPT
+Harvested: [arquivo(s) criado(s) p/ os SÓ-NO-TRANSCRIPT valiosos]
+Afirmação: "Nenhuma inteligência de subagente com valor de referência ficou só no transcript."
+```
+
+**Skip:** sessão sem subagente OU todo output já virou código/memory → "Phase 8.5: skip — sem inteligência órfã".
+
+---
+
+## PHASE 8.6 — Knowledge Ingest Gate [OBRIGATÓRIO — END-INGEST-PROMPT-001]
+
+**SEMPRE executar — sem skip.** Perguntar ao Enio ANTES de fechar:
+
+> "📥 **Tem algo a acrescentar desta sessão?**
+> Notas soltas, resumos do ChatGPT/Grok, estudos lidos, áudios transcritos, ideias anotadas no celular — qualquer coisa que ficou fora da conversa.
+> Se sim: drope aqui ou em `docs/_inbox/ingest/` e eu processo (atomizo → memória → RAG).
+> Se não: 'nada' e seguimos."
+
+**Processar resposta:**
+- **"nada" / silêncio**: registrar no handoff: "Phase 8.6: nenhum ingest externo". Seguir.
+- **Conteúdo dropado**: executar pipeline KNOWLEDGE-INGEST-CHANNEL-001 (quando implementado) OU atomizar manualmente → memory write → arquivar em `docs/_inbox/ingest/processed/`.
+- **"tem mas não agora"**: criar task INGEST-PENDENTE-<data> no TASKS.md e registrar no handoff.
+
+**Origem:** Enio 2026-06-08 — "todo /end talvez você deveria me perguntar se temos algo a acrescentar de anotações, chatgpt, grok, estudos — inclua isso, tornar obrigatório". SSOT: KNOWLEDGE-INGEST-CHANNEL-001.
+
 ---
 
 ## PHASE 9 — Daily Article (CONDITIONAL)
@@ -998,6 +1041,7 @@ Ao final, imprimir para o usuário (copiável para a janela-mestre):
 | 3.6 | NUNCA (exceto read-only zero-commit) | "Phase 3.6: skip — read-only" |
 | 7.2 | Zero commits OU só mudanças em docs/jobs+audits | "Phase 7.2: skip — sem impacto L0/templates" |
 | 8 | NUNCA — memory write obrigatório | — |
+| 8.5 | Sessão sem subagente OU output já em código/memory | "Phase 8.5: skip — sem inteligência órfã" |
 | 9 | Sessão zero commits OU só infra/chore | "Phase 9: skip — [reason]" |
 | 10 | NUNCA — checkpoint é a prova | — |
 | 11.5 | NUNCA — Understanding Verification é Karpathy gate | — |
@@ -1021,6 +1065,7 @@ Ao final, imprimir para o usuário (copiável para a janela-mestre):
 
 ---
 
+*v6.7 — 2026-06-07 | Phase 8.5 Subagent/Research Intelligence Harvest (END-HARVEST-001, pedido Enio "por que errou no /end"): força colher a EVIDÊNCIA das sondas (Agent/Explore/Workflow) que vive só no transcript, condensada em memory `reference` ou docs/jobs. Causa-raiz: subagent output tratado como andaime descartável após síntese — /end salvava conclusão, perdia a análise que a sustenta. Pego só porque Enio mandou "verifique de novo, não percamos algo precioso".*
 *v6.6 — 2026-06-03 | Phase 3.6 Varredura Anti-Atropelo (END-ANTIATROPELO-001, pedido Enio): relê a sessão INTEIRA por gatilhos linguísticos+estruturais e força cada idéia/conceito/decisão a virar task (ou nota deferida com motivo) antes do handoff/commit. Não-skipável (exceto read-only). Origem: sessão item-intake onde idéias boas (KYTE-API, DEDUP, GENERIC, TOOLS-INVENTORY…) foram ditas de passagem e só viraram task numa varredura manual pós-/end.*
 *v6.5.1 — 2026-05-30 | Phase 14 cross-repo fix (INC-MERGE-001): inbox de merge SEMPRE no kernel egos (a mestre só pulla lá). Janela em leaf-repo escreve o block no kernel referenciando os SHAs do leaf; commit/push do block a partir do kernel. Descoberto no merge de 3 janelas onde a janela intelink-platform teve que improvisar o destino.*
 *v6.5 — 2026-05-30 | Adiciona Phase 14 Cross-Session Merge Handoff — MERGE BLOCK auto-suficiente por janela quando N sessões Claude Code são fundidas numa sessão-mestre única (index .git compartilhado, INC-002).*
