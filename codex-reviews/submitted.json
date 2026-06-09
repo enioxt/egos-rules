@@ -1098,3 +1098,33 @@
   "mode": "local-exec-review",
   "status": "DONE"
 }
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-76e2a5f9.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "76e2a5f9",
+  "submitted": "2026-06-09T18:47:12Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-6dccf0bb.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "6dccf0bb",
+  "submitted": "2026-06-09T18:54:32Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
+{
+  "review_file": "/home/enio/.egos/codex-reviews/2026-06-09-local-review-b24d431f.md",
+  "repo": "egos",
+  "branch": "main",
+  "head": "b24d431f",
+  "submitted": "2026-06-09T19:22:00Z",
+  "commits": "3",
+  "mode": "local-exec-review",
+  "status": "DONE"
+}
