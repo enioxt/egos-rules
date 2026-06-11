@@ -32,11 +32,12 @@
 | **MCP quality** | MCP_TOOL_QUALITY_FRAMEWORK.md | `.guarani/standards/MCP_TOOL_QUALITY_FRAMEWORK.md` |
 | **MCP usage / registry** | MCP_REGISTRY.md (§Quando usar MCP) | `docs/governance/MCP_REGISTRY.md` |
 | **Domain rules** | DOMAIN_RULES.md | `.guarani/orchestration/DOMAIN_RULES.md` |
-| **Open access sourcing** | OPEN_ACCESS_SOURCING_RULE.md | `docs/governance/OPEN_ACCESS_SOURCING_RULE.md` |
+| **Open access sourcing** | OPEN_ACCESS_INTEGRATION_RULE.md | `docs/governance/OPEN_ACCESS_INTEGRATION_RULE.md` |
 | **Agent scope gates** | agent-scope-check.ts | `scripts/security/agent-scope-check.ts` |
 | **Literature API** | OA REST + MCP | `apps/egos-hq/api/hq/literature/` + `packages/mcp-literature/` |
 | **Coordination monitor** | COORDINATION_MONITOR_SPEC.md | `docs/governance/COORDINATION_MONITOR_SPEC.md` |
 | **Pre-commit hooks** | pre-commit | `.husky/pre-commit` |
+| **Metaprompt mínimo (Banda/Codex/Council)** | METAPROMPT-GATE-001 | `docs/governance/METAPROMPT_STANDARD.md` + gate em `scripts/banda.ts` |
 | **Presentations versioning** | GOV-PRES-001 | `CLAUDE.md §7 Presentations` + `scripts/check-doc-proliferation.sh` |
 | **File classification** | file-intelligence.sh | `scripts/file-intelligence.sh` |
 | **Doc proliferation** | check-doc-proliferation.sh | `scripts/check-doc-proliferation.sh` |
@@ -84,7 +85,7 @@ When starting any work, check:
 > **Rule:** Challenge stale P0s, scope creep, and false claims (§16).
 > **Rule:** Every discovery/architecture decision must produce FACT/INFERENCE/PROPOSAL (§20).
 > **Rule:** Use Enio's vocabulary map for term translation (§21).
-> **Rule:** If any adapter surface (`CLAUDE.md`, `.windsurfrules`) conflicts with `.guarani`, `.guarani` wins.
+> **Rule (C1/C2 — cláusula-árbitro Fable 2026-06-09):** Regras de agente (comportamento/código/SSOT): AGENTS.md vence. `.guarani` = índice de descoberta + enforcement de frozen-zones/pipeline; em conflito de REGRA, AGENTS.md vence; em conflito de PROCESSO/orquestração (`.guarani/orchestration/`), `.guarani` vence. Adapters (`.windsurfrules`, `CLAUDE.md` repo-level) são subordinados a ambos conforme este árbitro.
 > **Rule:** Include task IDs in commit subjects for auto-propagation to TASKS.md (§28).
 > **Rule:** Add `LEARNING: <insight>` lines to commit bodies to auto-append to HARVEST.md (§28).
 > **Rule:** On `/start`, read last 3 days of `docs/jobs/` — surface CRITICAL as [BLOCKER] (§29).

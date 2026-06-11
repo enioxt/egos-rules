@@ -2817,7 +2817,7 @@ MCP administrativo para G Peças exposto via REST e MCP nativo. 10 tools: 6 read
 - **Status:** COMPLETO Fases 1-7 — 33 tools, v0.7.0, deploy prod pendente
 - **Owner:** Enio Rocha (PO) + Claude Opus 4.7 (orquestração) + Claude Sonnet 4.6 (execução)
 - **Evidence:** 120 golden cases (288 assertions) em CBC-EGOS-MCP-G-PECAS.eval.ts. 33 tools: 10 read + 23 write. Typecheck ✅.
-- **Plano:** [docs/planning/MCP_WRITE_EXPAND_PLAN.md](docs/planning/MCP_WRITE_EXPAND_PLAN.md)
+- **Plano:** [docs/planning/MCP_WRITE_EXPAND_PLAN.md](planning/MCP_WRITE_EXPAND_PLAN.md)
 - **Objetivo:** ChatGPT GPT personalizado faz 100% do admin G Peças
 
 Expansão do MCP G Peças de 10 tools (1 write) para 40+ tools (30+ write) cobrindo admin completo: produtos, estoque, pedidos, chatbot, FAQ, IA, workflow, usuários. Princípio de design: tools INTELIGENTES (confirmação 2-step para destrutivas, `needs[]` em cada resposta indicando o que falta para próximo estado, `next_actions[]` clicáveis apontando dashboard). Audit com `origin_channel` (mcp vs dashboard).

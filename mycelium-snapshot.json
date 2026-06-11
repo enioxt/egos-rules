@@ -1,0 +1,2576 @@
+{
+  "version": "1.0.0",
+  "generated": "2026-06-10T17:04:33.770Z",
+  "nodes": [
+    {
+      "id": "ws:egos-kernel",
+      "type": "workspace_root",
+      "label": "EGOS Kernel (/home/enio/egos)",
+      "status": "active",
+      "evidence": [
+        "code",
+        "runtime"
+      ],
+      "sourcePath": "/home/enio/egos",
+      "note": "root anchor — todos os nós do ecossistema pertencem ou são governados por este workspace"
+    },
+    {
+      "id": "repo:852",
+      "type": "repository",
+      "label": "852",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/852",
+      "note": "last_commit: 2026-06-10"
+    },
+    {
+      "id": "repo:arch",
+      "type": "repository",
+      "label": "arch",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/arch",
+      "note": "last_commit: 2026-06-10"
+    },
+    {
+      "id": "repo:blueprint-egos",
+      "type": "repository",
+      "label": "blueprint-egos",
+      "status": "degraded",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/blueprint-egos",
+      "note": "last_commit: 2026-05-06"
+    },
+    {
+      "id": "repo:br-acc",
+      "type": "repository",
+      "label": "br-acc",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/br-acc",
+      "note": "last_commit: 2026-06-10"
+    },
+    {
+      "id": "repo:carteira-livre",
+      "type": "repository",
+      "label": "carteira-livre",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/carteira-livre",
+      "note": "last_commit: 2026-06-10"
+    },
+    {
+      "id": "repo:egos-governance",
+      "type": "repository",
+      "label": "egos-governance",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos-governance",
+      "note": "last_commit: 2026-06-05"
+    },
+    {
+      "id": "repo:egos-inteligencia",
+      "type": "repository",
+      "label": "egos-inteligencia",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos-inteligencia",
+      "note": "last_commit: 2026-06-10"
+    },
+    {
+      "id": "repo:egos-lab-chat",
+      "type": "repository",
+      "label": "egos-lab-chat",
+      "status": "degraded",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos-lab-chat",
+      "note": "last_commit: 2026-05-07"
+    },
+    {
+      "id": "repo:egos-lab",
+      "type": "repository",
+      "label": "egos-lab",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos-lab",
+      "note": "last_commit: 2026-06-10"
+    },
+    {
+      "id": "repo:egos-public-work",
+      "type": "repository",
+      "label": "egos-public-work",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos-public-work",
+      "note": "last_commit: 2026-06-04"
+    },
+    {
+      "id": "repo:egos-self",
+      "type": "repository",
+      "label": "egos-self",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos-self",
+      "note": "last_commit: 2026-06-10"
+    },
+    {
+      "id": "repo:forja",
+      "type": "repository",
+      "label": "forja",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/forja",
+      "note": "last_commit: 2026-06-10"
+    },
+    {
+      "id": "repo:gem-hunter",
+      "type": "repository",
+      "label": "gem-hunter",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/gem-hunter",
+      "note": "last_commit: 2026-06-04"
+    },
+    {
+      "id": "repo:hermes-egos",
+      "type": "repository",
+      "label": "hermes-egos",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/hermes-egos",
+      "note": "last_commit: 2026-06-04"
+    },
+    {
+      "id": "repo:intelink-clean",
+      "type": "repository",
+      "label": "intelink-clean",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/intelink-clean",
+      "note": "last_commit: 2026-06-08"
+    },
+    {
+      "id": "repo:intelink",
+      "type": "repository",
+      "label": "intelink",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/intelink",
+      "note": "last_commit: 2026-06-10"
+    },
+    {
+      "id": "repo:omniview",
+      "type": "repository",
+      "label": "omniview",
+      "status": "degraded",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/omniview",
+      "note": "last_commit: 2026-04-17"
+    },
+    {
+      "id": "repo:pixelart",
+      "type": "repository",
+      "label": "pixelart",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/pixelart",
+      "note": "last_commit: 2026-06-02"
+    },
+    {
+      "id": "repo:policia",
+      "type": "repository",
+      "label": "policia",
+      "status": "degraded",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/policia",
+      "note": "last_commit: 2026-05-01"
+    },
+    {
+      "id": "repo:santiago",
+      "type": "repository",
+      "label": "santiago",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/santiago",
+      "note": "last_commit: 2026-06-10"
+    },
+    {
+      "id": "repo:smartbuscas",
+      "type": "repository",
+      "label": "smartbuscas",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/smartbuscas",
+      "note": "last_commit: 2026-06-10"
+    },
+    {
+      "id": "repo:video-editor",
+      "type": "repository",
+      "label": "video-editor",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/video-editor",
+      "note": "last_commit: 2026-06-02"
+    },
+    {
+      "id": "agent:sentinela",
+      "type": "agent",
+      "label": "sentinela",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/agents/registry/triggers.json",
+      "tags": [
+        "tier:haiku",
+        "runtime:Hermes VPS (cron) / local"
+      ],
+      "note": "analista always-on — lê estado, flagga"
+    },
+    {
+      "id": "agent:prime",
+      "type": "agent",
+      "label": "prime",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/agents/registry/triggers.json",
+      "tags": [
+        "tier:opus",
+        "runtime:Claude Code"
+      ],
+      "note": "arquiteto/orquestrador — triagem R=L/C, decide, Red Zone, roteia"
+    },
+    {
+      "id": "agent:forja",
+      "type": "agent",
+      "label": "forja",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/agents/registry/triggers.json",
+      "tags": [
+        "tier:sonnet",
+        "runtime:Claude Code / worktree"
+      ],
+      "note": "developer — implementa código + testes, não commita"
+    },
+    {
+      "id": "agent:critico",
+      "type": "agent",
+      "label": "critico",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/agents/registry/triggers.json",
+      "tags": [
+        "tier:sonnet|codex",
+        "runtime:Codex / Sonnet"
+      ],
+      "note": "reviewer adversarial — tenta refutar o diff"
+    },
+    {
+      "id": "agent:provador",
+      "type": "agent",
+      "label": "provador",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/agents/registry/triggers.json",
+      "tags": [
+        "tier:sonnet",
+        "runtime:eval-runner"
+      ],
+      "note": "QA — golden cases, prova comportamental"
+    },
+    {
+      "id": "agent:pixel",
+      "type": "agent",
+      "label": "pixel",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/agents/registry/triggers.json",
+      "tags": [
+        "tier:sonnet",
+        "runtime:Claude Code"
+      ],
+      "note": "designer — UI, visual proof, slides"
+    },
+    {
+      "id": "agent:voz",
+      "type": "agent",
+      "label": "voz",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/agents/registry/triggers.json",
+      "tags": [
+        "tier:sonnet",
+        "runtime:Claude Code"
+      ],
+      "note": "marketing — copy, artigos, posts (HITL Enio)"
+    },
+    {
+      "id": "agent:hermes-ops",
+      "type": "agent",
+      "label": "hermes-ops",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/agents/registry/triggers.json",
+      "tags": [
+        "tier:sonnet",
+        "runtime:Hermes / Claude Code"
+      ],
+      "note": "devops — deploy, VPS, infra, smoke"
+    },
+    {
+      "id": "agent:guarani",
+      "type": "agent",
+      "label": "guarani",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/agents/registry/triggers.json",
+      "tags": [
+        "tier:gemini",
+        "runtime:Antigravity"
+      ],
+      "note": "coerência — auditor constitucional, drift"
+    },
+    {
+      "id": "agent:investigador",
+      "type": "agent",
+      "label": "investigador",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/agents/registry/triggers.json",
+      "tags": [
+        "tier:sonnet",
+        "runtime:Claude Code (+ MCP OSINT)"
+      ],
+      "note": "OSINT/forense — investigação, grafo, NER PT-BR (fronteira do pivô)"
+    },
+    {
+      "id": "agent:guardiao",
+      "type": "agent",
+      "label": "guardiao",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/agents/registry/triggers.json",
+      "tags": [
+        "tier:sonnet",
+        "runtime:Claude Code / pre-commit"
+      ],
+      "note": "segurança — PII/LGPD, ATRiAN, A2A signing, scope-gate"
+    },
+    {
+      "id": "agent:curador",
+      "type": "agent",
+      "label": "curador",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/agents/registry/triggers.json",
+      "tags": [
+        "tier:sonnet",
+        "runtime:Claude Code / cron"
+      ],
+      "note": "conhecimento — KB/RAG, NotebookLM, open-access, LLM-routing"
+    },
+    {
+      "id": "policy:gate-ingest-real",
+      "type": "policy",
+      "label": "Gate: ingest-real",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/agents/registry/triggers.json",
+      "note": "dado REAL PCMG/REDS/BISP/PII/cliente — contexto policial = Red Zone",
+      "tags": [
+        "hitl",
+        "wired"
+      ]
+    },
+    {
+      "id": "policy:gate-public-copy",
+      "type": "policy",
+      "label": "Gate: public-copy",
+      "status": "planned",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/agents/registry/triggers.json",
+      "note": "copy/artigo/post/design PÚBLICO — nunca publicar sem corte do Enio (§0 T0)",
+      "tags": [
+        "hitl",
+        "unwired"
+      ]
+    },
+    {
+      "id": "policy:gate-pii-code",
+      "type": "policy",
+      "label": "Gate: pii-code",
+      "status": "planned",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/agents/registry/triggers.json",
+      "note": "código que toca PII/dado sensível → Guardião valida boundary LGPD antes do merge",
+      "tags": [
+        "auto",
+        "unwired"
+      ]
+    },
+    {
+      "id": "policy:gate-prod-deploy",
+      "type": "policy",
+      "label": "Gate: prod-deploy",
+      "status": "planned",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/agents/registry/triggers.json",
+      "note": "deploy produção com gates (INC-PROD-001): env canonical, bundle, backup, smoke, rollback",
+      "tags": [
+        "hitl",
+        "unwired"
+      ]
+    },
+    {
+      "id": "policy:gate-frozen-zone",
+      "type": "policy",
+      "label": "Gate: frozen-zone",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/agents/registry/triggers.json",
+      "note": ".husky/pre-commit, .guarani/, governance, agents/runtime — corte humano",
+      "tags": [
+        "hitl",
+        "wired"
+      ]
+    },
+    {
+      "id": "worker:ssot-auditor",
+      "type": "worker",
+      "label": "SSOT Auditor",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/ssot-auditor.ts",
+      "tags": [
+        "area:architecture",
+        "kind:tool"
+      ],
+      "note": "Structural Triage Engine — scans TypeScript/Python codebases via AST, detects ty"
+    },
+    {
+      "id": "worker:ssot-fixer",
+      "type": "worker",
+      "label": "SSOT Fixer",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/ssot-fixer.ts",
+      "tags": [
+        "area:architecture",
+        "kind:tool"
+      ],
+      "note": "Consumes ssot-auditor output and applies safe, low-risk codemod plans automatica"
+    },
+    {
+      "id": "worker:drift-sentinel",
+      "type": "worker",
+      "label": "Drift Sentinel",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/drift-sentinel.ts",
+      "tags": [
+        "area:governance",
+        "kind:tool"
+      ],
+      "note": "Configuration drift detection — compares narrative (docs) vs live system state, "
+    },
+    {
+      "id": "worker:dep-auditor",
+      "type": "worker",
+      "label": "Dependency Auditor",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/dep-auditor.ts",
+      "tags": [
+        "area:architecture",
+        "kind:tool"
+      ],
+      "note": "Scans package.json files for version conflicts, misplaced dev deps, and unused d"
+    },
+    {
+      "id": "worker:archaeology-digger",
+      "type": "worker",
+      "label": "Archaeology Digger",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/archaeology-digger.ts",
+      "tags": [
+        "area:knowledge",
+        "kind:tool"
+      ],
+      "note": "Recursively traverses git history, agent registries, governance files, and hando"
+    },
+    {
+      "id": "worker:dead-code-detector",
+      "type": "worker",
+      "label": "Dead Code Detector",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/dead-code-detector.ts",
+      "tags": [
+        "area:qa",
+        "kind:tool"
+      ],
+      "note": "Finds dead exports, orphan files, and empty stubs across any TypeScript codebase"
+    },
+    {
+      "id": "worker:capability-drift-checker",
+      "type": "worker",
+      "label": "Capability Drift Checker",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/capability-drift-checker.ts",
+      "tags": [
+        "area:governance",
+        "kind:tool"
+      ],
+      "note": "Scans any target repo against the EGOS kernel's shared capabilities, governance "
+    },
+    {
+      "id": "worker:context-tracker",
+      "type": "worker",
+      "label": "Context Tracker",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/context-tracker.ts",
+      "tags": [
+        "area:observability",
+        "kind:tool"
+      ],
+      "note": "Estimates remaining usable context window (CTX 0-280) from uncommitted files, se"
+    },
+    {
+      "id": "worker:framework-benchmarker",
+      "type": "worker",
+      "label": "Framework Benchmarker",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/framework-benchmarker.ts",
+      "tags": [
+        "area:knowledge",
+        "kind:tool"
+      ],
+      "note": "Benchmarks MASA and competing agent/orchestration frameworks from official docs "
+    },
+    {
+      "id": "worker:mcp-router",
+      "type": "worker",
+      "label": "MCP Router",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/mcp-router.ts",
+      "tags": [
+        "area:infrastructure",
+        "kind:tool"
+      ],
+      "note": "Routes incoming MCP server discovery requests to the correct handler based on ca"
+    },
+    {
+      "id": "worker:spec-router",
+      "type": "worker",
+      "label": "Spec Pipeline Router",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/spec-router.ts",
+      "tags": [
+        "area:governance",
+        "kind:workflow"
+      ],
+      "note": "Validates spec pipeline stage fields, detects current stage, routes to next revi"
+    },
+    {
+      "id": "worker:gem-hunter",
+      "type": "worker",
+      "label": "Gem Hunter v6.0",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/gem-hunter.ts",
+      "tags": [
+        "area:intelligence",
+        "kind:discovery"
+      ],
+      "note": "Multi-track discovery engine: GitHub, arXiv, HuggingFace, PWC, Exa, X, Reddit, H"
+    },
+    {
+      "id": "worker:kol-discovery",
+      "type": "worker",
+      "label": "KOL Discovery",
+      "status": "planned",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "scripts/kol-discovery.ts",
+      "tags": [
+        "area:intelligence",
+        "kind:tool"
+      ],
+      "note": "Fetches @anoineim X following list, classifies accounts by bio (crypto/ai-ml/dev"
+    },
+    {
+      "id": "worker:gem-hunter-api",
+      "type": "worker",
+      "label": "Gem Hunter API",
+      "status": "planned",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/api/gem-hunter-server.ts",
+      "tags": [
+        "area:intelligence",
+        "kind:service"
+      ],
+      "note": "Standalone REST API for gem-hunter (Phase 1 product). Endpoints: GET /v1/finding"
+    },
+    {
+      "id": "worker:agent-validator",
+      "type": "worker",
+      "label": "Agent Registry Validator",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/agent-validator.ts",
+      "tags": [
+        "area:governance",
+        "kind:tool"
+      ],
+      "note": "Lightweight validation agent — updates agents/registry/validation.json cache. 4-"
+    },
+    {
+      "id": "worker:wiki-compiler",
+      "type": "worker",
+      "label": "Wiki Compiler",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/wiki-compiler.ts",
+      "tags": [
+        "area:knowledge",
+        "kind:tool"
+      ],
+      "note": "Compiles raw sources (handoffs, job reports, gem-hunter, strategy docs) into str"
+    },
+    {
+      "id": "worker:doc-drift-sentinel",
+      "type": "worker",
+      "label": "Doc-Drift Sentinel",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/doc-drift-sentinel.ts",
+      "tags": [
+        "area:governance",
+        "kind:undefined"
+      ],
+      "note": "Layer 3 of the EGOS Doc-Drift Shield. Daily scanner that verifies all .egos-mani"
+    },
+    {
+      "id": "worker:egos-pr",
+      "type": "worker",
+      "label": "EGOS PR Creator",
+      "status": "planned",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "scripts/create-pr.sh",
+      "tags": [
+        "area:git",
+        "kind:tool"
+      ],
+      "note": "Creates GitHub PRs from current branch — validates not on main, pushes via safe-"
+    },
+    {
+      "id": "worker:article-writer",
+      "type": "worker",
+      "label": "Article Writer",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/article-writer.ts",
+      "tags": [
+        "area:publishing",
+        "kind:undefined"
+      ],
+      "note": "Timeline AI Publishing Pipeline: reads git commits, calls qwen-plus to generate "
+    },
+    {
+      "id": "worker:doc-drift-verifier",
+      "type": "worker",
+      "label": "Doc-Drift Verifier",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/doc-drift-verifier.ts",
+      "tags": [
+        "area:governance",
+        "kind:undefined"
+      ],
+      "note": "Layer 2 of EGOS Doc-Drift Shield. Verifies .egos-manifest.yaml claims against li"
+    },
+    {
+      "id": "worker:doc-drift-analyzer",
+      "type": "worker",
+      "label": "Doc-Drift Analyzer",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/doc-drift-analyzer.ts",
+      "tags": [
+        "area:governance",
+        "kind:undefined"
+      ],
+      "note": "Analyzes doc drift patterns across repos. Part of the EGOS Doc-Drift Shield ecos"
+    },
+    {
+      "id": "worker:readme-syncer",
+      "type": "worker",
+      "label": "README Syncer",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/readme-syncer.ts",
+      "tags": [
+        "area:governance",
+        "kind:undefined"
+      ],
+      "note": "Syncs README claims against .egos-manifest.yaml. Part of Doc-Drift Shield — keep"
+    },
+    {
+      "id": "worker:chatbot-manifest-aggregator",
+      "type": "worker",
+      "label": "Chatbot Manifest Aggregator",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/chatbot-manifest-aggregator.ts",
+      "tags": [
+        "area:compliance",
+        "kind:tool"
+      ],
+      "note": "Aggregates chatbot manifests and populates the AUTO-GEN compliance matrix in CHA"
+    },
+    {
+      "id": "worker:skill-candidate-extractor",
+      "type": "worker",
+      "label": "Skill Candidate Extractor",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "scripts/skill-candidate-extractor.ts",
+      "tags": [
+        "area:intelligence",
+        "kind:tool"
+      ],
+      "note": "Mines agents/.logs/*.jsonl events ➔ clusters by (topic, source) ➔ generates docs"
+    },
+    {
+      "id": "worker:chatbot-compliance-checker",
+      "type": "worker",
+      "label": "Chatbot Compliance Checker",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/chatbot-compliance-checker.ts",
+      "tags": [
+        "area:compliance",
+        "kind:tool"
+      ],
+      "note": "Scans codebase to evaluate compliance against Modular Prompt, ATRiAN, and PII po"
+    },
+    {
+      "id": "worker:gtm-harvester",
+      "type": "worker",
+      "label": "GTM Harvester",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/gtm-harvester.ts",
+      "tags": [
+        "area:intelligence",
+        "kind:tool"
+      ],
+      "note": "Scans public GitHub repositories for market/GTM strategy artifacts and returns a"
+    },
+    {
+      "id": "worker:capability-scanner",
+      "type": "worker",
+      "label": "Capability Scanner",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "agents/agents/capability-scanner.ts",
+      "tags": [
+        "area:governance",
+        "kind:tool"
+      ],
+      "note": "Analyzes commit diffs to classify and extract new capabilities, proposing or app"
+    },
+    {
+      "id": "integration:mcp-egos-governance",
+      "type": "shadow_node",
+      "label": "MCP: egos-governance",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/packages/mcp-governance/src/index.ts",
+      "tags": [
+        "mcp",
+        "integration"
+      ],
+      "note": "R-MYC-001: aguarda identity card (ego incompleto — faltam: objetivo canonico, regras, fronteiras_dados)"
+    },
+    {
+      "id": "integration:mcp-egos-memory",
+      "type": "shadow_node",
+      "label": "MCP: egos-memory",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/packages/mcp-memory/src/index.ts",
+      "tags": [
+        "mcp",
+        "integration"
+      ],
+      "note": "R-MYC-001: aguarda identity card (ego incompleto — faltam: objetivo canonico, regras, fronteiras_dados)"
+    },
+    {
+      "id": "integration:mcp-egos-knowledge",
+      "type": "shadow_node",
+      "label": "MCP: egos-knowledge",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/packages/knowledge-mcp/src/index.ts",
+      "tags": [
+        "mcp",
+        "integration"
+      ],
+      "note": "R-MYC-001: aguarda identity card (ego incompleto — faltam: objetivo canonico, regras, fronteiras_dados)"
+    },
+    {
+      "id": "integration:mcp-egos-security",
+      "type": "shadow_node",
+      "label": "MCP: egos-security",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/packages/guard-brasil-mcp/src/index.ts",
+      "tags": [
+        "mcp",
+        "integration"
+      ],
+      "note": "R-MYC-001: aguarda identity card (ego incompleto — faltam: objetivo canonico, regras, fronteiras_dados)"
+    },
+    {
+      "id": "integration:mcp-egos-eval-runner",
+      "type": "shadow_node",
+      "label": "MCP: egos-eval-runner",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/packages/mcp-eval-runner/src/index.ts",
+      "tags": [
+        "mcp",
+        "integration"
+      ],
+      "note": "R-MYC-001: aguarda identity card (ego incompleto — faltam: objetivo canonico, regras, fronteiras_dados)"
+    },
+    {
+      "id": "integration:mcp-egos-ops",
+      "type": "shadow_node",
+      "label": "MCP: egos-ops",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/packages/mcp-ops/src/index.ts",
+      "tags": [
+        "mcp",
+        "integration"
+      ],
+      "note": "R-MYC-001: aguarda identity card (ego incompleto — faltam: objetivo canonico, regras, fronteiras_dados)"
+    },
+    {
+      "id": "integration:mcp-egos-skills-registry",
+      "type": "shadow_node",
+      "label": "MCP: egos-skills-registry",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/packages/mcp-skills-registry/src/index.ts",
+      "tags": [
+        "mcp",
+        "integration"
+      ],
+      "note": "R-MYC-001: aguarda identity card (ego incompleto — faltam: objetivo canonico, regras, fronteiras_dados)"
+    },
+    {
+      "id": "integration:mcp-egos-observability",
+      "type": "shadow_node",
+      "label": "MCP: egos-observability",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/packages/mcp-observability/src/index.ts",
+      "tags": [
+        "mcp",
+        "integration"
+      ],
+      "note": "R-MYC-001: aguarda identity card (ego incompleto — faltam: objetivo canonico, regras, fronteiras_dados)"
+    },
+    {
+      "id": "integration:mcp-egos-browser-automation",
+      "type": "shadow_node",
+      "label": "MCP: egos-browser-automation",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/packages/mcp-browser-automation/src/index.ts",
+      "tags": [
+        "mcp",
+        "integration"
+      ],
+      "note": "R-MYC-001: aguarda identity card (ego incompleto — faltam: objetivo canonico, regras, fronteiras_dados)"
+    },
+    {
+      "id": "trigger:cron-governance-sync-MCAxMiAq",
+      "type": "trigger",
+      "label": "cron: governance-sync",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "scripts/governance-sync.sh",
+      "note": "schedule: 0 12 * * *",
+      "tags": [
+        "cron"
+      ]
+    },
+    {
+      "id": "trigger:cron-scheduler-MCAqICog",
+      "type": "trigger",
+      "label": "cron: scheduler",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/scripts/token-scheduler/scheduler.py",
+      "note": "schedule: 0 * * * *",
+      "tags": [
+        "cron"
+      ]
+    },
+    {
+      "id": "trigger:cron-unknown-cron-MCA2ICog",
+      "type": "trigger",
+      "label": "cron: unknown-cron",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "",
+      "note": "schedule: 0 6 * * *",
+      "tags": [
+        "cron"
+      ]
+    },
+    {
+      "id": "trigger:cron-refresh-token-Ki81ICog",
+      "type": "trigger",
+      "label": "cron: refresh-token",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/.hermes-agent/scripts/refresh-token.py",
+      "note": "schedule: */5 * * * *",
+      "tags": [
+        "cron"
+      ]
+    },
+    {
+      "id": "trigger:cron-session-aggregator-MzAgMiAq",
+      "type": "trigger",
+      "label": "cron: session-aggregator",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "scripts/session-aggregator.sh",
+      "note": "schedule: 30 2 * * *",
+      "tags": [
+        "cron"
+      ]
+    },
+    {
+      "id": "trigger:cron-governance-propagate-MCA0ICog",
+      "type": "trigger",
+      "label": "cron: governance-propagate",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/scripts/governance-propagate.sh",
+      "note": "schedule: 0 4 * * *",
+      "tags": [
+        "cron"
+      ]
+    },
+    {
+      "id": "trigger:cron-unknown-cron-MCAyICog",
+      "type": "trigger",
+      "label": "cron: unknown-cron",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "",
+      "note": "schedule: 0 2 * * *",
+      "tags": [
+        "cron"
+      ]
+    },
+    {
+      "id": "trigger:cron-gmail-sync-MCAqLzQg",
+      "type": "trigger",
+      "label": "cron: gmail-sync",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "scripts/gmail-sync.ts",
+      "note": "schedule: 0 */4 * * *",
+      "tags": [
+        "cron"
+      ]
+    },
+    {
+      "id": "trigger:cron-calendar-sync-MzAgKi80",
+      "type": "trigger",
+      "label": "cron: calendar-sync",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "scripts/calendar-sync.ts",
+      "note": "schedule: 30 */4 * * *",
+      "tags": [
+        "cron"
+      ]
+    },
+    {
+      "id": "trigger:cron-drive-personal-sync-NDUgKi80",
+      "type": "trigger",
+      "label": "cron: drive-personal-sync",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "scripts/drive-personal-sync.ts",
+      "note": "schedule: 45 */4 * * *",
+      "tags": [
+        "cron"
+      ]
+    },
+    {
+      "id": "trigger:cron-chatgpt-export-ingest-MTUgKiAq",
+      "type": "trigger",
+      "label": "cron: chatgpt-export-ingest",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "scripts/chatgpt-export-ingest.ts",
+      "note": "schedule: 15 * * * *",
+      "tags": [
+        "cron"
+      ]
+    },
+    {
+      "id": "trigger:cron-skill-usage-tracker-MCA2ICog",
+      "type": "trigger",
+      "label": "cron: skill-usage-tracker",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "scripts/skill-usage-tracker.ts",
+      "note": "schedule: 0 6 * * *",
+      "tags": [
+        "cron"
+      ]
+    },
+    {
+      "id": "trigger:cron-autoresearch-MCA3ICog",
+      "type": "trigger",
+      "label": "cron: autoresearch",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "scripts/autoresearch.ts",
+      "note": "schedule: 0 7 * * 1",
+      "tags": [
+        "cron"
+      ]
+    },
+    {
+      "id": "trigger:cron-llm-usage-notify-MCA4ICog",
+      "type": "trigger",
+      "label": "cron: llm-usage-notify",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "scripts/llm-usage-notify.ts",
+      "note": "schedule: 0 8 * * *",
+      "tags": [
+        "cron"
+      ]
+    },
+    {
+      "id": "trigger:cron-llm-usage-notify-MCAqLzYg",
+      "type": "trigger",
+      "label": "cron: llm-usage-notify",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "scripts/llm-usage-notify.ts",
+      "note": "schedule: 0 */6 * * *",
+      "tags": [
+        "cron"
+      ]
+    },
+    {
+      "id": "trigger:cron-agent-sentinela-Ki8xNSAq",
+      "type": "trigger",
+      "label": "cron: agent-sentinela",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "scripts/agent-sentinela.ts",
+      "note": "schedule: */15 * * * *",
+      "tags": [
+        "cron"
+      ]
+    },
+    {
+      "id": "trigger:cron-unknown-cron-QHJlYm9v",
+      "type": "trigger",
+      "label": "cron: unknown-cron",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "",
+      "note": "schedule: @reboot sleep 30 && /home/enio/.npm-global/bin/pm2",
+      "tags": [
+        "cron"
+      ]
+    },
+    {
+      "id": "trigger:cron-mycelium-snapshot-MCAqLzYg",
+      "type": "trigger",
+      "label": "cron: mycelium-snapshot",
+      "status": "active",
+      "evidence": [
+        "code"
+      ],
+      "sourcePath": "/home/enio/egos/scripts/mycelium-snapshot.ts",
+      "note": "schedule: 0 */6 * * *",
+      "tags": [
+        "cron"
+      ]
+    },
+    {
+      "id": "endpoint:egos-gateway",
+      "type": "shadow_node",
+      "label": "egos-gateway",
+      "status": "planned",
+      "evidence": [
+        "plan"
+      ],
+      "sourcePath": "apps/egos-gateway",
+      "tags": [
+        "endpoint",
+        "port:3050"
+      ],
+      "note": "R-MYC-001: shadow_node sem ego completo — faltam: objetivo, regras, fronteiras_dados verificados em runtime"
+    },
+    {
+      "id": "endpoint:egos-lab-chat",
+      "type": "shadow_node",
+      "label": "egos-lab-chat",
+      "status": "planned",
+      "evidence": [
+        "plan"
+      ],
+      "sourcePath": "egos-lab-chat",
+      "tags": [
+        "endpoint",
+        "port:3095"
+      ],
+      "note": "R-MYC-001: shadow_node sem ego completo — faltam: objetivo, regras, fronteiras_dados verificados em runtime"
+    },
+    {
+      "id": "endpoint:mcp-governance",
+      "type": "shadow_node",
+      "label": "MCP Governance",
+      "status": "planned",
+      "evidence": [
+        "plan"
+      ],
+      "sourcePath": "packages/mcp-governance",
+      "tags": [
+        "endpoint",
+        "port:7001"
+      ],
+      "note": "R-MYC-001: shadow_node sem ego completo — faltam: objetivo, regras, fronteiras_dados verificados em runtime"
+    },
+    {
+      "id": "endpoint:mcp-memory",
+      "type": "shadow_node",
+      "label": "MCP Memory",
+      "status": "planned",
+      "evidence": [
+        "plan"
+      ],
+      "sourcePath": "packages/mcp-memory",
+      "tags": [
+        "endpoint",
+        "port:7002"
+      ],
+      "note": "R-MYC-001: shadow_node sem ego completo — faltam: objetivo, regras, fronteiras_dados verificados em runtime"
+    },
+    {
+      "id": "endpoint:mcp-knowledge",
+      "type": "shadow_node",
+      "label": "MCP Knowledge",
+      "status": "planned",
+      "evidence": [
+        "plan"
+      ],
+      "sourcePath": "packages/knowledge-mcp",
+      "tags": [
+        "endpoint",
+        "port:7003"
+      ],
+      "note": "R-MYC-001: shadow_node sem ego completo — faltam: objetivo, regras, fronteiras_dados verificados em runtime"
+    },
+    {
+      "id": "endpoint:mcp-security",
+      "type": "shadow_node",
+      "label": "MCP Security",
+      "status": "planned",
+      "evidence": [
+        "plan"
+      ],
+      "sourcePath": "packages/guard-brasil-mcp",
+      "tags": [
+        "endpoint",
+        "port:7004"
+      ],
+      "note": "R-MYC-001: shadow_node sem ego completo — faltam: objetivo, regras, fronteiras_dados verificados em runtime"
+    },
+    {
+      "id": "endpoint:mcp-eval-runner",
+      "type": "shadow_node",
+      "label": "MCP Eval Runner",
+      "status": "planned",
+      "evidence": [
+        "plan"
+      ],
+      "sourcePath": "packages/mcp-eval-runner",
+      "tags": [
+        "endpoint",
+        "port:7005"
+      ],
+      "note": "R-MYC-001: shadow_node sem ego completo — faltam: objetivo, regras, fronteiras_dados verificados em runtime"
+    },
+    {
+      "id": "endpoint:mcp-ops",
+      "type": "shadow_node",
+      "label": "MCP Ops",
+      "status": "planned",
+      "evidence": [
+        "plan"
+      ],
+      "sourcePath": "packages/mcp-ops",
+      "tags": [
+        "endpoint",
+        "port:7006"
+      ],
+      "note": "R-MYC-001: shadow_node sem ego completo — faltam: objetivo, regras, fronteiras_dados verificados em runtime"
+    },
+    {
+      "id": "endpoint:mcp-skills-registry",
+      "type": "shadow_node",
+      "label": "MCP Skills Registry",
+      "status": "planned",
+      "evidence": [
+        "plan"
+      ],
+      "sourcePath": "packages/mcp-skills-registry",
+      "tags": [
+        "endpoint",
+        "port:7007"
+      ],
+      "note": "R-MYC-001: shadow_node sem ego completo — faltam: objetivo, regras, fronteiras_dados verificados em runtime"
+    },
+    {
+      "id": "endpoint:mcp-observability",
+      "type": "shadow_node",
+      "label": "MCP Observability",
+      "status": "planned",
+      "evidence": [
+        "plan"
+      ],
+      "sourcePath": "packages/mcp-observability",
+      "tags": [
+        "endpoint",
+        "port:7008"
+      ],
+      "note": "R-MYC-001: shadow_node sem ego completo — faltam: objetivo, regras, fronteiras_dados verificados em runtime"
+    },
+    {
+      "id": "endpoint:mcp-browser-automation",
+      "type": "shadow_node",
+      "label": "MCP Browser Automation",
+      "status": "planned",
+      "evidence": [
+        "plan"
+      ],
+      "sourcePath": "packages/mcp-browser-automation",
+      "tags": [
+        "endpoint",
+        "port:7009"
+      ],
+      "note": "R-MYC-001: shadow_node sem ego completo — faltam: objetivo, regras, fronteiras_dados verificados em runtime"
+    }
+  ],
+  "edges": [
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:852",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:arch",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:blueprint-egos",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:br-acc",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:carteira-livre",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:egos-governance",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:egos-inteligencia",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:egos-lab-chat",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:egos-lab",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:egos-public-work",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:egos-self",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:forja",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:gem-hunter",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:hermes-egos",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:intelink-clean",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:intelink",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:omniview",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:pixelart",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:policia",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:santiago",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:smartbuscas",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "ws:egos-kernel",
+      "relation": "governs",
+      "to": "repo:video-editor",
+      "evidence": [
+        "code"
+      ],
+      "note": "workspace governance"
+    },
+    {
+      "from": "agent:sentinela",
+      "relation": "routes_to",
+      "to": "agent:prime",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:sentinela",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "agent:guarani",
+      "relation": "routes_to",
+      "to": "agent:prime",
+      "evidence": [
+        "code"
+      ],
+      "note": "upstream handoff"
+    },
+    {
+      "from": "agent:prime",
+      "relation": "routes_to",
+      "to": "agent:forja",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:prime",
+      "relation": "routes_to",
+      "to": "agent:critico",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:prime",
+      "relation": "routes_to",
+      "to": "agent:provador",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:prime",
+      "relation": "routes_to",
+      "to": "agent:pixel",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:prime",
+      "relation": "routes_to",
+      "to": "agent:voz",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:prime",
+      "relation": "routes_to",
+      "to": "agent:hermes-ops",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:prime",
+      "relation": "routes_to",
+      "to": "agent:investigador",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:prime",
+      "relation": "routes_to",
+      "to": "agent:guardiao",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:prime",
+      "relation": "routes_to",
+      "to": "agent:curador",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:prime",
+      "relation": "validates",
+      "to": "policy:gate-frozen-zone",
+      "evidence": [
+        "code"
+      ],
+      "note": "fires gate: frozen-zone"
+    },
+    {
+      "from": "agent:prime",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "agent:forja",
+      "relation": "routes_to",
+      "to": "agent:critico",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:forja",
+      "relation": "validates",
+      "to": "policy:gate-pii-code",
+      "evidence": [
+        "code"
+      ],
+      "note": "fires gate: pii-code"
+    },
+    {
+      "from": "agent:forja",
+      "relation": "validates",
+      "to": "policy:gate-frozen-zone",
+      "evidence": [
+        "code"
+      ],
+      "note": "fires gate: frozen-zone"
+    },
+    {
+      "from": "agent:forja",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "agent:pixel",
+      "relation": "routes_to",
+      "to": "agent:critico",
+      "evidence": [
+        "code"
+      ],
+      "note": "upstream handoff"
+    },
+    {
+      "from": "agent:critico",
+      "relation": "routes_to",
+      "to": "agent:provador",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:critico",
+      "relation": "routes_to",
+      "to": "agent:prime",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:critico",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "agent:forja",
+      "relation": "routes_to",
+      "to": "agent:provador",
+      "evidence": [
+        "code"
+      ],
+      "note": "upstream handoff"
+    },
+    {
+      "from": "agent:provador",
+      "relation": "routes_to",
+      "to": "agent:hermes-ops",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:provador",
+      "relation": "routes_to",
+      "to": "agent:prime",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:provador",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "agent:pixel",
+      "relation": "routes_to",
+      "to": "agent:prime",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:pixel",
+      "relation": "validates",
+      "to": "policy:gate-public-copy",
+      "evidence": [
+        "code"
+      ],
+      "note": "fires gate: public-copy"
+    },
+    {
+      "from": "agent:pixel",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "agent:voz",
+      "relation": "routes_to",
+      "to": "agent:prime",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:voz",
+      "relation": "validates",
+      "to": "policy:gate-public-copy",
+      "evidence": [
+        "code"
+      ],
+      "note": "fires gate: public-copy"
+    },
+    {
+      "from": "agent:voz",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "agent:hermes-ops",
+      "relation": "routes_to",
+      "to": "agent:sentinela",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:hermes-ops",
+      "relation": "validates",
+      "to": "policy:gate-prod-deploy",
+      "evidence": [
+        "code"
+      ],
+      "note": "fires gate: prod-deploy"
+    },
+    {
+      "from": "agent:hermes-ops",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "agent:guarani",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "agent:investigador",
+      "relation": "routes_to",
+      "to": "agent:guardiao",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:investigador",
+      "relation": "validates",
+      "to": "policy:gate-ingest-real",
+      "evidence": [
+        "code"
+      ],
+      "note": "fires gate: ingest-real"
+    },
+    {
+      "from": "agent:investigador",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "agent:forja",
+      "relation": "routes_to",
+      "to": "agent:guardiao",
+      "evidence": [
+        "code"
+      ],
+      "note": "upstream handoff"
+    },
+    {
+      "from": "agent:guardiao",
+      "relation": "routes_to",
+      "to": "agent:prime",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:guardiao",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "agent:curador",
+      "relation": "routes_to",
+      "to": "agent:prime",
+      "evidence": [
+        "code"
+      ],
+      "note": "downstream handoff"
+    },
+    {
+      "from": "agent:curador",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:ssot-auditor",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:ssot-fixer",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:drift-sentinel",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:dep-auditor",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:archaeology-digger",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:dead-code-detector",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:capability-drift-checker",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:context-tracker",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:framework-benchmarker",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:mcp-router",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:spec-router",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:gem-hunter",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:kol-discovery",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:gem-hunter-api",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:agent-validator",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:wiki-compiler",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:doc-drift-sentinel",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:egos-pr",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:article-writer",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:doc-drift-verifier",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:doc-drift-analyzer",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:readme-syncer",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:chatbot-manifest-aggregator",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:skill-candidate-extractor",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:chatbot-compliance-checker",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:gtm-harvester",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "worker:capability-scanner",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "integration:mcp-egos-governance",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "integration:mcp-egos-memory",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "integration:mcp-egos-knowledge",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "integration:mcp-egos-security",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "integration:mcp-egos-eval-runner",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "integration:mcp-egos-ops",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "integration:mcp-egos-skills-registry",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "integration:mcp-egos-observability",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "integration:mcp-egos-browser-automation",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "trigger:cron-governance-sync-MCAxMiAq",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "trigger:cron-scheduler-MCAqICog",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "trigger:cron-unknown-cron-MCA2ICog",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "trigger:cron-refresh-token-Ki81ICog",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "trigger:cron-session-aggregator-MzAgMiAq",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "trigger:cron-governance-propagate-MCA0ICog",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "trigger:cron-unknown-cron-MCAyICog",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "trigger:cron-gmail-sync-MCAqLzQg",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "trigger:cron-calendar-sync-MzAgKi80",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "trigger:cron-drive-personal-sync-NDUgKi80",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "trigger:cron-chatgpt-export-ingest-MTUgKiAq",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "trigger:cron-skill-usage-tracker-MCA2ICog",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "trigger:cron-autoresearch-MCA3ICog",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "trigger:cron-llm-usage-notify-MCA4ICog",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "trigger:cron-llm-usage-notify-MCAqLzYg",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "trigger:cron-agent-sentinela-Ki8xNSAq",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "trigger:cron-unknown-cron-QHJlYm9v",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "trigger:cron-mycelium-snapshot-MCAqLzYg",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "code"
+      ]
+    },
+    {
+      "from": "endpoint:egos-gateway",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "plan"
+      ]
+    },
+    {
+      "from": "endpoint:egos-lab-chat",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "plan"
+      ]
+    },
+    {
+      "from": "endpoint:mcp-governance",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "plan"
+      ]
+    },
+    {
+      "from": "endpoint:mcp-memory",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "plan"
+      ]
+    },
+    {
+      "from": "endpoint:mcp-knowledge",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "plan"
+      ]
+    },
+    {
+      "from": "endpoint:mcp-security",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "plan"
+      ]
+    },
+    {
+      "from": "endpoint:mcp-eval-runner",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "plan"
+      ]
+    },
+    {
+      "from": "endpoint:mcp-ops",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "plan"
+      ]
+    },
+    {
+      "from": "endpoint:mcp-skills-registry",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "plan"
+      ]
+    },
+    {
+      "from": "endpoint:mcp-observability",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "plan"
+      ]
+    },
+    {
+      "from": "endpoint:mcp-browser-automation",
+      "relation": "belongs_to",
+      "to": "ws:egos-kernel",
+      "evidence": [
+        "plan"
+      ]
+    }
+  ]
+}

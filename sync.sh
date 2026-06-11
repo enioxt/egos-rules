@@ -27,20 +27,20 @@ echo ""
 # Intentionally excluded:
 # - "$HOME/policia"   (sensitive/private workflow, isolated rules)
 # - "$HOME/personal"  (non-code/personal artifacts)
-REPOS=(
-  "$HOME/852"
-  "$HOME/INPI"
-  "$HOME/egos-lab"
-  "$HOME/carteira-livre"
-  "$HOME/br-acc"
-  "$HOME/forja"
-  "$HOME/egos-self"
-  "$HOME/commons"
-  "$HOME/smartbuscas"
-  "$HOME/santiago"   # EGOS-069: added 2026-03-30
-  "$HOME/arch"       # EGOS governance bootstrap
-  "$HOME/intelink"          # intelink (migrado de egos-inteligencia 2026-05-05)
-)
+# MYCELIUM-006 (2026-06-10): lista canônica única em agents/registry/leaf-repos.json
+# — NÃO adicionar repos aqui; adicionar no JSON. Fallback hardcoded só se jq/JSON ausente.
+LEAF_JSON="$(cd "$(dirname "$0")/../.." && pwd)/agents/registry/leaf-repos.json"
+if command -v jq >/dev/null 2>&1 && [ -f "$LEAF_JSON" ]; then
+  mapfile -t REPOS < <(jq -r '.leaf_repos[] | select(.alias_of == null or .alias_of == "") | .path' "$LEAF_JSON" 2>/dev/null)
+fi
+if [ "${#REPOS[@]:-0}" -eq 0 ]; then
+  echo "⚠️  leaf-repos.json indisponível — usando fallback hardcoded (atualizar JSON!)" >&2
+  REPOS=(
+    "$HOME/852" "$HOME/INPI" "$HOME/egos-lab" "$HOME/carteira-livre"
+    "$HOME/br-acc" "$HOME/forja" "$HOME/egos-self" "$HOME/commons"
+    "$HOME/smartbuscas" "$HOME/santiago" "$HOME/arch" "$HOME/intelink"
+  )
+fi
 
 # ── Step 1: Validate central governance ──
 echo "📋 Step 1: Validating central governance..."

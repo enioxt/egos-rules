@@ -49,9 +49,10 @@ bun scripts/disseminate-propagator.ts --all                    # R2 leaves (bloc
 bash ~/.egos/sync.sh                                            # R2 symlinks + commands
 # ⚠️ GAP CRÍTICO (achado 2026-06-03): o propagator COMMITA nos leaves mas NÃO PUSHA.
 # "Disseminado" ≠ "commitado local" — só está disseminado quando está no GitHub.
-# PUSH OBRIGATÓRIO dos leaves que ficaram ahead:
-for d in /home/enio/intelink /home/enio/egos-inteligencia /home/enio/egos-lab /home/enio/852 \
-         /home/enio/smartbuscas /home/enio/santiago /home/enio/arch /home/enio/egos-self; do
+# PUSH OBRIGATÓRIO dos leaves que ficaram ahead.
+# Lista canônica lida de agents/registry/leaf-repos.json (MYCELIUM-006 — não editar aqui):
+LEAF_REPOS_JSON=~/egos/agents/registry/leaf-repos.json
+for d in $(jq -r '.leaf_repos[].path' "$LEAF_REPOS_JSON"); do
   [ -d "$d/.git" ] || continue
   ahead=$(git -C "$d" rev-list --count @{u}..HEAD 2>/dev/null || echo 0)
   [ "$ahead" -gt 0 ] && echo "push $(basename $d) ($ahead ahead)" && git -C "$d" push origin "$(git -C "$d" branch --show-current)" 2>&1 | grep -E "\->|rejected|error" | head -1

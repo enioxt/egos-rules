@@ -34,3 +34,6 @@ coordination-blackboard.md
 coordination-history.jsonl
 codex-reviews/*.log
 logs/*.log
+
+# runtime logs
+coordination-watcher.log

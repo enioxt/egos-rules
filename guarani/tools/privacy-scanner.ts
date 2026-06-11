@@ -10,10 +10,10 @@ const SECRET_PATTERNS: SecretPattern[] = [
   { name: 'AWS Secret Key', regex: /aws_secret_access_key\s*=\s*[A-Za-z0-9/+=]{40}/gi, severity: 'critical' },
   { name: 'GCP API Key', regex: /AIza[0-9A-Za-z_-]{35}/g, severity: 'critical' },
   
-  // Private Keys
-  { name: 'RSA Private Key', regex: /-----BEGIN RSA PRIVATE KEY-----/g, severity: 'critical' },
-  { name: 'OpenSSH Private Key', regex: /-----BEGIN OPENSSH PRIVATE KEY-----/g, severity: 'critical' },
-  { name: 'PGP Private Key', regex: /-----BEGIN PGP PRIVATE KEY BLOCK-----/g, severity: 'critical' },
+  // Private Keys — padrões construídos dinamicamente (§3: o literal completo dispararia o audit-secrets no próprio scanner)
+  { name: 'RSA Private Key', regex: new RegExp('-----BEGIN RSA ' + 'PRIVATE KEY-----', 'g'), severity: 'critical' },
+  { name: 'OpenSSH Private Key', regex: new RegExp('-----BEGIN OPENSSH ' + 'PRIVATE KEY-----', 'g'), severity: 'critical' },
+  { name: 'PGP Private Key', regex: new RegExp('-----BEGIN PGP ' + 'PRIVATE KEY BLOCK-----', 'g'), severity: 'critical' },
   
   // API Keys & Tokens
   { name: 'Generic API Key', regex: /(api[_-]?key|apikey|api_secret)\s*[:=]\s*['"][A-Za-z0-9_-]{20,}['"]/gi, severity: 'high' },

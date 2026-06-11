@@ -20,6 +20,7 @@ Você está executando `/end`. Sua obrigação:
 4. **VERIFICATION CHECKPOINT** (Phase 10) é OBRIGATÓRIO. Sem ele, /end está incompleto.
 5. **RESOLVER DOCTRINE — captura de padrões:** registre as **decisões humanas do Enio** desta sessão (cortes de Red Zone, escolhas entre opções, mudanças de prioridade) como padrão em memória (`feedback`/`project`), para que triagens futuras pré-preencham a preferência dele. SSOT: [RESOLVER_DOCTRINE](../../docs/governance/RESOLVER_DOCTRINE.md) §3.
 5. **NEVER `git add -A`** — sempre `git add <specific-file>` (T0 rule, INC-002).
+6. **No-Code Handoff Discipline (END-NOCODE-001):** Ao consolidar a sessão e gerar o handoff, certifique-se de que os próximos passos e in-progress estão descritos de modo a serem 100% acionáveis de forma autônoma por IAs subsequentes, sem requerer intervenções de codificação manual do usuário Enio.
 
 ---
 
@@ -702,6 +703,7 @@ EGOS /end v6.1 — Verification Checkpoint
 Phase 0 — Re-load Context
   ✓ Single Pursuit confirmado: [Central EGOS / outro]
   ✓ session-checklist format: ✅/🔄/⏳
+  ✓ No-Code Handoff e tasks auto-executáveis: [confirmado]
 
 Phase 1 — Coverage Check
   ✓ Skills changed: [N] | ADRs changed: [N]

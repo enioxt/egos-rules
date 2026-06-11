@@ -28,6 +28,7 @@ Você está executando `/start`. Sua obrigação:
 12. **PERGUNTA OBRIGATÓRIA DE DIREÇÃO [T1 — Enio 2026-06-02, START-ASK-001]:** Todo `/start` DEVE terminar **perguntando ativamente ao Enio o que for necessário sobre os próximos passos** antes de executar qualquer trabalho — nunca auto-prosseguir. Use `AskUserQuestion` com opções+argumentos quando houver escolha de track/persona/forma-de-agir; pergunta aberta quando faltar contexto. O checkpoint (Layer 7) que **não** fecha com pergunta de direção = `/start` inválido. Enio elogiou explicitamente este comportamento e pediu persistência: "reforce mais ainda para toda as vezes que der /start obrigatoriamente você questionar o que for necessário sobre os próximos passos." Não confundir com pressa: descobrir o rumo certo > começar rápido no rumo errado.
 
 13. **NEW DIRECTION GATE [T1 — Enio 2026-06-07, A82]:** Se o Enio (ou qualquer agente, inclusive você) mencionar nova direção/insight/ideia/feature/refactor **durante a sessão** (não só no `/start`), **PARAR e executar `FOCUS_GATES.md §6b`** ANTES de engajar com o conteúdo da ideia: classificar REAL/CONCEPT/PHANTOM + DESCARTAR/ESTACIONAR/TESTAR/INTEGRAR/TROCAR-FOCO + 5 critérios. Vale para o entusiasmo do próprio Enio e para sugestões suas. A mesma confiança que descobre é a que dispersa — o gate confia em enforcement, não em força de vontade.
+14. **100% AI-Driven / No-Code Master (START-NOCODE-001):** O desenvolvimento do EGOS é 100% feito por IAs. O usuário Enio não lê nem escreve código cru. Você deve assumir total propriedade e autonomia técnica operacional. Não crie tarefas ou dê respostas pedindo para o usuário implementar, colar código ou realizar alterações manuais de arquivos. A interação com o humano deve ocorrer no nível estratégico-arquitetural e interfaces visuais/funcionais.
 
 ---
 
@@ -293,7 +294,7 @@ Use **Read tool** no handoff retornado. Foque em: "Next / Próximos Passos", "In
 
 ## LAYER 4.6 — SSOT do Leaf-Repo (INC-009)
 
-> **Aplica quando:** cwd é leaf-repo (não `/home/enio/egos/`). Detalhe completo: [docs/start-layers/leaf-ssot.md](../docs/start-layers/leaf-ssot.md).
+> **Aplica quando:** cwd é leaf-repo (não `/home/enio/egos/`). Detalhe completo: [docs/start-layers/leaf-ssot.md](../../docs/start-layers/leaf-ssot.md).
 
 ```bash
 ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo $PWD)
@@ -316,7 +317,7 @@ Layer 4.6 — Leaf SSOTs
 
 ## LAYER 4.7 — External Integrations Health
 
-> **Aplica quando:** repo tem `.env` com `EVOLUTION_API_URL`. Detalhe completo: [docs/start-layers/evolution-health.md](../docs/start-layers/evolution-health.md).
+> **Aplica quando:** repo tem `.env` com `EVOLUTION_API_URL`. Detalhe completo: [docs/start-layers/evolution-health.md](../../docs/start-layers/evolution-health.md).
 
 ```bash
 HAS_EVOL=$(grep -lE "^EVOLUTION_API_URL" .env .env.local 2>/dev/null | head -1)
@@ -420,7 +421,7 @@ echo "Agent Org: ${AGENTS_DEF} papéis em .claude/agents/ | mapa: docs/governanc
 
 ## LAYER 6.5 — Capability Delta
 
-> Detalhe completo (bash MCPs + Hermes VPS): [docs/start-layers/capability-delta.md](../docs/start-layers/capability-delta.md).
+> Detalhe completo (bash MCPs + Hermes VPS): [docs/start-layers/capability-delta.md](../../docs/start-layers/capability-delta.md).
 
 Executar bash de `capability-delta.md` para: novas sections em CAPABILITY_REGISTRY, INTEGRATION_REGISTRY status, MCPs ativos, Hermes VPS skills, eval coverage.
 
@@ -527,6 +528,7 @@ Layer 0.6 — Dispersion Signal (híbrido por métrica)
 Layer 1 — Global Rules
   ✓ T0 citada: [ex: "NEVER force-push main"]
   ✓ Single Pursuit (enio-profile): [data + descrição]
+  ✓ 100% AI-Driven Developer / No-Code Master internalizado: [sim]
 
 Layer 1.5 — PRIME Process + Flow
   ✓ Loop R=L/C internalizado | §6 fronteiras citadas

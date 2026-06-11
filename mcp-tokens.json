@@ -1,0 +1,33 @@
+{
+  "smoke-core-2026": {
+    "tenant": "smoke-tenant",
+    "scopes": [
+      "read"
+    ],
+    "groups": [
+      "core"
+    ],
+    "label": "Smoke Core Token"
+  },
+  "smoke-full-2026": {
+    "tenant": "smoke-tenant-full",
+    "scopes": [
+      "full"
+    ],
+    "groups": [
+      "full"
+    ],
+    "label": "Smoke Full Token"
+  },
+  "enio-local-full-2026": {
+    "tenant": "enio",
+    "scopes": [
+      "read",
+      "write"
+    ],
+    "groups": [
+      "full"
+    ],
+    "label": "Enio Local Full"
+  }
+}
